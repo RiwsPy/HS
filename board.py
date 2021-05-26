@@ -52,18 +52,22 @@ class Board(list):
                 self.secret[key].discard(card)
             self.secret_key.remove(card.key_number)
 
-    def append(self, card, position=constants.BATTLE_SIZE):
-        if self.can_add_card() and card.general == 'minion':
+    def append(self, card, position=constants.BATTLE_SIZE) -> bool:
+        if card.general == 'minion' and self.can_add_card():
             if card.owner:
                 card.owner.remove(card)
             card.owner = self
             super().insert(position, card)
             self.refresh_enchantment()
             return True
-        elif card.general == 'secret' and self.can_add_this_secret(card):
+        elif card.general == 'secret' and self.can_add_this_secret(card) \
+                and type(self.owner) is player.Player:
             for key in card.script.keys():
                 self.secret[key].add(card)
             self.secret_key.append(card.key_number)
+            if getattr(card, 'limitation', 0) == 1:
+                self.owner.power.secret_limition.append(card.key_number)
+            return True
 
         return False
 

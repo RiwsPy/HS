@@ -27,7 +27,7 @@ class Power:
         self.roll_cost = 1
         self.lst_bob_cost = constants.LEVEL_UP_COST
         self.quest_value = 0
-        self.ice_block_limitation = False
+        self.secret_limitation = []
 
         self.is_disabled = False # une utilisation / tour
         for key, value in info.items():

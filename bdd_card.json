@@ -314,16 +314,16 @@
 "1011":{"name":"Récompense de triple", "synergy":"0x0", "level":0, "cost":0, "script":{"0x1":"Recrutement_4"}, "general":"spell", "cant_collect":1},
 "1012":{"name":"Récompense de triple", "synergy":"0x0", "level":0, "cost":0, "script":{"0x1":"Recrutement_5"}, "general":"spell", "cant_collect":1},
 "1013":{"name":"Récompense de triple", "synergy":"0x0", "level":0, "cost":0, "script":{"0x1":"Recrutement_6"}, "general":"spell", "cant_collect":1},
+"1014":{"name":"Gemme de sang", "synergy":"0x0", "level":0, "script":{"0x1":"Blood_gem"}, "general":"spell", "cant_collect":1},
 
 
-"1014":{"name":"Matrice d'autodéfense", "synergy":"0x0", "level":0, "script":{"0x8000":"Autodefense_matrix"}, "general":"secret", "cant_collect":1},
-"1015":{"name":"Rédemption", "synergy":"0x0", "level":0, "script":{"0x2000":"Redemption"}, "general":"secret", "cant_collect":1},
-"1016":{"name":"Venger", "synergy":"0x0", "level":0, "script":{"0x2000":"Avenge"}, "general":"secret", "cant_collect":1},
-"1017":{"name":"Piège à serpents", "synergy":"0x0", "level":0, "script":{"0x8000":"Sneak_trap"}, "general":"secret", "cant_collect":1},
-"1018":{"name":"Piège frappe-venin", "synergy":"0x0", "level":0, "script":{"0x8000":"Venomstrike_trap"}, "general":"secret", "cant_collect":1},
-"1019":{"name":"Bloc de glace", "synergy":"0x0", "level":0, "script":{"0x8000000":"Ice_block"}, "general":"secret", "cant_collect":1},
-"1020":{"name":"Portrait caché", "synergy":"0x0", "level":0, "script":{"0x8000":"Splitting_image"}, "general":"secret", "cant_collect":1},
-"1021":{"name":"Esprit combatif", "synergy":"0x0", "level":0, "script":{"0x1":"Competitive_spirit"}, "general":"secret", "cant_collect":1},
+"2000":{"name":"Matrice d'autodéfense", "synergy":"0x0", "level":0, "script":{"0x8000":"Autodefense_matrix"}, "general":"secret", "cant_collect":1},
+"2001":{"name":"Rédemption", "synergy":"0x0", "level":0, "script":{"0x2000":"Redemption"}, "general":"secret", "cant_collect":1},
+"2002":{"name":"Venger", "synergy":"0x0", "level":0, "script":{"0x2000":"Avenge"}, "general":"secret", "cant_collect":1},
+"2003":{"name":"Piège à serpents", "synergy":"0x0", "level":0, "script":{"0x8000":"Sneak_trap"}, "general":"secret", "cant_collect":1},
+"2004":{"name":"Piège frappe-venin", "synergy":"0x0", "level":0, "script":{"0x8000":"Venomstrike_trap"}, "general":"secret", "cant_collect":1},
+"2005":{"name":"Bloc de glace", "synergy":"0x0", "level":0, "script":{"0x8000000":"Ice_block"}, "general":"secret", "cant_collect":1, "limitation":1},
+"2006":{"name":"Portrait caché", "synergy":"0x0", "level":0, "script":{"0x8000":"Splitting_image"}, "general":"secret", "cant_collect":1},
+"2007":{"name":"Esprit combatif", "synergy":"0x0", "level":0, "script":{"0x1":"Competitive_spirit"}, "general":"secret", "cant_collect":1}
 
-"1022":{"name":"Gemme de sang", "synergy":"0x0", "level":0, "script":{"0x1":"Blood_gem"}, "general":"spell", "cant_collect":1}
 }

@@ -466,40 +466,25 @@ class Player:
                 self.hand.append(choice)
 
     def discover_secret(self, nb=3): # Akazamzarak
-        lst = ["1015", "1016", "1017", "1018", "1019", "1020", "1021"]
-        for secret_key in self.secret_key:
+        lst = self.bob.all_secret_key[:]
+        for secret_key in set(self.board.secret_key+self.power.secret_limitation):
             lst.remove(secret_key)
-        if self.power.ice_block_limitation and "1019" in lst:
-            lst.remove("1019")
 
-        if len(lst) <= nb:
-            secret_choice = lst
-        else:
-            secret_choice = []
-            for _ in range(nb):
-                if lst:
-                    sp = random.choice(lst)
-                    secret_choice.append(sp)
-                    lst.remove(sp)
-                else:
-                    break
-
-        self.discover_secret_choice(secret_choice)
+        random.shuffle(lst)
+        self.discover_secret_choice(lst[:nb])
 
     #TODO
     def discover_secret_choice(self, lst):
         if not lst:
             return None
 
-        if "1019" in lst:
-            choice = "1019"
+        if "2005" in lst:
+            choice = "2005"
         else:
+            # TODO
             choice = lst[-1]
 
-        spl = card.Card(choice, self.bob, self)
-        if spl.key_number == "1019":
-            self.ice_block_limitation = True
-        self.board.append(spl)
+        self.board.append(card.Card(choice, self.bob, self))
 
     def best_card_T1(self, *players, nb_turn=2):
         # renvoie la "meilleure" carte que peut choisir un héros qui rencontre un héros précis au tour n°2

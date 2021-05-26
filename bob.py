@@ -16,6 +16,7 @@ class Bob:
         self.all_card = self.normalize_bdd_card()
         self.all_hero = self.normalize_bdd_hero()
         self.all_effect = self.normalize_bdd_effect()
+        self.all_secret_key = []
 
         self.type_not_ban = constants.TYPE_ALL - type_ban
         self.hand = hand.Bob_hand(self)
@@ -25,6 +26,9 @@ class Bob:
             for nb in constants.TYPE_NAME }
 
         for key, info in self.all_card.items():
+            if info['general'] == 'secret':
+                self.all_secret_key.append(key)
+
             if 'cant_collect' in info:
                 continue
 
