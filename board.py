@@ -1,9 +1,8 @@
 import constants
 import player
-import bob
-import hand
 import card
 import random
+import script_minion
 from collections import defaultdict
 
 #TODO: bloquer les fonctions manuelles board en cours de combat
@@ -11,7 +10,7 @@ class Board(list):
     def __init__(self, owner):
         list.__setitem__(self, slice(None), [])
         self.owner = owner
-        self.enchantment = {} # dict(card_id: {'bonus': value, 'restr_type': type})
+        self.aura = {} # dict(card_id: {'bonus': value, 'restr_type': type})
         self.secret = defaultdict(set) # dict('0x1': set())
         self.secret_key = []
         self._opponent = None # pour Bob, id du joueur qui a accès à ce board
@@ -29,7 +28,7 @@ class Board(list):
 
     @opponent.setter
     def opponent(self, value):
-        self.refresh_enchantment()
+        self.refresh_aura()
         self._opponent = value
 
     def copy(self, source):
@@ -46,7 +45,7 @@ class Board(list):
                 super().remove(card)
             except ValueError:
                 pass
-            self.refresh_enchantment()
+            self.refresh_aura()
         elif card.general == 'secret':
             for key in card.script.keys():
                 self.secret[key].discard(card)
@@ -58,7 +57,7 @@ class Board(list):
                 card.owner.remove(card)
             card.owner = self
             super().insert(position, card)
-            self.refresh_enchantment()
+            self.apply_aura(card)
             return True
         elif card.general == 'secret' and self.can_add_this_secret(card) \
                 and type(self.owner) is player.Player:
@@ -151,20 +150,39 @@ class Board(list):
         if bob_hand:
             random.choice(bob_hand).play(board=self)
 
-    def remove_enchantment(self, owner):
+    def remove_aura(self, owner):
         try:
-            del self.enchantment[owner]
+            del self.aura[owner]
         except KeyError:
             pass
 
-    def add_enchantment(self, owner, **infos):
-        if owner not in self.enchantment:
-            self.enchantment[owner] = defaultdict(int)
-        self.enchantment[owner].update(infos)
+    def add_aura(self, owner, **infos):
+        if owner not in self.aura:
+            self.aura[owner] = defaultdict(int)
+        self.aura[owner].update(infos)
+        if 'method' in infos:
+            method = getattr(script_minion, infos['method'])
+            for minion in self:
+                method(owner, minion)
 
-    def refresh_enchantment(self):
-        self.enchantment.clear()
-        self.owner.active_event(constants.EVENT_PLAY_ENCHANTMENT)
+    def apply_aura(self, minion):
+        for owner, infos in self.aura.items():
+            if 'method' in infos:
+                getattr(script_minion, infos['method'])(owner, minion)
+
+    def refresh_aura(self):
+        minion_with_aura = []
+        for minion in self:
+            for enchant in minion.enchantment[::-1]:
+                if enchant.type == 'aura':
+                    minion.enchantment.remove(enchant)
+                    minion_with_aura.append(minion)
+
+        self.aura.clear()
+        for minion in minion_with_aura:
+            minion.calc_stat_from_scratch()
+
+        self.owner.active_event(constants.EVENT_PLAY_AURA)
 
     def nb_premium_card(self):
         nb = 0

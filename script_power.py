@@ -81,21 +81,19 @@ def Clairvoyance(self, event):
 
 def Brick_by_brick(self, event):
     if self.board:
-        random.choice(self.board).health += 4
+        random.choice(self.board).create_and_apply_enchantment("305")
 
 def Tavern_ligthing(self, event):
     minion = self.minion_choice(self.board)
     if minion:
-        minion.attack += self.level
-        minion.health += self.level
+        minion.create_and_apply_enchantment("306", a=self.level, h=self.level)
         return minion
     return None
 
 def Bloodfury(self, event):
     for minion in self.board:
         if minion.type & constants.TYPE_DEMON:
-            minion.attack += 1
-            minion.health += 1
+            minion.create_and_apply_enchantment("307")
 
 def Lead_explorer(self, event):
     return self.hand.create_card("10"+str(self.level))
@@ -108,12 +106,11 @@ def Avalanche(self, event):
 def Stay_frosty(self, event):
     for minion in self.board.opponent:
         if minion.state & constants.STATE_FREEZE:
-            minion.attack += 2
-            minion.health += 1
+            minion.create_and_apply_enchantment("308")
 
 def Tinker(self, event, card):
     if card.type & constants.TYPE_MECH:
-        card.set_effect_on("15")
+        card.create_and_apply_enchantment("300")
 
 def Die_insects(self, event):
     self.power.quest_value += 1
@@ -122,26 +119,21 @@ def Die_insects(self, event):
 
 def Sulfuras(self, event):
     # le bonus s'active-t-il deux fois si le board ne contient qu'un serviteur ?
-    bonus = 3
     if self.board:
-        self.board[0].attack += bonus
-        self.board[0].health += bonus
-        self.board[-1].attack += bonus
-        self.board[-1].health += bonus
+        self.board[0].create_and_apply_enchantment("309")
+        self.board[-1].create_and_apply_enchantment("309")
 
 def Puzzle_box(self, event):
     op = self.bob.boards[self]
     if op:
         random_card = random.choice(op)
         self.hand.append(random_card)
-        random_card.attack += 1
-        random_card.health += 1
+        random_card.create_and_apply_enchantment("301")
 
 def A_tale_of_kings(self, event, card=None):  # will not change into the same Hero Power twice in a row
     if event == constants.EVENT_BUY: # achat
         if card.is_type(self.power.quest_value):
-            card.attack += 2
-            card.health += 2
+            card.create_and_apply_enchantment("303")
     elif event == constants.EVENT_BEGIN_TURN: # détermination du type concerné
         possible_types = self.bob.type_not_ban & (0xFF - self.power.quest_value)
         if possible_types > 0:
@@ -161,8 +153,7 @@ def Prestidigitation(self, event):
 def Verdant_spheres(self, event, card):
     self.power.quest_value += 1
     if not self.power.quest_value % 3:
-        card.attack += 2
-        card.health += 2
+        card.create_and_apply_enchantment("302")
 
 def Saturday_cthuns(self, event):
     if event == constants.EVENT_USE_POWER:
@@ -170,8 +161,7 @@ def Saturday_cthuns(self, event):
     elif event == constants.EVENT_END_TURN and self.board and self.power.is_disabled:
         for _ in range(self.power.quest_value):
             minion = random.choice(self.board)
-            minion.attack += 1
-            minion.health += 1
+            minion.create_and_apply_enchantment("304")
 
 def Sharpen_blades(self, event, card=None):
     if event == constants.EVENT_USE_POWER:
@@ -179,8 +169,7 @@ def Sharpen_blades(self, event, card=None):
             minion = self.minion_choice(self.board)
             if minion:
                 bonus = len(self.minion_buy_this_turn)
-                minion.attack += bonus
-                minion.health += bonus
+                minion.create_and_apply_enchantment("310", a=bonus, h=bonus)
                 return minion
         return False
     return None
@@ -204,8 +193,7 @@ def Ill_take_that(self, event, attacker=None, victim=None):
 
 def Sprout_it_out(self, event, repop_id):
     if self.opponent and type(self.opponent) is player.Player:
-        repop_id.attack += 1
-        repop_id.health += 2
+        repop_id.minion.create_and_apply_enchantment("310")
         repop_id.state_fight |= constants.STATE_TAUNT
 
 def Dream_portal(self, event):
@@ -238,13 +226,12 @@ def Hat_trick(self, event, card=None):
     if brd:
         for _ in range(2):
             minion = random.choice(brd)
-            minion.attack += 1
-            minion.health += 1
+            minion.create_and_apply_enchantment("312")
 
 def All_will_burn(self, event):
-    self.board.add_enchantment(self.power, attack=2)
+    self.board.add_aura(self, method='Aile_de_mort')
     if self.board.opponent:
-        self.board.opponent.add_enchantment(self.power, attack=2)
+        self.board.opponent.add_aura(self, method='Aile_de_mort')
 
 def Swatting_insects(self, event):
     if self.board:
@@ -256,5 +243,6 @@ def Wingmen(self, event):
         self.board[-1].state_fight |= constants.STATE_ATTACK_IMMEDIATLY
 
 def active_nomi_bonus(self, event, target):
-    if target.type & constants.TYPE_ELEMENTAL:
-        target.set_effect_on("14", self.bonus_nomi)
+    pass
+    #if target.type & constants.TYPE_ELEMENTAL:
+    #    target.set_effect_on("14", self.bonus_nomi)

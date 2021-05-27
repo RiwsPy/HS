@@ -73,22 +73,17 @@ def Tranchetripe(self):
     for minion in self.owner:
         if minion.type & constants.TYPE_DRAGON:
             nb += 1
-    if self.is_premium:
-        self.apply_effect_on("16", nb)
-    else:
-        self.apply_effect_on("16_p", nb)
+    self.create_and_apply_enchantment("16", is_premium=self.is_premium, nb=nb)
 
 def Captaine_Larrrrdeur(self, card):
     if card.type & constants.TYPE_PIRATE:
         self.owner.owner.gold += self.double_if_premium(1)
 
 def Devoreur_dames(self):
-    #TODO !!!!!!
     minion = self.owner.owner.minion_choice(self.owner, self, restr=constants.TYPE_DEMON)
     if minion:
-        self.attack += minion.attack*self.double_if_premium(1)
-        self.health += minion.health*self.double_if_premium(1)
         self.owner.owner.gold += 3*self.double_if_premium(1)
+        self.create_and_apply_enchantment("74", is_premium=self.is_premium, a=minion.attack, h=minion.health)
         self.bob.hand.append(minion)
 
 def Apprentie_reinit(self):
@@ -116,18 +111,21 @@ def Apprentie_de_Kangor_p(self):
         pass
 
 def Mal_Ganis_a(self):
-    bonus = self.double_if_premium(2)
-    self.owner.add_enchantment(self, attack=bonus, health=bonus, insensible=1, restr_type=constants.TYPE_DEMON)
+    self.owner.add_aura(self, insensible=1, method='Mal_Ganis')
+
+def Mal_Ganis(self, target):
+    if self != target and target.type & constants.TYPE_DEMON:
+        target.create_and_apply_enchantment("78", is_premium=self.is_premium, origin=self, type='aura')
 
 def Brise_siege_a(self):
-    self.owner.add_enchantment(self, attack=self.double_if_premium(1), restr_type=constants.TYPE_DEMON)
+    self.owner.add_aura(self, attack=self.double_if_premium(1), restr_type=constants.TYPE_DEMON)
 
 def Chef_de_guerre_murloc_a(self):
-    self.owner.add_enchantment(self, attack=self.double_if_premium(2), restr_type=constants.TYPE_MURLOC)
+    self.owner.add_aura(self, attack=self.double_if_premium(2), restr_type=constants.TYPE_MURLOC)
 
 def Capitaine_des_mers_a(self): #add
     bonus = self.double_if_premium(1)
-    self.owner.add_enchantment(self, attack=bonus, health=bonus, restr_type=constants.TYPE_PIRATE)
+    self.owner.add_aura(self, attack=bonus, health=bonus, restr_type=constants.TYPE_PIRATE)
 
 def Mythrax(self):
     type_indispo = 0
@@ -138,19 +136,13 @@ def Mythrax(self):
                 nb += 1
                 if minion.type != constants.TYPE_ALL:
                     type_indispo |= minion.type
-    if not self.is_premium:
-        self.apply_effect_on("17", nb)
-    else:
-        self.apply_effect_on("17_p", nb)
+    self.create_and_apply_enchantment("17", is_premium=self.is_premium, nb=nb)
 
 def Heraut_qijari(self, victim):
     if victim.state & constants.STATE_TAUNT:
         for minion in [self.owner[victim.position+1], self.owner[victim.position-1]]:
             if minion:
-                if not self.is_premium:
-                    minion.apply_effect_on("18")
-                else:
-                    minion.apply_effect_on("18_p")
+                minion.create_and_apply_enchantment("18", is_premium=self.is_premium)
 
 def Gardienne_dantan(self):
     self.owner.owner.hand.create_card('1001')
@@ -161,29 +153,16 @@ def Gardienne_dantan_p(self):
 
 def Champion_dYshaarj(self, ally):
     if ally.state & constants.STATE_TAUNT:
-        self.apply_effect_on("19")
-
-def Champion_dYshaarj_p(self, ally):
-    if ally.state & constants.STATE_TAUNT:
-        self.apply_effect_on("19_p")
+        self.create_and_apply_enchantment("19", is_premium=self.is_premium)
 
 def Bras_de_lempire(self, ally):
     if ally.state & constants.STATE_TAUNT:
-        ally.apply_effect_on("20")
-
-def Bras_de_lempire_p(self, ally):
-    if ally.state & constants.STATE_TAUNT:
-        ally.apply_effect_on("20_p")
+        ally.create_and_apply_enchantment("20", is_premium=self.is_premium)
 
 def Ritualiste_tourmente(self, defenser):
     if self == defenser:
         for minion in [self.owner[self.position-1], self.owner[self.position+1]]:
-            minion.apply_effect_on("21")
-
-def Ritualiste_tourmente_p(self, defenser):
-    if self == defenser:
-        for minion in [self.owner[self.position-1], self.owner[self.position+1]]:
-            minion.apply_effect_on("21_p")
+            minion.create_and_apply_enchantment("21", is_premium=self.is_premium)
 
 def Nat_Pagle(self, attacker, victim):
     # n'est pas une découverte à 1 car peut se découvrir lui-même
@@ -197,75 +176,45 @@ def Nat_Pagle(self, attacker, victim):
 def Amiral_de_leffroi(self, attacker):
     if attacker.type & constants.TYPE_PIRATE:
         for minion in self.owner:
-            minion.apply_effect_on("21")
-
-def Amiral_de_leffroi_p(self, attacker):
-    if attacker.type & constants.TYPE_PIRATE:
-        for minion in self.owner:
-            minion.apply_effect_on("21_p")
+            minion.create_and_apply_enchantment("21", is_premium=self.is_premium)
 
 def Capitaine_Grondeventre(self, attacker):
     if attacker.type & constants.TYPE_PIRATE and self != attacker:
-        attacker.apply_effect_on("22")
-
-def Capitaine_Grondeventre_p(self, attacker):
-    if attacker.type & constants.TYPE_PIRATE and self != attacker:
-        attacker.apply_effect_on("22_p")
+        attacker.create_and_apply_enchantment("22", is_premium=self.is_premium)
 
 def Brann(self):
-    self.owner.add_enchantment(self, boost_battlecry=self.double_if_premium(1))
+    self.owner.add_aura(self, boost_battlecry=self.double_if_premium(1))
 
 def Baron_Vaillefendre(self):
-    self.owner.add_enchantment(self, boost_deathrattle=self.double_if_premium(1))
+    self.owner.add_aura(self, boost_deathrattle=self.double_if_premium(1))
 
 def Khadgar(self):
-    self.owner.add_enchantment(self, boost_invoc=self.double_if_premium(1))
+    self.owner.add_aura(self, boost_invoc=self.double_if_premium(1))
 
 def Raflelor(self):
-    self.apply_effect_on("1", self.owner.nb_premium_card())
-
-def Raflelor_p(self):
-    self.apply_effect_on("1_p", self.owner.nb_premium_card())
+    self.create_and_apply_enchantment("1", is_premium=self.is_premium, nb=self.owner.nb_premium_card())
 
 def Micromomie(self):
-    if not self.is_premium:
-        Boost_other(self, "23", nb_max=1)
-    else:
-        Boost_other(self, "23_p", nb_max=1)
+    Boost_other(self, "23", nb_max=1)
 
 def Sensei_de_fer(self):
     Boost_other(self, "24", type=constants.TYPE_MECH, nb_max=1)
 
-def Sensei_de_fer_p(self):
-    Boost_other(self, "24_p", type=constants.TYPE_MECH, nb_max=1)
-
 def Chambellan_Executus(self):
-    nb = 1
-    bonus = 1
-    if self.is_premium:
-        bonus = 2
+    nb = 0
     for minion in self.owner.owner.minion_play_this_turn:
         if minion.type & constants.TYPE_ELEMENTAL:
-            nb += bonus
-    self.owner[0].apply_effect_on("25", nb)
+            nb += 1
+    self.owner[0].create_and_apply_enchantment("25", is_premium=self.is_premium, nb=nb)
 
 def Micro_machine(self):
-    self.apply_effect_on("2")
-
-def Micro_machine_p(self):
-    self.apply_effect_on("2_p")
+    self.create_and_apply_enchantment("2", is_premium=self.is_premium)
 
 def Dragon_infamelique(self):
-    self.apply_effect_on("3")
-
-def Dragon_infamelique_p(self):
-    self.apply_effect_on("3_p")
+    self.create_and_apply_enchantment("3", is_premium=self.is_premium)
 
 def Plaiedecaille_cobalt(self):
     Boost_other(self, "26", nb_max=1)
-
-def Plaiedecaille_cobalt_p(self):
-    Boost_other(self, "26_p", nb_max=1)
 
 def Massacreuse_croc_radieux(self):
     position_check = list(range(len(self.owner)))
@@ -276,22 +225,7 @@ def Massacreuse_croc_radieux(self):
         minion = self.owner[random_position]
         if minion.type:
             if not minion.type & type_indispo or minion.type == constants.TYPE_ALL:
-                minion.apply_effect_on("27")
-                if minion.type != constants.TYPE_ALL:
-                    type_indispo |= minion.type
-
-        position_check.remove(random_position)
-
-def Massacreuse_croc_radieux_p(self):
-    position_check = list(range(len(self.owner)))
-    type_indispo = 0
-
-    while position_check:
-        random_position = random.choice(position_check)
-        minion = self.owner[random_position]
-        if minion.type:
-            if not minion.type & type_indispo or minion.type == constants.TYPE_ALL:
-                minion.apply_effect_on("27_p")
+                minion.create_and_apply_enchantment("27", is_premium=self.is_premium)
                 if minion.type != constants.TYPE_ALL:
                     type_indispo |= minion.type
 
@@ -299,35 +233,24 @@ def Massacreuse_croc_radieux_p(self):
 
 def Elémentplus(self, minion):
     if self is minion and type(self.owner.owner) is player.Player:
-        self.owner.owner.hand.create_card("117a")
-
-def Elémentplus_p(self, minion):
-    if self is minion and type(self.owner.owner) is player.Player:
-        self.owner.owner.hand.create_card("117a")
-        self.owner.owner.hand.create_card("117a")
+        for _ in range(self.double_if_premium(1)):
+            self.owner.owner.hand.create_card("117a")
 
 def Bronze_couenne(self, minion):
     if self is minion and type(self.owner.owner) is player.Player:
-        self.owner.owner.hand.create_card("1022")
-        self.owner.owner.hand.create_card("1022")
-        if self.is_premium:
-            self.owner.owner.hand.create_card("1022")
-            self.owner.owner.hand.create_card("1022")
+        for _ in range(self.double_if_premium(2)):
+            self.owner.owner.hand.create_card("1014")
+            self.owner.owner.hand.create_card("1014")
 
 def Geomancien_de_Tranchebauge(self):
-    self.owner.owner.hand.create_card("1022")
+    self.owner.owner.hand.create_card("1014")
     if self.is_premium:
-        self.owner.owner.hand.create_card("1022")
+        self.owner.owner.hand.create_card("1014")
 
 def Regisseur_du_temps(self, minion):
     if self is minion and type(self.owner.owner) is player.Player:
         for minion in self.bob.boards[self.owner.owner]:
-            minion.apply_effect_on("28")
-
-def Regisseur_du_temps_p(self, minion):
-    if self is minion and type(self.owner.owner) is player.Player:
-        for minion in self.owner.opponent:
-            minion.apply_effect_on("28_p")
+            minion.create_and_apply_enchantment("28", is_premium=self.is_premium)
 
 def Parieuse_convaincante(self, minion):
     if self is minion:
@@ -338,71 +261,42 @@ def Parieuse_convaincante_p(self, minion):
         self.owner.owner.gold += 5
 
 def Bolvar_sang_de_feu(self):
-    self.apply_effect_on("29")
-
-def Bolvar_sang_de_feu_p(self):
-    self.apply_effect_on("29_p")
+    self.create_and_apply_enchantment("29", is_premium=self.is_premium)
 
 def Massacreur_drakonide(self):
-    self.apply_effect_on("30")
-
-def Massacreur_drakonide_p(self):
-    self.apply_effect_on("30_p")
+    self.create_and_apply_enchantment("30", is_premium=self.is_premium)
 
 def Tisse_colere(self, invoc):
     if self != invoc and invoc.is_type(constants.TYPE_DEMON):
-        self.apply_effect_on("4")
-        self.owner.owner.hp -= 1
-
-def Tisse_colere_p(self, invoc):
-    if self != invoc and invoc.is_type(constants.TYPE_DEMON):
-        self.apply_effect_on("4_p")
+        self.create_and_apply_enchantment("4", is_premium=self.is_premium)
         self.owner.owner.hp -= 1
 
 def Mande_flots_murloc(self, invoc):
     if self != invoc and invoc.is_type(constants.TYPE_MURLOC):
         if type(self.owner.opponent.owner) is player.Player:
-            self.apply_effect_on("31")
+            self.create_and_apply_enchantment("31", is_premium=self.is_premium)
         else:
-            self.apply_effect_on("5")
-
-def Mande_flots_murloc_p(self, invoc):
-    if self != invoc and invoc.is_type(constants.TYPE_MURLOC):
-        if type(self.owner.opponent.owner) is player.Player:
-            self.apply_effect_on("31_p")
-        else:
-            self.apply_effect_on("5_p")
+            self.create_and_apply_enchantment("5", is_premium=self.is_premium)
 
 def Guetteur_Flottant(self):
-    self.apply_effect_on("11")
-
-def Guetteur_Flottant_p(self):
-    self.apply_effect_on("11_p")
+    self.create_and_apply_enchantment("11", is_premium=self.is_premium)
 
 def Mini_Rag(self, invoc):
     if invoc.is_type(constants.TYPE_ELEMENTAL) and invoc != self:
-        random.choice(self.owner).apply_effect_on("31", invoc.level)
-
-def Mini_Rag_p(self, invoc):
-    if invoc.is_type(constants.TYPE_ELEMENTAL) and invoc != self:
-        for _ in range(2):
-            random.choice(self.owner).apply_effect_on("31", invoc.level)
+        for _ in range(self.double_if_premium(1)):
+            random.choice(self.owner).create_and_apply_enchantment(
+                "31",
+                is_premium=False,
+                a=invoc.level,
+                h=invoc.level)
 
 def Pillard_pirate(self, invoc):
     if self != invoc and invoc.is_type(constants.TYPE_PIRATE):
-        self.apply_effect_on("6")
-
-def Pillard_pirate_p(self, invoc):
-    if self != invoc and invoc.is_type(constants.TYPE_PIRATE):
-        self.apply_effect_on("6_p")
+        self.create_and_apply_enchantment("6", is_premium=self.is_premium)
 
 def Kalecgos(self, invoc):
     if self != invoc and invoc.have_script_type(constants.EVENT_BATTLECRY):
         Boost_all(self, "33", typ=constants.TYPE_DRAGON)
-
-def Kalecgos_p(self, invoc):
-    if self != invoc and invoc.have_script_type(constants.EVENT_BATTLECRY):
-        Boost_all(self, "33_p", typ=constants.TYPE_DRAGON)
 
 def Lieutenant_garr(self, invoc):
     if self != invoc and invoc.is_type(constants.TYPE_ELEMENTAL):
@@ -410,71 +304,40 @@ def Lieutenant_garr(self, invoc):
         for minion in self.owner:
             if minion.is_type(constants.TYPE_ELEMENTAL):
                 bonus += 1
-        if self.is_premium:
-            self.apply_effect_on("7_p", bonus)
-        else:
-            self.apply_effect_on("7", bonus)
+        self.create_and_apply_enchantment("7", is_premium=self.is_premium, h=bonus)
 
 def Favori_de_la_foule(self, invoc):
     if self != invoc and invoc.have_script_type(constants.EVENT_BATTLECRY):
-        self.apply_effect_on("8")
-
-def Favori_de_la_foule_p(self, invoc):
-    if self != invoc and invoc.have_script_type(constants.EVENT_BATTLECRY):
-        self.apply_effect_on("8_p")
+        self.create_and_apply_enchantment("8", is_premium=self.is_premium)
 
 def Saurolisque_enrage(self, invoc):
     if self != invoc and invoc.have_script_type(constants.EVENT_DEATHRATTLE):
-        self.apply_effect_on("9")
-
-def Saurolisque_enrage_p(self, invoc):
-    if self != invoc and invoc.have_script_type(constants.EVENT_DEATHRATTLE):
-        self.apply_effect_on("9_p")
+        self.create_and_apply_enchantment("9", is_premium=self.is_premium)
 
 def Roche_en_fusion(self, invoc):
     if self != invoc and invoc.is_type(constants.TYPE_ELEMENTAL):
-        self.apply_effect_on("10")
-
-def Roche_en_fusion_p(self, invoc):
-    if self != invoc and invoc.is_type(constants.TYPE_ELEMENTAL):
-        self.apply_effect_on("10_p")
+        self.create_and_apply_enchantment("10", is_premium=self.is_premium)
 
 def Elementaire_de_fete(self, invoc):
     if self != invoc and invoc.is_type(constants.TYPE_ELEMENTAL):
         for _ in range(self.double_if_premium(1)):
-            Boost_other(self, "34", type=constants.TYPE_ELEMENTAL, nb_max=1)
+            Boost_other(self, "34", type=constants.TYPE_ELEMENTAL, nb_max=1, is_premium=False)
 
 def Demon_demesure(self, target):
     if self != target and target.is_type(constants.TYPE_DEMON):
-        self.apply_effect_on("35")
-
-def Demon_demesure_p(self, target):
-    if self != target and target.is_type(constants.TYPE_DEMON):
-        self.apply_effect_on("35_p")
+        self.create_and_apply_enchantment("35", is_premium=self.is_premium)
 
 def Maman_ourse(self, target):
     if self != target and target.is_type(constants.TYPE_BEAST):
-        self.apply_effect_on("36")
-
-def Maman_ourse_p(self, target):
-    if self != target and target.is_type(constants.TYPE_BEAST):
-        self.apply_effect_on("36_p")
+        self.create_and_apply_enchantment("36", is_premium=self.is_premium)
 
 def Chef_de_Meute(self, target):
     if self != target and target.is_type(constants.TYPE_BEAST):
-        self.apply_effect_on("37")
-
-def Chef_de_Meute_p(self, target):
-    if self != target and target.is_type(constants.TYPE_BEAST):
-        self.apply_effect_on("37_p")
+        self.create_and_apply_enchantment("37", is_premium=self.is_premium)
 
 def Gardien_des_Glyphes(self, attacker):
     if self is attacker:
-        self.apply_effect_on("38", self.attack)
-
-def Gardien_des_Glyphes_p(self, attacker):
-    if self is attacker:
-        self.apply_effect_on("38_p", self.attack)
+        self.create_and_apply_enchantment("38", is_premium=self.is_premium, a=self.attack)
 
 def Dragonnet_rouge(self):
     #for card in self.owner.owner.real_board.board:
@@ -511,11 +374,7 @@ def Ara_monstrueux_p(self):
 
 def Deflect_o_bot(self, repop):
     if self != repop and repop.is_type(constants.TYPE_MECH):
-        self.apply_effect_on("39")
-
-def Deflect_o_bot_p(self, repop):
-    if self != repop and repop.is_type(constants.TYPE_MECH):
-        self.apply_effect_on("39_p")
+        self.create_and_apply_enchantment("39", is_premium=self.is_premium)
 
 def Jongleur_d_ame(self, victim):
     if victim.is_type(constants.TYPE_DEMON):
@@ -532,19 +391,11 @@ def Jongleur_d_ame_p(self, victim):
 
 def Charognard2_1(self, victim):
     if self.are_same_type(victim):
-        self.apply_effect_on("40")
-
-def Charognard4_2(self, victim):
-    if self.are_same_type(victim):
-        self.apply_effect_on("40_p")
+        self.create_and_apply_enchantment("40", is_premium=self.is_premium)
 
 def Charognard2_2(self, victim):
     if self.are_same_type(victim):
-        self.apply_effect_on("41")
-
-def Charognard4_4(self, victim):
-    if self.are_same_type(victim):
-        self.apply_effect_on("41_p")
+        self.create_and_apply_enchantment("41", is_premium=self.is_premium)
 
 def Poisson(self, victim):
     self.copy_deathrattle(victim)
@@ -557,11 +408,7 @@ def Init_poisson(self):
 
 def Dragon_killer2_2(self, killer, victim):
     if killer.is_type(constants.TYPE_DRAGON):
-        self.apply_effect_on("41")
-
-def Dragon_killer4_4(self, killer, victim):
-    if killer.is_type(constants.TYPE_DRAGON):
-        self.apply_effect_on("41_p")
+        self.create_and_apply_enchantment("41", is_premium=self.is_premium)
 
 ### BATTLECRY ###
 
@@ -581,6 +428,7 @@ def Amalgadon(self):
             if servant.type != constants.TYPE_ALL:
                 type_cumul |= servant.type
 
+    nb_adapt *= self.double_if_premium(1)
     for _ in range(nb_adapt):
         adapt_spell(self)
 
@@ -591,22 +439,9 @@ def adapt_spell(self, nb=0):
     if nb == 8:
         self.add_deathrattle('Amalgadon_repop')
     elif nb > 0 and nb < 8:
-        self.apply_effect_on(str(42+nb))
+        self.create_and_apply_enchantment(str(42+nb))
     else:
         print(f"Amalgadon adapt error n°{nb}")
-
-def Amalgadon_p(self):
-    type_cumul = 0
-    nb_adapt = 0
-    for servant in self.owner:
-        if servant != self and servant.type and (not servant.type & type_cumul\
-                or servant.type == constants.TYPE_ALL):
-            nb_adapt += 2
-            if servant.type != constants.TYPE_ALL:
-                type_cumul |= servant.type
-
-    for _ in range(nb_adapt):
-        adapt_spell(self)
 
 def Guetteur_primaileron(self):
     for minion in self.owner:
@@ -629,47 +464,31 @@ def Tempete_de_la_taverne_p(self):
     self.owner.owner.discover(self, nb=1, typ=constants.TYPE_ELEMENTAL)
 
 def Maitre_de_guerre_annihileen(self):
-    #TODO: 1 effet de valeur variable ??
-    self.apply_effect_on("12", self.owner.owner.init_hp - self.owner.owner.hp)
-
-def Maitre_de_guerre_annihileen_p(self):
-    self.apply_effect_on("12_p", self.owner.owner.init_hp - self.owner.owner.hp)
+    health = self.owner.owner.init_hp - self.owner.owner.hp
+    self.create_and_apply_enchantment("12", is_premium=self.is_premium, h=health)
 
 def Gaillarde_des_mers_du_sud(self):
-    bonus = 0
-    for minion in self.owner.owner.minion_buy_this_turn:
-        if minion.type & constants.TYPE_PIRATE:
-            bonus += 1
-
-    if bonus:
-        minion = self.owner.owner.minion_choice(self.owner, self, restr=constants.TYPE_PIRATE)
-        if minion:
-            if self.is_premium:
-                minion.apply_effect_on("50", bonus)
-            else:
-                minion.apply_effect_on("50_p", bonus)
+    minion = self.owner.owner.minion_choice(self.owner, self, restr=constants.TYPE_PIRATE)
+    if minion:
+        bonus = 0
+        for minion in self.owner.owner.minion_buy_this_turn:
+            if minion.type & constants.TYPE_PIRATE:
+                bonus += 1
+        minion.create_and_apply_enchantment("50", is_premium=self.is_premium, nb=bonus)
 
 def Pillard_dure_ecaille(self):
     for minion in self.owner:
         if minion.state & constants.STATE_TAUNT:
-            minion.apply_effect_on("13")
-
-def Pillard_dure_ecaille_p(self):
-    for minion in self.owner:
-        if minion.state & constants.STATE_TAUNT:
-            minion.apply_effect_on("13_p")
+            minion.create_and_apply_enchantment("13", is_premium=self.is_premium)
 
 def Roi_Bagargouille(self):
-    Boost_other(self, "51", type=constants.TYPE_MURLOC)
-
-def Roi_Bagargouille_p(self):
-    Boost_other(self, "51_p", type=constants.TYPE_MURLOC)
+    Boost_other(self, "51", type=constants.TYPE_MURLOC, is_premium=self.is_premium)
 
 def Roi_Bagargouille_death(self):
-    Boost_other(self, "52", type=constants.TYPE_MURLOC)
+    Boost_other(self, "52", type=constants.TYPE_MURLOC, is_premium=False)
 
 def Roi_Bagargouille_death_p(self):
-    Boost_other(self, "52_p", type=constants.TYPE_MURLOC)
+    Boost_other(self, "52", type=constants.TYPE_MURLOC, is_premium=True)
 
 def Invoc01(self): # chasse-marée, chat de gouttière
     script_functions.invocation(self, self.key_number + "a", 1, self.position)
@@ -720,15 +539,12 @@ def Defenseur_d_Argus(self):
 
     for target in targets:
         if target:
-            if self.is_premium:
-                target.apply_effect_on("53_p")
-            else:
-                target.apply_effect_on("53")
+            target.create_and_apply_enchantment("53", is_premium=self.is_premium)
 
 def Aileron_toxique(self):
     minion = self.owner.owner.minion_choice(self.owner, self, restr=constants.TYPE_MURLOC)
     if minion:
-        minion.apply_effect_on("54")
+        minion.create_and_apply_enchantment("54", is_premium=self.is_premium)
 
 def Homoncule_sans_gene(self):
     self.owner.owner.hp -= 2
@@ -736,110 +552,56 @@ def Homoncule_sans_gene(self):
 def Sensei_virmen(self):
     minion = self.owner.owner.minion_choice(self.owner, self, restr=constants.TYPE_BEAST)
     if minion:
-        minion.apply_effect_on("55")
-
-def Sensei_virmen_p(self):
-    minion = self.owner.owner.minion_choice(self.owner, self, restr=constants.TYPE_BEAST)
-    if minion:
-        minion.apply_effect_on("55_p")
+        minion.create_and_apply_enchantment("55", is_premium=self.is_premium)
 
 def Chasseur_rochecave(self): # bonus posé sur le premier murloc trouvé
     minion = self.owner.owner.minion_choice(self.owner, self, restr=constants.TYPE_MURLOC)
     if minion:
-        minion.apply_effect_on("56")
-
-def Chasseur_rochecave_p(self): # bonus posé sur le premier murloc trouvé
-    minion = self.owner.owner.minion_choice(self.owner, self, restr=constants.TYPE_MURLOC)
-    if minion:
-        minion.apply_effect_on("56_p")
+        minion.create_and_apply_enchantment("56", is_premium=self.is_premium)
 
 def Cliqueteur(self):
     minion = self.owner.owner.minion_choice(self.owner, self, restr=constants.TYPE_MECH)
     if minion:
-        minion.apply_effect_on("57")
-
-def Cliqueteur_p(self):
-    minion = self.owner.owner.minion_choice(self.owner, self, restr=constants.TYPE_MECH)
-    if minion:
-        minion.apply_effect_on("57_p")
+        minion.create_and_apply_enchantment("57", is_premium=self.is_premium)
 
 def Bondisseur_dent_de_metal(self):
-    Boost_other(self, "58", type=constants.TYPE_MECH)
-
-def Bondisseur_dent_de_metal_p(self):
-    Boost_other(self, "58_p", type=constants.TYPE_MECH)
+    Boost_other(self, "58", type=constants.TYPE_MECH, is_premium=self.is_premium)
 
 def Navigateur_gangraileron(self):
-    Boost_other(self, "59", type=constants.TYPE_MURLOC)
-
-def Navigateur_gangraileron_p(self):
-    Boost_other(self, "59_p", type=constants.TYPE_MURLOC)
+    Boost_other(self, "59", type=constants.TYPE_MURLOC, is_premium=self.is_premium)
 
 def Tisse_cristal(self):
-    Boost_other(self, "60", type=constants.TYPE_DEMON)
-
-def Tisse_cristal_p(self):
-    Boost_other(self, "60_p", type=constants.TYPE_DEMON)
+    Boost_other(self, "60", type=constants.TYPE_DEMON, is_premium=self.is_premium)
 
 def Assistant_arcanique(self):
-    Boost_other(self, "61", type=constants.TYPE_ELEMENTAL)
-
-def Assistant_arcanique_p(self):
-    Boost_other(self, "61_p", type=constants.TYPE_ELEMENTAL)
+    Boost_other(self, "61", type=constants.TYPE_ELEMENTAL, is_premium=self.is_premium)
 
 def Canonnier(self):
-    Boost_other(self, "62", type=constants.TYPE_PIRATE)
-
-def Canonnier_p(self):
-    Boost_other(self, "62_p", type=constants.TYPE_PIRATE)
+    Boost_other(self, "62", type=constants.TYPE_PIRATE, is_premium=self.is_premium)
 
 def Emissaire_du_crepuscule(self):
     minion = self.owner.owner.minion_choice(self.owner, self, restr=constants.TYPE_DRAGON)
     if minion:
-        self.apply_effect_on("63")
-
-def Emissaire_du_crepuscule_p(self):
-    minion = self.owner.owner.minion_choice(self.owner, self, restr=constants.TYPE_DRAGON)
-    if minion:
-        self.apply_effect_on("63_p")
+        self.create_and_apply_enchantment("63", is_premium=self.is_premium)
 
 def Voyant_froide_lumiere(self):
-    Boost_other(self, "64", type=constants.TYPE_MURLOC)
-
-def Voyant_froide_lumiere_p(self):
-    Boost_other(self, "64_p", type=constants.TYPE_MURLOC)
+    Boost_other(self, "64", type=constants.TYPE_MURLOC, is_premium=self.is_premium)
 
 def Maitre_chien(self):
     minion = self.owner.owner.minion_choice(self.owner, self, restr=constants.TYPE_BEAST)
     if minion:
-        minion.apply_effect_on("65")
-
-def Maitre_chien_p(self):
-    minion = self.owner.owner.minion_choice(self.owner, self, restr=constants.TYPE_BEAST)
-    if minion:
-        minion.apply_effect_on("65_p")
+        minion.create_and_apply_enchantment("65", is_premium=self.is_premium)
 
 def Surveillant_Nathrezim(self):
     minion = self.owner.owner.minion_choice(self.owner, self, restr=constants.TYPE_DEMON)
     if minion:
-        minion.apply_effect_on("66")
-
-def Surveillant_Nathrezim_p(self):
-    minion = self.owner.owner.minion_choice(self.owner, self, restr=constants.TYPE_DEMON)
-    if minion:
-        minion.apply_effect_on("66_p")
+        minion.create_and_apply_enchantment("66", is_premium=self.is_premium)
 
 def Menagerie_1(self):
     Bonus_ménagerie(self, "67")
 
 def Menagerie_2(self):
-    Bonus_ménagerie(self, "67_p")
-
-def Menagerie_3(self):
     Bonus_ménagerie(self, "68")
-
-def Menagerie_4(self):
-    Bonus_ménagerie(self, "68_p")
 
 def Elementaire_de_stase(self):
     elem = None
@@ -873,36 +635,37 @@ def Bonus_ménagerie(self, key_effect):
         if serviteur.is_type(constants.TYPE_ALL):
             if not serviteur.type & type_indispo or serviteur.type == constants.TYPE_ALL:
                 nb_cible_restante -= 1
-                serviteur.apply_effect_on(key_effect)
+                serviteur.create_and_apply_enchantment(key_effect, is_premium=self.is_premium)
                 if serviteur.type != constants.TYPE_ALL:
                     type_indispo |= serviteur.type
 
         position_check.remove(random_position)
 
 def Lapin(self):
-    self.apply_effect_on("69", self.owner.owner.nb_lapin)
+    self.create_and_apply_enchantment("69", is_premium=self.is_premium, nb=self.owner.owner.nb_lapin)
 
-def Lapin_p(self):
-    self.apply_effect_on("69_p", self.owner.owner.nb_lapin)
-
-def Boost_other(self, effect_key, type=constants.TYPE_ALL, nb_max=constants.BATTLE_SIZE):
+def Boost_other(self, effect_key, type=constants.TYPE_ALL, nb_max=constants.BATTLE_SIZE, is_premium=None):
     board = [minion
         for minion in self.owner
             if minion.is_type(type) and minion != self]
 
+    if is_premium is None:
+        is_premium = self.is_premium
     random_target = None
     while board and nb_max:
         random_target = random.choice(board)
-        random_target.apply_effect_on(effect_key)
+        random_target.create_and_apply_enchantment(effect_key, is_premium=is_premium)
         board.remove(random_target)
         nb_max -= 1
 
     return random_target
 
-def Boost_all(self, effect_key, typ=None):
+def Boost_all(self, effect_key, typ=None, is_premium=None):
+    if is_premium is None:
+        is_premium = self.is_premium
     for minion in self.owner:
         if typ is None or minion.is_type(typ):
-            minion.apply_effect_on(effect_key)
+            minion.create_and_apply_enchantment(effect_key, is_premium=is_premium)
 
 ##### DEATHRATTLE #####
 
@@ -913,10 +676,10 @@ def Nadina(self):
             servant.state_fight |= constants.STATE_DIVINE_SHIELD
 
 def Goldrinn(self):
-    Boost_all(self, "70", constants.TYPE_BEAST)
+    Boost_all(self, "70", constants.TYPE_BEAST, is_premium=False)
 
 def Goldrinn_p(self):
-    Boost_all(self, "70_p", constants.TYPE_BEAST)
+    Boost_all(self, "70", constants.TYPE_BEAST, is_premium=True)
 
 def Gentil_djinn(self):
     """ donne-t-il un elem au hasard de la taverne ou une carte elem choisie au
@@ -1004,11 +767,7 @@ def Sneed_p(self):
 
 def Goliath_brisemer(*arg):
     self = arg[0]
-    Boost_other(self, "71", type=constants.TYPE_PIRATE)
-
-def Goliath_brisemer_p(*arg):
-    self = arg[0]
-    Boost_other(self, "71_p", type=constants.TYPE_PIRATE)
+    Boost_other(self, "71", type=constants.TYPE_PIRATE, is_premium=self.is_premium)
 
 def Navrecorne_cuiracier(self, target_position, attaquant_position, damage):
     script_functions.invocation(self, "504a", 1, attaquant_position)
@@ -1080,10 +839,7 @@ def Forgeronne_des_tarides(self):
         self.state_fight &= constants.STATE_ALL - constants.STATE_FRENZY
         for minion in self.owner:
             if minion != self:
-                if not self.is_premium:
-                    minion.apply_effect_on("72")
-                else:
-                    minion.apply_effect_on("72_p")
+                minion.create_and_apply_enchantment("72", is_premium=self.is_premium)
 
 def Chef_du_gang_des_diablotins(self):
     script_functions.invocation(self, "300a", 1)
@@ -1109,10 +865,10 @@ def GroBoum_p(self):
             self.owner.owner.fight.create_single_damage_event(self, target, 4)
 
 def Rejeton(self):
-    Boost_all(self, "73")
+    Boost_all(self, "73", is_premium=False)
 
 def Rejeton_p(self):
-    Boost_all(self, "73_p")
+    Boost_all(self, "73", is_premium=True)
 
 def Clan_des_rats(self):
     script_functions.invocation(self, "305a", self.attack, self.position)
@@ -1229,3 +985,9 @@ def Goule_instable_p(self):
             board = self.owner.opponent[:]
             for servant in board:
                 self.owner.owner.fight.create_single_damage_event(self, servant, 1)
+
+def Aile_de_mort_a(self):
+    self.owner.add_aura(self, method='Aile_de_mort')
+
+def Aile_de_mort(self, minion):
+    minion.create_and_apply_enchantment("313", is_premium=False, origin=self, type='aura')

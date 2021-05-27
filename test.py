@@ -14,6 +14,8 @@ def print_error(function_name, commentaire, attendu, obtenu):
 
 class test():
     def test_all(self, bob):
+        self.Guetteur_pri(bob)
+        """
         self.Bob(bob)
         #self.Murozond(bob)
         self.Aile_de_mort(bob)
@@ -43,6 +45,31 @@ class test():
         self.Regisseur(bob)
         self.Yogg(bob)
         self.Raflelor(bob)
+        """
+
+    def Guetteur_pri(self, bob):
+        player_1 = player.Player(bob, '', '')
+        player_2 = player.Player(bob, '', '')
+        bob.go_party(player_1, player_2)
+        bob.begin_turn()
+        murloc_1 = player_1.hand.create_card('105')
+        murloc_2 = player_1.hand.create_card('503')
+        murloc_3 = player_1.hand.create_card('105')
+        murloc_4 = player_1.hand.create_card('503')
+        murloc_1.play()
+        murloc_2.play()
+        murloc_3.play()
+        murloc_4.play()
+        print(player_1.board)
+        murloc_4.die()
+        print(player_1.board)
+        murloc_1.set_card("108", copy=False)
+        print(player_1.board)
+        murloc_1.health -= 1
+        print(player_1.board)
+        murloc_2.die()
+        print(player_1.board)
+
 
     def Raflelor(self, bob):
         player_1 = player.Player(bob, '', '')
@@ -54,7 +81,7 @@ class test():
         goldencard.play()
         rafle.play()
         bob.end_turn()
-        print_error('Raflelor', 'Bonus incorrect', 2*2, rafle.attack_bonus)
+        print_error('Raflelor', 'Bonus incorrect', 2*2, rafle.attack - rafle.init_attack)
         print(rafle)
 
     def Aile_de_mort(self, bob):
@@ -91,7 +118,7 @@ class test():
         minion.trade()
         print_error('Daryl', 'Gold incorrectes', 0, player_1.gold)
         minion.play()
-        print_error('Daryl', 'Caractéristiques incorrectes', [4, 4], [minion.attack_bonus, minion.health_bonus])
+        print_error('Daryl', 'Caractéristiques incorrectes', [4, 4], [minion.attack - minion.init_attack, minion.health - minion.init_health])
 
     def Edwin(self, bob):
         player_1 = player.Player(bob, '', 'Edwin')
@@ -107,7 +134,7 @@ class test():
         minion.trade()
         minion.play()
         minion = player_1.power.active_manual()
-        print_error('Edwin', 'Caractéristiques incorrectes', [2, 2], [minion.attack_bonus, minion.health_bonus])
+        print_error('Edwin', 'Caractéristiques incorrectes', [2, 2], [minion.attack - minion.init_attack, minion.health - minion.init_health])
 
     def Maitre_chien(self, bob):
         player_1 = player.Player(bob, '', '')
@@ -162,7 +189,7 @@ class test():
         player_1.power.active_manual()
 
         print_error("Yogg", "nombre de carte dans la main incorrect", 1, len(player_1.hand))
-        print_error("Yogg", "attaque bonus incorrecte", 1, player_1.hand[0].attack_bonus)
+        print_error("Yogg", "attaque bonus incorrecte", 1, player_1.hand[0].attack - player_1.hand[0].init_attack)
 
 
     def Bob(self, bob):
@@ -186,7 +213,7 @@ class test():
         regisseur = player_1.hand.create_card("214")
         regisseur.play()
         regisseur.trade()
-        atk_bonus = player_1.bob_board[0].attack_bonus
+        atk_bonus = player_1.bob_board[0].attack - player_1.bob_board[0].init_attack
         print_error("Regisseur", "Erreur d'attaque bonus", 2, atk_bonus)
 
 
@@ -202,7 +229,7 @@ class test():
         bob.begin_turn(False)
         board_2 = player_1.bob_board
         minion = player_1.bob_board[0]
-        print_error("Sindragosa", "Erreur d'attaque bonus", 2, minion.attack_bonus)
+        print_error("Sindragosa", "Erreur d'attaque bonus", 2, minion.attack - minion.init_attack)
         print_error("Sindragosa", "Board de Bob différent", [board_1, board_1], [board_1, board_2])
 
     def Aranna(self, bob):
@@ -233,8 +260,8 @@ class test():
                 if minion.type & constants.TYPE_MECH:
                     minion.play(board=player_1.board.opponent)
                     minion.trade()
-                    atk_bonus = minion.attack_bonus
-                    def_bonus = minion.health_bonus
+                    atk_bonus = minion.attack - minion.init_attack
+                    def_bonus = minion.health - minion.init_health
                     find = True
                     break
             player_1.roll()
@@ -285,7 +312,7 @@ class test():
         j1.force_buy_card("217") # tasse
         atk_cumul = 0
         for minion in j1.board:
-            atk_cumul += minion.attack_bonus
+            atk_cumul += minion.attack - minion.init_attack
         print_error("Tasse_ménagerie", "Attaque bonus incorrecte", 2, atk_cumul)
 
     def Khadgar_invoc2(self, bob):
@@ -477,10 +504,10 @@ class test():
             print(f"ERROR Deflecto_rover_goule board : \
                 \n espéré : {minion_key_theorique}\
                 \n obtenu : {minion_key_obtenu}")
-        elif j1.board[2].health_fight != 0:
-            print(f"ERROR Deflecto_rover_goule : Erreur health_fight robot gardien : \
+        elif j1.board[2].health != 0:
+            print(f"ERROR Deflecto_rover_goule : Erreur health robot gardien : \
                 \n espéré : 0\
-                \n obtenu : {j1.board[2].health_fight}")
+                \n obtenu : {j1.board[2].health}")
 
         if minion_state_obtenu != minion_state_theorique:
             print(f"ERROR Deflecto_rover_goule board : State incorrect : \
@@ -507,7 +534,7 @@ class test():
             print(f"ERROR Brutalite_heraut : total défense incorrect\
             \n espéré : 4\
             \n obtenu {heraut.health}\
-            \n {heraut.init_health} {heraut.health_bonus} {heraut.health_fight}")
+            \n {heraut.init_health} {heraut.health}")
 
     def Amalgadon_double_deathrattle(self, bob):
         player_1 = player.Player(bob, "")

@@ -58,7 +58,7 @@ class Player:
     @power.setter
     def power(self, id):
         if self._power:
-            self.board.refresh_enchantment() # Dangerous ???!
+            self.board.refresh_aura() # Dangerous ???!
         self._power = id
 
     @property
@@ -101,7 +101,7 @@ class Player:
     @property
     def is_insensible(self):
         if self.board:
-            for value in self.board.enchantment.values():
+            for value in self.board.aura.values():
                 if value['insensible']:
                     return True
         return False
@@ -118,8 +118,6 @@ class Player:
 
         for minion in self.board:
             minion.state_fight = minion.state
-        #    minion.init_attack += minion.attack_bonus
-        #    minion.init_health += minion.health_bonus
         #    minion.init_state |= minion.state
         #    minion.reinitialize(self.board)
 
@@ -304,7 +302,7 @@ class Player:
 
         copy_board = self.board[:]
         for minion in copy_board[:-1]: # placement des enchanteurs à la fin
-            if minion.have_script_type(constants.EVENT_PLAY_ENCHANTMENT):
+            if minion.have_script_type(constants.EVENT_PLAY_AURA):
                 minion.play(board=self.board)
 
         copy_board = self.board[:]
@@ -425,27 +423,26 @@ class Player:
             *param typ: (cf constants.TYPE_XXX)
             *return: liste des cartes à choisir
         """
-        if nb < 1 or not self.hand.can_add_card():
-            return []
+        if nb < 1:
+            return None
 
+        lst_key_ban = []
         if type(origin) is card.Card and origin.general == "minion":
             lvl_max = min(lvl_max, self.level)
-            lst_key_ban = [origin] # une carte ne peut se découvrir elle-même
-        else:
-            lst_key_ban = []
+            lst_key_ban.append(origin.key_number) # une carte ne peut se découvrir elle-même
 
         lvl_min = min(lvl_min, lvl_max)
         copy_bob = self.bob.hand.cards_type_of_tier_max(typ, lvl_max, lvl_min)
         lst_id = []
-        while copy_bob and len(lst_id) < nb:
-            if copy_bob:
-                random_card = random.choice(copy_bob)
-                if random_card not in lst_key_ban:
-                    random_card.owner = None
-                    self.bob.hand.remove(random_card)
-                    lst_id.append(random_card)
-                    lst_key_ban.append(random_card)
-                copy_bob.remove(random_card)
+        while copy_bob and nb:
+            random_card = random.choice(copy_bob)
+            copy_bob.remove(random_card)
+            if random_card.key_number not in lst_key_ban:
+                nb -= 1
+                random_card.owner = None
+                self.bob.hand.remove(random_card)
+                lst_id.append(random_card)
+                lst_key_ban.append(random_card.key_number)
 
         self.discover_choice(lst_id)
 
@@ -454,16 +451,17 @@ class Player:
             return None
 
         #TODO !
-        if self.is_bot or len(lst) == 1:
+        if self.is_bot:
             choice = lst[-1] # statistiquement, la dernière carte est la meilleure
         else:
             choice = random.choice(lst)
 
+        # c'est à la résolution que l'on vérifie que la main du joueur peut contenir la-dite carte
+        if self.hand.append(choice):
+            lst.remove(choice)
+
         for card in lst:
-            if card != choice:
-                self.bob.hand.append(card)
-            else:
-                self.hand.append(choice)
+            self.bob.hand.append(card)
 
     def discover_secret(self, nb=3): # Akazamzarak
         lst = self.bob.all_secret_key[:]
@@ -478,11 +476,8 @@ class Player:
         if not lst:
             return None
 
-        if "2005" in lst:
-            choice = "2005"
-        else:
-            # TODO
-            choice = lst[-1]
+        # TODO
+        choice = lst[-1]
 
         self.board.append(card.Card(choice, self.bob, self))
 

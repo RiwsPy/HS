@@ -23,8 +23,7 @@ def Recrutement_6(self):
 def Avenge(self):
     if self.owner.board:
         target = random.choice(self.owner.board)
-        target.attack_fight += 3
-        target.health_fight += 2
+        target.create_and_apply_enchantment("1001")
         return True
     return False
 
@@ -37,8 +36,7 @@ def Autodefense_matrix(self, card):
 def Competitive_spirit(self):
     if self.owner.board:
         for minion in self.owner.board:
-            minion.attack += 1
-            minion.health += 1
+            minion.create_and_apply_enchantment("1000")
         return True
     return False
 
@@ -68,8 +66,7 @@ def Blood_gem(self):
     player = self.owner.owner
     minion = player.minion_choice(player.board)
     if minion:
-        minion.attack += 1
-        minion.health += 1
+        minion.create_and_apply_enchantment("500")
         # + special effect
         return minion
     return False
@@ -78,8 +75,7 @@ def Banana(self):
     player = self.owner.owner
     minion = player.minion_choice(player.board)
     if minion:
-        minion.attack += 1
-        minion.health += 1
+        minion.create_and_apply_enchantment("501")
         return minion
     return False
 
@@ -87,7 +83,6 @@ def Great_banana(self):
     player = self.owner.owner
     minion = player.minion_choice(player.board)
     if minion:
-        minion.attack += 2
-        minion.health += 2
+        minion.create_and_apply_enchantment("502")
         return minion
     return False

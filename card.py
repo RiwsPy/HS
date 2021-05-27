@@ -6,6 +6,7 @@ import script_spell
 import player
 import board
 import script_functions
+import enchantment
 
 class Card:
     def __init__(self, key_number, bob, owner=None):
@@ -18,6 +19,7 @@ class Card:
         self.init_attack = 0
         self.init_health = 0
         self.effects = defaultdict(int)
+        self.enchantment = []
         self.from_bob = False
         self.level = 0
         self.key_number = key_number
@@ -33,6 +35,14 @@ class Card:
             return f'{self.name} ({self.attack}-{self.health})'
         return self
 
+    def calc_stat_from_scratch(self):
+        self.max_health = self.init_health
+        self.attack = self.init_attack
+        old_health = self.health
+        for enchant in self.enchantment:
+            enchant.apply()
+        self.health = min(self.max_health, old_health)
+
     @property
     def is_premium(self):
         return self.key_number[-2:] == '_p'
@@ -43,46 +53,32 @@ class Card:
             setattr(self, key, value)
         self.script = self.script.copy()
         self.card_in = [self] # toutes les cartes fusionnées avec celle-ci (magnétisme, triple...)
-        self.attack_bonus = 0
-        self.health_bonus = 0
-        for key, value in self.effects.copy().items():
-            if self.bob.all_effect[key]['duration'] > 0:
-                self.apply_effect_on(key, nb=-value)
+        self.max_health = self.init_health
+        self.health = self.init_health
+        self.attack = self.init_attack
+        self.enchantment = []
 
     def purge_fight_effects(self, owner): # end fight
-        self.attack_fight = 0 # effet qui se dissipe à la fin du combat
-        self.health_fight = 0
         self.state_fight = 0
         if owner is not None and type(owner) != board.Board:
             print("ERROR minion initialize", self.name, type(owner))
         self.owner = owner
-        #self.current_health = self.max_health
 
-    def apply_effect_on(self, effect_key, nb=1):
-        # ne modifie que les caractéristiques de combat
-        if not nb:
-            return None
+    def create_effect(self, effect_key, **arg):
+        info = {**self.bob.all_effect.get(effect_key, {}), **arg}
 
-        info = self.bob.all_effect.get(effect_key)
-        mult = 1
-        if not info and effect_key[:-2] == '_p':
-            info = self.bob.all_effect.get(effect_key[-2:])
-            mult = 2
+        return enchantment.Enchantment(info)
 
-        if info:
-            if nb < 1:
-                nb = max(nb, -self.effects[effect_key])
-                self.state &= constants.STATE_ALL - info.get('s', 0)
-                #TODO: recalculate state
-            else:
-                self.state |= info.get('s', 0)
+    def apply_enchantment_on(self, enchantment):
+        enchantment.owner = self
 
-            self.attack += info.get('a', 0)*nb*mult
-            self.health += info.get('h', 0)*nb*mult
-            self.effects[effect_key] += nb
+        if enchantment.apply() is not False:
+            self.enchantment.append(enchantment)
 
-            if self.effects[effect_key] == 0:
-                del self.effects[effect_key]
+    def create_and_apply_enchantment(self, effect_key, nb=1, **arg):
+        for _ in range(nb):
+            new_enchantment = self.create_effect(effect_key, **arg)
+            self.apply_enchantment_on(new_enchantment)
 
     def set_effect_on(self, effect_key, nb=1):
         self.apply_effect_on(effect_key, -self.effects[effect_key])
@@ -156,17 +152,14 @@ class Card:
                 for effect in value:
                     self.script[key].remove(effect)
             self.add_script(source_key_number)
+            self.key_number = source_key_number
 
         else: # habitué sans-visage, gestion de la vente ? la carte est enlevée de la main de bob?
             # ou bien seul l'habitué est enlevé ?
-            for key, value in self.bob.all_card[self.key_number].items():
-                setattr(self, key, value)
-            self.attack_bonus = 0
-            self.health_bonus = 0
-            self.card_in = [self]
+            self.key_number = source_key_number
+            self.reinitialize(self.owner)
 
-        self.key_number = source_key_number
-        self.owner.refresh_enchantment()
+        self.owner.refresh_aura()
 
     @property
     def is_alive(self):
@@ -225,44 +218,21 @@ class Card:
                     if constants.TYPE_MURLOC & minion.type and minion != self:
                         bonus += add
 
-            for enchanter, value in self.owner.enchantment.items():
-                if self != enchanter and (self.type & value['restr_type'] or\
-                        not value['restr_type']):
-                    bonus += value['attack']
-
-        return max(0, self.init_attack + self.attack_bonus + self.attack_fight + bonus)
+        return max(0, self._attack + bonus)
 
     @attack.setter
     def attack(self, value):
-        self.attack_bonus += value - self.attack
-
-    @property
-    def max_health(self):
-        bonus = 0
-        if self.owner and type(self.owner) == board.Board:
-            for enchanter, value in self.owner.enchantment.items():
-                if self != enchanter and (self.type & value['restr_type'] or\
-                        not value['restr_type']):
-                    bonus += value['max_health']
-        return self.init_health + self.health_bonus + self.health_fight + bonus
+        self._attack = value
 
     @property
     def health(self):
-        bonus = 0
-        if self.owner and type(self.owner) == board.Board:
-            for enchanter, value in self.owner.enchantment.items():
-                if self != enchanter and (self.type & value['restr_type'] or\
-                        not value['restr_type']):
-                    bonus += value['health']
-            # problème en cas de mort du serviteur, le pv est perdu
-        return self.init_health + self.health_bonus + self.health_fight + bonus
+        if self._health > self.max_health:
+            self._health = self.max_health
+        return self._health
 
     @health.setter
     def health(self, value):
-        add = value - self.health
-        self.health_bonus += add
-        if add < 0:
-            print("Health : value < 0 ??!")
+        self._health = value
 
     @property
     def state(self):
@@ -309,12 +279,12 @@ class Card:
 
         if type(self.owner) is board.Board:
             if event == constants.EVENT_DEATHRATTLE:
-                for value in self.owner.enchantment.values():
+                for value in self.owner.aura.values():
                     nb_strike = max(nb_strike, 1+value['boost_deathrattle'])
             elif event == constants.EVENT_BATTLECRY:
-                for value in self.owner.enchantment.values():
+                for value in self.owner.aura.values():
                     nb_strike = max(nb_strike, 1+value['boost_battlecry'])
-            elif event == constants.EVENT_PLAY_ENCHANTMENT:
+            elif event == constants.EVENT_PLAY_AURA:
                 if type(self.owner.owner) is bob.Bob:
                     return None
 
@@ -347,6 +317,7 @@ class Card:
 
                 playr.active_event(constants.EVENT_PLAY, self)
                 playr.active_event(constants.EVENT_INVOC, self)
+                self.active_script_type(constants.EVENT_PLAY_AURA)
                 self.active_script_type(constants.EVENT_BATTLECRY)
 
                 if self.owner[-1] != self and self.state & constants.STATE_MAGNETIC:

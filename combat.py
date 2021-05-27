@@ -207,7 +207,7 @@ class Combat:
             damagee.owner.owner.active_event(constants.EVENT_LOSS_SHIELD)
         else:
             damagee.active_script_type(constants.EVENT_HIT_BY)
-            damagee.health_fight -= damage
+            damagee.health -= damage
             if damager.state_fight & constants.STATE_POISONOUS:
                 damagee.state_fight |= constants.STATE_IS_POISONED
 

@@ -206,11 +206,11 @@ if __name__ == "__main__":
     j1 = player.Player(BOB, "Rivvers", "Eudora")
     j2 = player.Player(BOB, "notoum", "George")
     #print(arene.arene(BOB, j1, j2, TIER_MAX=1))
-    arene_old(BOB, j1, j2, TIER_MAX=1)
+    #arene_old(BOB, j1, j2, TIER_MAX=1)
     #result1 = arene.arene_T2(BOB, j1, j2, TIER_MAX=1, nb_turn=2)
 
-    #truc = test.test()
-    #truc.test_all(BOB)
+    truc = test.test()
+    truc.test_all(BOB)
     """
     j1 = player.Player(BOB, "Rivvers", "Millificent")
     j2 = player.Player(BOB, "notoum", "Eudora")

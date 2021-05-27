@@ -75,13 +75,13 @@ EVENT_DEFEND_ALLY = 0x8000 # un allié est attaqué
 EVENT_KILLER_ALLY = 0x10000 # un allié tue un adversaire
 
 EVENT_BOB_PLAY = 0x20000 # Millificent, Nomi ?
-EVENT_ATK_MYSELF = 0x40000 # Gardien des glyphes > unused (EVENT_ATK_ALLY)
+EVENT_CAST_SPELL_ON = 0x40000 # Aggem, tremble-terre...
 EVENT_HIT_BY = 0x80000 # Chef du gang des diablotins, Rover de sécurité, Maman des diablotins
 EVENT_DEFEND_MYSELF = 0x100000 # Ritualiste tourmenté > unused (EVENT_DEFEND_ALLY)
 EVENT_AFTER_ATK_MYSELF = 0x200000 # Ara monstrueux
 
-EVENT_PLAY_ENCHANTMENT = 0x400000 # Capitaine des mers du sud, Mal Ganis
-EVENT_LOSS_HP = 0x800000 # Guetteur flottant
+EVENT_PLAY_AURA = 0x400000 # Capitaine des mers du sud, Mal Ganis
+EVENT_LOSS_HP = 0x800000 # Guetteur flottant, plus utilisé
 EVENT_LOSS_SHIELD = 0x1000000 # Massacreur drakonide, Bolvar
 
 EVENT_USE_POWER = 0x2000000

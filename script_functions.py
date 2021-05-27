@@ -1,8 +1,6 @@
 import card
-import script_minion # problématique, import circulaire probable
 import constants
 import random
-from copy import deepcopy
 
 # TODO : le repop n'est pas dans le bon ordre en cas de repop multiple (Magnetic, Reincarnation etc) :
 # tout repop sur la position initiale du minion
@@ -27,7 +25,7 @@ def invocation(self, key_number, nb_max=1, position=constants.BATTLE_SIZE):
         if self.owner.can_add_card():
             repop_id = card.Card(key_number, self.owner.owner.bob)
             # enchantement avant que le repop soit ajouté au board
-            enchant_copy = self.owner.enchantment.copy()
+            enchant_copy = self.owner.aura.copy()
             self.owner.append(repop_id, position)
 
             self.owner.owner.active_event(constants.EVENT_INVOC, repop_id)
@@ -55,7 +53,7 @@ def reborn(self):
     serviteur = invocation(self, self.key_number, 1, self.position)
     if serviteur:
         serviteur.state_fight = serviteur.init_state & (constants.STATE_ALL - constants.STATE_REBORN)
-        serviteur.health_fight = 1 - serviteur.init_health
+        serviteur.health = 1
 
 def invocation_random_list(self, key_lst, nb_max=1):
     if self.key_number in key_lst: # un serviteur ne peut se réinvoquer lui-même
