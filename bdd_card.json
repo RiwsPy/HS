@@ -295,9 +295,9 @@
 "524_p":{"name":"Aggem Malépine", "type":"0x80", "synergy":"0x80", "level":5, "init_attack":6, "init_health":12, "script":{"0x40000":["Aggem_malepine"]}, "legendary":1, "cant_collect":1, "general":"minion"},
 "525":{"name":"Chevalier dos-hirsute", "type":"0x80", "synergy":"0x80", "level":5, "init_attack":4, "init_health":8, "init_state":"0x4012", "script":{"0x40000":["Chevalier_dos_hirsute"]}, "general":"minion"},
 "525_p":{"name":"Chevalier dos-hirsute", "type":"0x80", "synergy":"0x80", "level":5, "init_attack":8, "init_health":16, "init_state":"0x4022", "script":{"0x40000":["Chevalier_dos_hirsute"]}, "cant_collect":1, "general":"minion"},
-"526":{"name":"Agamaggan, le grand Sanglier", "type":"0x1", "synergy":"0x80", "level":5, "init_attack":6, "init_health":6, "script":{"0x40000":["Agamaggan"]}, "legendary":1, "general":"minion"},
-"526_p":{"name":"Agamaggan, le grand Sanglier", "type":"0x1", "synergy":"0x80", "level":5, "init_attack":12, "init_health":12, "script":{"0x40000":["Agamaggan"]}, "legendary":1, "cant_collect":1, "general":"minion"},
-        
+"526":{"name":"Agamaggan, le grand Sanglier", "type":"0x1", "synergy":"0x80", "level":5, "init_attack":6, "init_health":6, "script":{"0x400000":["Agamaggan"]}, "legendary":1, "general":"minion"},
+"526_p":{"name":"Agamaggan, le grand Sanglier", "type":"0x1", "synergy":"0x80", "level":5, "init_attack":12, "init_health":12, "script":{"0x400000":["Agamaggan"]}, "legendary":1, "cant_collect":1, "general":"minion"},
+
 "600":{"name":"Faucheur 4000", "type":"0x10", "synergy":"0x10", "level":6, "init_attack":6, "init_health":9, "legendary":1, "init_state":"0x200", "general":"minion"},
 "600_p":{"name":"Faucheur 4000", "type":"0x10", "synergy":"0x10", "level":6, "init_attack":12, "init_health":18, "legendary":1, "init_state":"0x200", "cant_collect":1, "general":"minion"},
 "601":{"name":"Maexxna", "type":"0x1", "synergy":"0x1", "level":6, "init_attack":2, "init_health":8, "legendary":1, "init_state":"0x8", "general":"minion"},
@@ -327,11 +327,11 @@
 "613_p":{"name":"Zapp Mèche-Sournoise", "type":"0x0", "synergy":"0x0", "level":6, "init_attack":14, "init_health":20, "init_state":"0x420", "legendary":1, "cant_collect":1, "general":"minion"},
 "614":{"name":"Mini Rag", "type":"0x8", "synergy":"0x8", "level":6, "init_attack":6, "init_health":6, "script":{"0x80":["Mini_Rag"]}, "legendary":1, "general":"minion"},
 "614_p":{"name":"Mini Rag", "type":"0x8", "synergy":"0x8", "level":6, "init_attack":12, "init_health":12, "script":{"0x80":["Mini_Rag"]}, "legendary":1, "cant_collect":1, "general":"minion"},
-"615":{"name":"Capitaine Plate-Défense", "type":"0x80", "synergy":"0x80", "level":6, "init_attack":9, "init_health":6, "script":{"0x40000":["Capitaine_Plate_Defense"]}, "legendary":1, "general":"minion"},
-"615_p":{"name":"Capitaine Plate-Défense", "type":"0x80", "synergy":"0x80", "level":6, "init_attack":18, "init_health":12, "script":{"0x40000":["Capitaine_Plate_Defense"]}, "legendary":1, "cant_collect":1, "general":"minion"},
+"615":{"name":"Capitaine Plate-Défense", "type":"0x80", "synergy":"0x80", "level":6, "init_attack":9, "init_health":6, "script":{"0x400000":["Capitaine_Plate_Defense"]}, "legendary":1, "general":"minion"},
+"615_p":{"name":"Capitaine Plate-Défense", "type":"0x80", "synergy":"0x80", "level":6, "init_attack":18, "init_health":12, "script":{"0x400000":["Capitaine_Plate_Defense"]}, "legendary":1, "cant_collect":1, "general":"minion"},
 "616":{"name":"Charlga", "type":"0x80", "synergy":"0x80", "level":6, "init_attack":4, "init_health":4, "script":{"0x2":["Charlga"]}, "legendary":1, "general":"minion"},
 "616_p":{"name":"Charlga", "type":"0x80", "synergy":"0x80", "level":6, "init_attack":8, "init_health":8, "script":{"0x2":["Charlga"]}, "legendary":1, "cant_collect":1, "general":"minion"},
-        
+
 
 "1001":{"name":"Pièce d'or", "synergy":"0x0", "level":0, "cost":0, "script":{"0x1":"Piece_dor"}, "general":"spell", "cant_collect":1},
 "1002":{"name":"Recrutement", "synergy":"0x0", "level":0, "cost":3, "script":{"0x1":"Recrutement_2"}, "general":"spell", "cant_collect":1},

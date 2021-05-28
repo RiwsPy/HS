@@ -1000,3 +1000,23 @@ def Aggem_malepine(self, enchantment_key_number, target):
     if self is target and enchantment_key_number == "500":
         for minion in self.owner.one_minion_by_type():
             minion.create_and_apply_enchantment('83', is_premium=self.is_premium)
+
+def Agamaggan(self):
+    self.owner.add_aura(self, boost_blood_gem=self.double_if_premium(1))
+
+def Charlga(self):
+    nb_gem = self.double_if_premium(1)
+    for minion in self.owner:
+        if minion != self:
+            for _ in range(nb_gem):
+                minion.create_and_apply_enchantment('500', is_premium=False)
+
+def Capitaine_Plate_Defense(self):
+    self.owner.add_aura(self, spend_gold=1, check='Capitaine_Plate_Defense_check')
+
+def Capitaine_Plate_Defense_check(self):
+    while self.quest_value >= 3:
+        self.quest_value -= 3
+        for _ in range(self.double_if_premium(1)):
+            card = self.owner.owner.hand.create_card("1014")
+            

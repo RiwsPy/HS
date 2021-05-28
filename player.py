@@ -96,6 +96,13 @@ class Player:
 
     @gold.setter
     def gold(self, value):
+        gold_spend = self._gold - value
+        if gold_spend > 0:
+            for origin, info in self.board.aura.items():
+                if info['spend_gold']:
+                    origin.quest_value += gold_spend
+                    if info['check']:
+                        getattr(script_minion, info['check'])(origin)
         self._gold = max(0, min(constants.MAX_GOLD, value))
 
     @property

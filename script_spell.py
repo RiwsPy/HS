@@ -66,8 +66,10 @@ def Blood_gem(self):
     player = self.owner.owner
     minion = player.minion_choice(player.board)
     if minion:
-        minion.create_and_apply_enchantment("500")
-        # + special effect
+        bonus = 1
+        for info in minion.owner.aura.values():
+            bonus += info['boost_blood_gem']
+        minion.create_and_apply_enchantment("500", a=bonus, h=bonus)
         return minion
     return False
 

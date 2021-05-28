@@ -16,6 +16,7 @@ class Card:
         self.type = 0
         self.cost = 0
         self.script = {}
+        self.quest_value = 0
         self.init_attack = 0
         self.init_health = 0
         self.effects = defaultdict(int)
@@ -33,12 +34,12 @@ class Card:
     def __repr__(self):
         if self.general == 'minion':
             return f'{self.name} ({self.attack}-{self.health})'
-        return self
+        return f'{self.name}'
 
     def calc_stat_from_scratch(self):
+        old_health = self.health
         self.max_health = self.init_health
         self.attack = self.init_attack
-        old_health = self.health
         for enchant in self.enchantment:
             enchant.apply()
         self.health = min(self.max_health, old_health)
@@ -65,15 +66,30 @@ class Card:
         self.owner = owner
 
     def create_effect(self, effect_key, **arg):
-        info = {**self.bob.all_effect.get(effect_key, {}), **arg}
+        info = {
+            **self.bob.all_effect.get(effect_key, {}),
+            **{'key_number': effect_key},
+            **arg}
 
         return enchantment.Enchantment(info)
 
-    def apply_enchantment_on(self, enchantment):
-        enchantment.owner = self
+    def apply_enchantment_on(self, enchant):
+        if enchant.owner:
+            if enchant.owner == self:
+                return None
+            enchant.owner.enchantment.remove(enchant)
 
-        if enchantment.apply() is not False:
-            self.enchantment.append(enchantment)
+        enchant.owner = self
+
+        if enchant.apply() is not False:
+            self.enchantment.append(enchant)
+
+    def adjacent_neighbors(self) -> list:
+        if self.owner:
+            return [minion            
+                for minion in [self.owner[self.position-1], self.owner[self.position+1]]
+                    if minion]
+        return []
 
     def create_and_apply_enchantment(self, effect_key, nb=1, **arg):
         for _ in range(nb):
@@ -238,13 +254,16 @@ class Card:
     def state(self):
         return self.init_state | self.state_fight
 
+    @state.setter
+    def state(self, value):
+        self.init_state = value
+
     @property
     def has_frenzy(self):
         return self.state_fight & constants.STATE_FRENZY and self.is_alive
 
-    @state.setter
-    def state(self, value):
-        self.init_state = value
+    def remove_state_fight(self, state):
+        self.state_fight &= constants.STATE_ALL - state
 
     @property
     def position(self):

@@ -5,6 +5,7 @@ default_value = {
     'method': 'no_effect',
     'name': '',
     'duration': -1,
+    'key_number': '0',
     'is_premium': False,
     'owner': None,
     'origin': None,
