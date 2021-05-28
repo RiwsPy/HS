@@ -722,18 +722,16 @@ def Tranche_les_vagues_p(self):
     script_functions.invocation_random_list(self, pirate_cards, 6)
 
 def Sneed(self):
-    cards = self.bob.card_can_collect
     legendary_cards = [key
-        for key, value in cards.items()
-            if value.get("legendary")]
+        for key, value in self.bob.card_can_collect.items()
+            if value['rarity'] == constants.RARITY_LEGENDARY]
 
     script_functions.invocation_random_list(self, legendary_cards, 1)
 
 def Sneed_p(self):
-    cards = self.bob.card_can_collect
     legendary_cards = [key
-        for key, value in cards.items()
-            if value.get("legendary")]
+        for key, value in self.bob.card_can_collect.items()
+            if value['rarity'] == constants.RARITY_LEGENDARY]
 
     script_functions.invocation_random_list(self, legendary_cards, 2)
 
