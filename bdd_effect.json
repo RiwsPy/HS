@@ -1,4 +1,5 @@
 {
+"0": {"h":1, "a":1, "duration":-1, "name":"Default", "method":"add_stat"},
 "1": {"h":2, "a":2, "duration":-1, "name":"Raflelor", "method":"add_stat"},
 "2": {"a":1, "duration":-1, "name":"Piston", "method":"add_stat"},
 "3": {"h":2, "a":2, "duration":-1, "name":"Dragon_infamelique", "method":"add_stat"},
@@ -74,11 +75,16 @@
 "73": {"h":1, "a":1, "duration":1, "name":"Poisseux", "method":"add_stat"},
 "74": {"h":0, "a":0, "duration":-1, "name":"Âme dévorée", "method":"add_stat"},
 
-"75": {"h":1, "a":1, "duration":-1, "name":"Capitaine des mers du Sud", "method":"add_stat"},
+"75": {"h":1, "a":1, "duration":-1, "name":"Yarrr!", "method":"add_stat"},
 "76": {"a":2, "duration":-1, "name":"Chef de guerre murloc", "method":"add_stat"},
 "77": {"a":1, "duration":-1, "name":"Brise-siège", "method":"add_stat"},
 "78": {"h":2, "a":2, "duration":-1, "name":"Mal'Ganis", "method":"add_stat"},
 
+"79": {"a":1, "duration":1, "name":"Serviteur diabolique", "method":"add_stat"},
+"80": {"h":2, "a":2, "duration":-1, "name":"Brute dos-hirsute", "method":"add_stat"},
+"81": {"h":1, "a":1, "duration":-1, "name":"Duo dynamique", "method":"add_stat"},
+"82": {"a":2, "duration":1, "name":"Tremble-terre", "method":"add_stat"},
+"83": {"h":1, "a":1, "duration":-1, "name":"Aggem Malépine", "method":"add_stat"},
 
 "300": {"h":1, "a":1, "duration":-1, "name":"Millificent", "method":"add_stat"},
 "301": {"h":1, "a":1, "duration":-1, "name":"Dans la boîte", "method":"add_stat"},

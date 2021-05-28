@@ -190,3 +190,55 @@ class Board(list):
             if minion.is_premium:
                 nb += 1
         return nb
+
+    def classification_by_type(self) -> dict:
+        # exclu de fait les minions multi-type
+        return {typ: [minion 
+                    for minion in self
+                        if minion.type == typ]
+            for typ in [0, 1, 2, 4, 8, 16, 32, 64, 128]}
+
+    def one_minion_by_type(self) -> set:
+        """
+            Return a set which contains until one minion by type
+        """
+        result = set()
+        for minion in self[:][::-1]:
+            if minion.type == constants.TYPE_ALL:
+                result.add(minion)
+
+        tri = self.classification_by_type()
+        del tri[0] # exclusion des types neutres
+
+        # first search: valide les minions étant seuls dans leur type
+        for typ, minions in tri.copy().items():
+            if minions:
+                if len(set(minions)) == 1:
+                    result.add(minions[0])
+                    del tri[typ]
+                    remove_all_occurences_in_dict(tri, minions[0])
+            else:
+                del tri[typ]
+
+        # second search
+        while tri:
+            for typ, minions in tri.items():
+                if minions:
+                    minion = random.choice(minions)
+                    result.add(minion)
+                    del tri[typ]
+                    remove_all_occurences_in_dict(tri, minion)
+                    break
+                else:
+                    del tri[typ]
+                    break
+
+        return result
+
+def remove_all_occurences_in_dict(dic, occu):
+    new_dic = dic.copy()
+    for key, value in new_dic.items():
+        if occu in value:
+            while occu in value:
+                value.remove(occu)
+            dic[key] = value

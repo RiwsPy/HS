@@ -128,21 +128,15 @@ def Capitaine_des_mers_a(self): #add
     self.owner.add_aura(self, attack=bonus, health=bonus, restr_type=constants.TYPE_PIRATE)
 
 def Mythrax(self):
-    type_indispo = 0
-    nb = 0
-    for minion in self.owner:
-        if minion.type:
-            if not minion.type & type_indispo or minion.type == constants.TYPE_ALL:
-                nb += 1
-                if minion.type != constants.TYPE_ALL:
-                    type_indispo |= minion.type
-    self.create_and_apply_enchantment("17", is_premium=self.is_premium, nb=nb)
+    self.create_and_apply_enchantment(
+        "17",
+        is_premium=self.is_premium,
+        nb=len(self.owner.one_minion_by_type()))
 
 def Heraut_qijari(self, victim):
     if victim.state & constants.STATE_TAUNT:
-        for minion in [self.owner[victim.position+1], self.owner[victim.position-1]]:
-            if minion:
-                minion.create_and_apply_enchantment("18", is_premium=self.is_premium)
+        for minion in victim.adjacent_neighbors():
+            minion.create_and_apply_enchantment("18", is_premium=self.is_premium)
 
 def Gardienne_dantan(self):
     self.owner.owner.hand.create_card('1001')
@@ -161,7 +155,7 @@ def Bras_de_lempire(self, ally):
 
 def Ritualiste_tourmente(self, defenser):
     if self == defenser:
-        for minion in [self.owner[self.position-1], self.owner[self.position+1]]:
+        for minion in self.adjacent_neighbors():
             minion.create_and_apply_enchantment("21", is_premium=self.is_premium)
 
 def Nat_Pagle(self, attacker, victim):
@@ -217,19 +211,8 @@ def Plaiedecaille_cobalt(self):
     Boost_other(self, "26", nb_max=1)
 
 def Massacreuse_croc_radieux(self):
-    position_check = list(range(len(self.owner)))
-    type_indispo = 0
-
-    while position_check:
-        random_position = random.choice(position_check)
-        minion = self.owner[random_position]
-        if minion.type:
-            if not minion.type & type_indispo or minion.type == constants.TYPE_ALL:
-                minion.create_and_apply_enchantment("27", is_premium=self.is_premium)
-                if minion.type != constants.TYPE_ALL:
-                    type_indispo |= minion.type
-
-        position_check.remove(random_position)
+    for minion in self.owner.one_minion_by_type():
+        minion.create_and_apply_enchantment("27", is_premium=self.is_premium)
 
 def Elémentplus(self, minion):
     if self is minion and type(self.owner.owner) is player.Player:
@@ -625,21 +608,10 @@ def Elementaire_de_stase_p(self):
             elem.state |= constants.STATE_FREEZE
 
 def Bonus_ménagerie(self, key_effect):
-    position_check = list(range(len(self.owner)))
-    type_indispo = 0
-    nb_cible_restante = 3
-
-    while nb_cible_restante and position_check:
-        random_position = random.choice(position_check)
-        serviteur = self.owner[random_position]
-        if serviteur.is_type(constants.TYPE_ALL):
-            if not serviteur.type & type_indispo or serviteur.type == constants.TYPE_ALL:
-                nb_cible_restante -= 1
-                serviteur.create_and_apply_enchantment(key_effect, is_premium=self.is_premium)
-                if serviteur.type != constants.TYPE_ALL:
-                    type_indispo |= serviteur.type
-
-        position_check.remove(random_position)
+    minion_list = list(self.owner.one_minion_by_type())
+    random.shuffle(minion_list)
+    for minion in minion_list[:3]:
+        minion.create_and_apply_enchantment(key_effect, is_premium=self.is_premium)
 
 def Lapin(self):
     self.create_and_apply_enchantment("69", is_premium=self.is_premium, nb=self.owner.owner.nb_lapin)
@@ -820,23 +792,14 @@ def Maman_des_diablotins(self):
         for key, value in self.bob.card_can_collect.items()
             if value["type"] & constants.TYPE_DEMON]
 
-    repop_id = script_functions.invocation_random_list(self, demon_cards, 1)
-    if repop_id:
-        repop_id.state_fight |= constants.STATE_TAUNT
-
-def Maman_des_diablotins_p(self):
-    demon_cards = [key
-        for key, value in self.bob.card_can_collect.items()
-            if value["type"] & constants.TYPE_DEMON]
-
-    for _ in range(2):
+    for _ in range(self.double_if_premium(1)):
         repop_id = script_functions.invocation_random_list(self, demon_cards, 1)
         if repop_id:
             repop_id.state_fight |= constants.STATE_TAUNT
 
 def Forgeronne_des_tarides(self):
     if self.has_frenzy:
-        self.state_fight &= constants.STATE_ALL - constants.STATE_FRENZY
+        self.remove_state_fight(constants.STATE_FRENZY)
         for minion in self.owner:
             if minion != self:
                 minion.create_and_apply_enchantment("72", is_premium=self.is_premium)
@@ -854,15 +817,17 @@ def Rover_de_securite_p(self):
     script_functions.invocation(self, "410a_p", 1)
 
 def GroBoum(self):
-    if self.owner.opponent:
-        target = random.choice(self.owner.opponent)
+    potential_targets = [minion
+        for minion in self.owner.opponent
+            if minion.is_alive]
+
+    if potential_targets:
+        target = random.choice(potential_targets)
         self.owner.owner.fight.create_single_damage_event(self, target, 4)
 
 def GroBoum_p(self):
     for _ in range(2):
-        if self.owner.opponent:
-            target = random.choice(self.owner.opponent)
-            self.owner.owner.fight.create_single_damage_event(self, target, 4)
+        GroBoum(self)
 
 def Rejeton(self):
     Boost_all(self, "73", is_premium=False)
@@ -938,56 +903,100 @@ def Héroïne_altruiste(self):
             if not minion.state & constants.STATE_DIVINE_SHIELD and minion.is_alive]
 
     if cibles_potentielles:
-        cible = random.choice(cibles_potentielles)
-        cible.state_fight |= constants.STATE_DIVINE_SHIELD
-        #print(f"{self.name} offre un bouclier divin à {cible.name} !")
+        random.choice(cibles_potentielles).state_fight |= constants.STATE_DIVINE_SHIELD
 
 def Héroïne_altruiste_p(self):
-    cibles_potentielles = [minion
-        for minion in self.owner
-            if not minion.state & constants.STATE_DIVINE_SHIELD and minion.is_alive]
-
     for _ in range(2):
-        if cibles_potentielles:
-            cible = random.choice(cibles_potentielles)
-            cible.state_fight |= constants.STATE_DIVINE_SHIELD
-            cibles_potentielles.remove(cible)
-            #print(f"{self.name} offre un bouclier divin à {cible.name} !")
+        Héroïne_altruiste(self)
 
 def Serviteur_diabolique(self):
     if self.owner:
-        random.choice(self.owner).attack += self.attack
-        #print(f"{self.name} offre {self.attack} d'attaque à {target.name} !")
+        random.choice(self.owner).create_and_apply_enchantment("79", a=self.attack, is_premium=False)
 
 def Serviteur_diabolique_p(self):
-    if self.owner:
-        for _ in range(2):
-            random.choice(self.owner).attack += self.attack
-            #print(f"{self.name} offre {self.attack} d'attaque à {target.name} !")
+    for _ in range(2):
+        Serviteur_diabolique(self)
 
 def Goule_instable(self):
-    if self.owner:
-        board = self.owner[:]
-        for servant in board:
-            self.owner.owner.fight.create_single_damage_event(self, servant, 1)
-    if self.owner.opponent:
-        board = self.owner.opponent[:]
-        for servant in board:
-            self.owner.owner.fight.create_single_damage_event(self, servant, 1)
+    for minion in self.owner+self.owner.opponent:
+        self.owner.owner.fight.create_single_damage_event(self, minion, 1)
 
 def Goule_instable_p(self):
     for _ in range(2):
-        if self.owner:
-            board = self.owner[:]
-            for servant in board:
-                self.owner.owner.fight.create_single_damage_event(self, servant, 1)
-        if self.owner.opponent:
-            board = self.owner.opponent[:]
-            for servant in board:
-                self.owner.owner.fight.create_single_damage_event(self, servant, 1)
-
-def Aile_de_mort_a(self):
-    self.owner.add_aura(self, method='Aile_de_mort')
+        Goule_instable(self)
 
 def Aile_de_mort(self, minion):
     minion.create_and_apply_enchantment("313", is_premium=False, origin=self, type='aura')
+
+def Chauffard_huran(self):
+    if self.has_frenzy:
+        self.remove_state_fight(constants.STATE_FRENZY)
+        for _ in range(self.double_if_premium(1)):
+            self.owner.owner.hand.create_card("1014")
+
+def Defense_robuste(self, enchantment_key_number, target):
+    if target is self and enchantment_key_number == "500":
+        if self.is_premium:
+            self.state |= constants.STATE_DIVINE_SHIELD
+        else:
+            self.state_fight |= constants.STATE_DIVINE_SHIELD
+
+def Brute_dos_hirsute_a(self):
+    self.quest_value = 0
+
+def Brute_dos_hirsute(self, enchantment_key_number, target):
+    if target is self and enchantment_key_number == "500" and self.quest_value == 0:
+        self.quest_value = 1
+        self.create_and_apply_enchantment("80", is_premium=self.is_premium)
+
+def Mande_epines(self):
+    for _ in range(self.double_if_premium(1)):
+        self.owner.owner.hand.create_card("1014")
+
+def Mande_epines_d(self):
+    self.owner.owner.hand.create_card("1014")
+
+def Mande_epines_d_p(self):
+    for _ in range(2):
+        Mande_epines_d(self)
+
+def Necrolyte(self):
+    minion = self.owner.owner.minion_choice(self.owner, self)
+    if minion:
+        for neighbour in minion.adjacent_neighbors():
+            change = False
+            for enchantment in neighbour.enchantment[::-1]:
+                if enchantment.key_number == '500':
+                    minion.apply_enchantment_on(enchantment)
+                    change = True
+            if change:
+                neighbour.calc_stat_from_scratch()
+        minion.calc_stat_from_scratch()
+
+def Porte_banniere_huran(self):
+    for neighbour in self.adjacent_neighbors():
+        if neighbour.type & constants.TYPE_QUILBOAR:
+            for _ in range(self.double_if_premium(1)):
+                neighbour.create_and_apply_enchantment('500', is_premium=False)
+
+def Cogneur(self):
+    self.owner.owner.hand.create_card("1014")
+
+def Duo_dynamique(self, enchantment_key_number, target):
+    if target != self and enchantment_key_number == "500" and target.type & constants.TYPE_QUILBOAR:
+        self.create_and_apply_enchantment('81', is_premium=self.is_premium)
+
+def Tremble_terre(self, enchantment_key_number, target):
+    if self is target and enchantment_key_number == "500":
+        for minion in self.owner:
+            minion.create_and_apply_enchantment('82', is_premium=self.is_premium)
+
+def Chevalier_dos_hirsute(self):
+    if self.has_frenzy:
+        self.remove_state_fight(constants.STATE_FRENZY)
+        self.state_fight |= constants.STATE_DIVINE_SHIELD
+
+def Aggem_malepine(self, enchantment_key_number, target):
+    if self is target and enchantment_key_number == "500":
+        for minion in self.owner.one_minion_by_type():
+            minion.create_and_apply_enchantment('83', is_premium=self.is_premium)
