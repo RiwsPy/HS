@@ -181,10 +181,8 @@ class Combat:
 
     def take_cleave_damage(self, attacker_minion, defenser_minion, damage=None):
         if attacker_minion.state_fight & constants.STATE_CLEAVE: # cleave
-            for minion in [defenser_minion.owner[defenser_minion.position-1], 
-                defenser_minion.owner[defenser_minion.position+1]]:
-                if minion:
-                    self.take_damage(attacker_minion, minion, damage=damage)
+            for minion in defenser_minion.adjacent_neighbors():
+                self.take_damage(attacker_minion, minion, damage=damage)
 
     def check_attack_immediatly(self, player):
         for minion in player.board:
@@ -203,7 +201,7 @@ class Combat:
             return None
 
         if damagee.state_fight & constants.STATE_DIVINE_SHIELD: # bouclier divin
-            damagee.state_fight -= constants.STATE_DIVINE_SHIELD
+            damagee.remove_state(constants.STATE_DIVINE_SHIELD)
             damagee.owner.owner.active_event(constants.EVENT_LOSS_SHIELD)
         else:
             damagee.active_script_type(constants.EVENT_HIT_BY)
@@ -212,8 +210,7 @@ class Combat:
                 damagee.state_fight |= constants.STATE_IS_POISONED
 
             if overkill and damagee.health < 0 and constants.EVENT_OVERKILL in damager.script:
-                damager.active_script_type(constants.EVENT_OVERKILL, \
-                    damagee.position, damager.position, damagee.health)
+                damager.active_script_type(constants.EVENT_OVERKILL, damagee)
 
     def resolve_damage_event(self, board, attacker):
         for defenser in board[::-1]:

@@ -587,23 +587,14 @@ def Menagerie_2(self):
     Bonus_ménagerie(self, "68")
 
 def Elementaire_de_stase(self):
-    elem = None
-    for minion in self.owner.opponent.owner.hand.cards_of_tier_max(self.owner.owner.level):
-        if minion.is_type(constants.TYPE_ELEMENTAL):
-            elem = minion
-            break
-    if elem:
-        elem.play(board=self.owner.opponent)
-        elem.state |= constants.STATE_FREEZE
-
-def Elementaire_de_stase_p(self):
-    for _ in range(2):
-        elem = None
-        for minion in self.owner.opponent.owner.hand.cards_of_tier_max(self.owner.owner.level):
-            if minion.is_type(constants.TYPE_ELEMENTAL):
-                elem = minion
-                break
-        if elem:
+    player = self.owner.owner
+    elem_lst = [minion
+        for minion in player.bob.hand.cards_of_tier_max(player.level)
+            if minion.type & constants.TYPE_ELEMENTAL]
+    for _ in range(self.double_if_premium(1)):
+        if self.owner.opponent.can_add_card() and elem_lst:
+            elem = random.choice(elem_lst)
+            elem_lst.remove(elem)
             elem.play(board=self.owner.opponent)
             elem.state |= constants.STATE_FREEZE
 
@@ -735,54 +726,38 @@ def Sneed_p(self):
 
     script_functions.invocation_random_list(self, legendary_cards, 2)
 
-def Goliath_brisemer(*arg):
-    self = arg[0]
+def Goliath_brisemer(self, target):
     Boost_other(self, "71", type=constants.TYPE_PIRATE, is_premium=self.is_premium)
 
-def Navrecorne_cuiracier(self, target_position, attaquant_position, damage):
-    script_functions.invocation(self, "504a", 1, attaquant_position)
+def Navrecorne_cuiracier(self, target):
+    script_functions.invocation(self, "504a", 1, self.position)
 
-def Navrecorne_cuiracier_p(self, target_position, attaquant_position, damage):
-    script_functions.invocation(self, "504a_p", 1, attaquant_position)
+def Navrecorne_cuiracier_p(self, target):
+    script_functions.invocation(self, "504a_p", 1, self.position)
 
-def Feu_de_brousse(self, target_position, attaquant_position, damage):
-    # la cible est déjà retirée du board adverse
-    if damage > 0 and self.owner.opponent:
-        if target_position == 0: # first card
-            self.owner.owner.fight.take_damage(self, self.owner.opponent[0], damage, overkill=False)
-        elif target_position == len(self.owner.opponent): # last card
-            self.owner.owner.fight.take_damage(self, self.owner.opponent[-1], damage, overkill=False)
-        else:
-            if random.randint(0, 1):
-                self.owner.owner.fight.take_damage(self, self.owner.opponent[target_position], damage, overkill=False)
-            else:
-                self.owner.owner.fight.take_damage(self, self.owner.opponent[target_position-1], damage, overkill=False)
+def Feu_de_brousse(self, target):
+    new_target = target.adjacent_neighbors()
+    if new_target:
+        self.owner.owner.fight.take_damage(
+                self,
+                random.choice(new_target),
+                -target.health,
+                overkill=False)
 
-def Feu_de_brousse_p(self, target_position, attaquant_position, damage):
-    # la cible est déjà retirée du board adverse
-    if damage > 0 and self.owner.opponent:
-        if target_position == 0: # first card
-            self.owner.owner.fight.take_damage(self, self.owner.opponent[0], damage, overkill=False)
-        elif target_position == len(self.owner.opponent): # last card
-            self.owner.owner.fight.take_damage(self, self.owner.opponent[-1], damage, overkill=False)
-        else:
-            self.owner.owner.fight.take_damage(self, self.owner.opponent[target_position], damage, overkill=False)
-            self.owner.owner.fight.take_damage(self, self.owner.opponent[target_position-1], damage, overkill=False)
+def Feu_de_brousse_p(self, target):
+    for new_target in target.adjacent_neighbors():
+        self.owner.owner.fight.take_damage(
+                self,
+                new_target,
+                -target.health,
+                overkill=False)
 
-def Heraut_de_la_flamme(*arg):
-    self = arg[0]
+def Heraut_de_la_flamme(self, target):
     if self.owner.opponent:
+        damage = 3*self.double_if_premium(1)
         for minion in self.owner.opponent:
             if minion.is_alive:
-                self.owner.owner.fight.take_damage(self, minion, 3)
-                break
-
-def Heraut_de_la_flamme_p(*arg):
-    self = arg[0]
-    if self.owner.opponent:
-        for minion in self.owner.opponent:
-            if minion.is_alive:
-                self.owner.owner.fight.take_damage(self, minion, 6)
+                self.owner.owner.fight.take_damage(self, minion, damage)
                 break
 
 def Maman_des_diablotins(self):
@@ -797,7 +772,7 @@ def Maman_des_diablotins(self):
 
 def Forgeronne_des_tarides(self):
     if self.has_frenzy:
-        self.remove_state_fight(constants.STATE_FRENZY)
+        self.remove_state(constants.STATE_FRENZY)
         for minion in self.owner:
             if minion != self:
                 minion.create_and_apply_enchantment("72", is_premium=self.is_premium)
@@ -928,24 +903,25 @@ def Aile_de_mort(self, minion):
 
 def Chauffard_huran(self):
     if self.has_frenzy:
-        self.remove_state_fight(constants.STATE_FRENZY)
+        self.remove_state(constants.STATE_FRENZY)
         for _ in range(self.double_if_premium(1)):
             self.owner.owner.hand.create_card("1014")
 
-def Defense_robuste(self, enchantment_key_number, target):
-    if target is self and enchantment_key_number == "500":
+def Defense_robuste(self, enchantment, target):
+    if target is self and enchantment.key_number == "500":
         if self.is_premium:
-            self.state |= constants.STATE_DIVINE_SHIELD
+            self.create_and_apply_enchantment('85', is_premium=False)
         else:
-            self.state_fight |= constants.STATE_DIVINE_SHIELD
+            self.create_and_apply_enchantment('84', is_premium=False)
 
 def Brute_dos_hirsute_a(self):
     self.quest_value = 0
 
-def Brute_dos_hirsute(self, enchantment_key_number, target):
-    if target is self and enchantment_key_number == "500" and self.quest_value == 0:
+def Brute_dos_hirsute(self, enchantment, target):
+    if target is self and enchantment.key_number == "500" and self.quest_value == 0:
         self.quest_value = 1
-        self.create_and_apply_enchantment("80", is_premium=self.is_premium)
+        self.enchantment[-1].a += 2*self.double_if_premium(1)
+        self.enchantment[-1].h += 2*self.double_if_premium(1)
 
 def Mande_epines(self):
     for _ in range(self.double_if_premium(1)):
@@ -980,22 +956,22 @@ def Porte_banniere_huran(self):
 def Cogneur(self):
     self.owner.owner.hand.create_card("1014")
 
-def Duo_dynamique(self, enchantment_key_number, target):
-    if target != self and enchantment_key_number == "500" and target.type & constants.TYPE_QUILBOAR:
+def Duo_dynamique(self, enchantment, target):
+    if target != self and enchantment.key_number == "500" and target.type & constants.TYPE_QUILBOAR:
         self.create_and_apply_enchantment('81', is_premium=self.is_premium)
 
-def Tremble_terre(self, enchantment_key_number, target):
-    if self is target and enchantment_key_number == "500":
+def Tremble_terre(self, enchantment, target):
+    if self is target and enchantment.key_number == "500":
         for minion in self.owner:
             minion.create_and_apply_enchantment('82', is_premium=self.is_premium)
 
 def Chevalier_dos_hirsute(self):
     if self.has_frenzy:
-        self.remove_state_fight(constants.STATE_FRENZY)
+        self.remove_state(constants.STATE_FRENZY)
         self.state_fight |= constants.STATE_DIVINE_SHIELD
 
-def Aggem_malepine(self, enchantment_key_number, target):
-    if self is target and enchantment_key_number == "500":
+def Aggem_malepine(self, enchantment, target):
+    if self is target and enchantment.key_number == "500":
         for minion in self.owner.one_minion_by_type():
             minion.create_and_apply_enchantment('83', is_premium=self.is_premium)
 
@@ -1016,5 +992,17 @@ def Capitaine_Plate_Defense_check(self):
     while self.quest_value >= 3:
         self.quest_value -= 3
         for _ in range(self.double_if_premium(1)):
-            card = self.owner.owner.hand.create_card("1014")
-            
+            self.owner.owner.hand.create_card("1014")
+
+def wake_up(self):
+    # Maeiv effect
+    self.create_and_apply_enchantment('315')
+    self.owner.opponent.owner.hand.append(self)
+
+def Prophete_du_sanglier(self):
+    if self.quest_value == 0:
+        self.quest_value = 1
+        self.owner.owner.hand.create_card("1014")
+
+def Prophete_du_sanglier_a(self):
+    self.quest_value = 0
