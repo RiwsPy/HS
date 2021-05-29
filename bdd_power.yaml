@@ -363,3 +363,36 @@
   script: Lead_explorer
   type: 0x20
 
+56:
+  <<: *DEFAULT
+  name: Liés par le sang
+  script: Bloodbound
+  type: 0x20
+
+57:
+  <<: *DEFAULT
+  name: Pour la Horde!
+  script: For_the_Horde
+  type: 0x10
+  cost: 1
+
+58:
+  <<: *DEFAULT
+  name: Troupe de guerre cirière
+  script: Wax_warband
+  type: 0x2000000
+  cost: 1
+
+59:
+  <<: *DEFAULT
+  name: Échange spirituel
+  script: Spirit_swap
+  type: 0x2000002
+
+60:
+  <<: *DEFAULT
+  name: Vision de lumière
+  script: See_the_Light
+  type: 0x2000000
+  cost: 2
+

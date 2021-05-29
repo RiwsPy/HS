@@ -1,7 +1,7 @@
 import player
 import random
 import constants
-import bob
+import card
 import power
 
 def no_power(self, event):
@@ -48,7 +48,7 @@ def All_patched_up(self, event):
 def Manastorm(self, event):
     self.power.minion_cost = 2
     self.power.roll_cost = 2
-    self.power.lst_bob_cost = constants.LEVEL_UP_COST_MILLHOUSE
+    self.power.level_up_cost = constants.LEVEL_UP_COST_MILLHOUSE
 
 def Piggy_bank(self, event):
     self.gold += self.nb_turn
@@ -56,7 +56,7 @@ def Piggy_bank(self, event):
 def Boon_of_light(self, event):
     minion = self.minion_choice(self.board)
     if minion:
-        minion.state |= constants.STATE_DIVINE_SHIELD
+        minion.minion.create_and_apply_enchantment("317")
         return minion
     return None
 
@@ -160,8 +160,7 @@ def Saturday_cthuns(self, event):
         self.power.quest_value += 1
     elif event == constants.EVENT_END_TURN and self.board and self.power.is_disabled:
         for _ in range(self.power.quest_value):
-            minion = random.choice(self.board)
-            minion.create_and_apply_enchantment("304")
+            random.choice(self.board).create_and_apply_enchantment("304")
 
 def Sharpen_blades(self, event, card=None):
     if event == constants.EVENT_USE_POWER:
@@ -225,8 +224,7 @@ def Hat_trick(self, event, card=None):
     brd = self.board.opponent
     if brd:
         for _ in range(2):
-            minion = random.choice(brd)
-            minion.create_and_apply_enchantment("312")
+            random.choice(brd).create_and_apply_enchantment("312")
 
 def All_will_burn(self, event):
     self.board.add_aura(self, method='Aile_de_mort')
@@ -246,3 +244,61 @@ def active_nomi_bonus(self, event, target):
     pass
     #if target.type & constants.TYPE_ELEMENTAL:
     #    target.set_effect_on("14", self.bonus_nomi)
+
+def Imprison(self, event):
+    minion = self.minion_choice(self.board.opponent)
+    if minion:
+        minion.create_and_apply_enchantment("314")
+
+def Reborn_rites(self, event):
+    minion = self.minion_choice(self.board)
+    if minion:
+        minion.create_and_apply_enchantment("316")
+
+def Bloodbound(self, event):
+    self.owner.hand.create_card("1014")
+    self.owner.hand.create_card("1014")
+
+def For_the_Horde(self, event, card):
+    if event == constants.EVENT_BUY and card and self.power.is_disabled:
+        card.create_and_apply_enchantment('318', a=self.bob.nb_turn)
+
+def Wax_warband(self, event):
+    for minion in self.owner.board.one_minion_by_type():
+        minion.create_and_apply_enchantment('319')
+
+def Spirit_swap(self, event):
+    if event == constants.EVENT_USE_POWER:
+        minion = self.minion_choice(self.board + self.board.opponent)
+        if minion:
+            self.power.quest_value = minion
+            self.power.script += '2'
+            self.power.reset_power()
+    elif event == constants.EVENT_END_TURN:
+        self.power.quest_value = 0
+
+def Spirit_swap2(self, event):
+    if event == constants.EVENT_USE_POWER:
+        if type(self.power.quest_value) is card.Card:
+            choice = self.board + self.board.opponent
+            choice.remove(self.power.quest_value)
+            minion = self.minion_choice(choice)
+            if minion:
+                # gestion des enchantements ?
+                self.power.script = self.script[:-1]
+                self.power.quest_value.create_and_apply_enchantment("320", a=minion.attack, h=minion.max_health)
+                self.power.quest_value = 0
+        else:
+            print("Error vol'jin power")
+            self.power.script = self.power.script[:-1]
+            self.power.quest_value = 0
+            self.power.reset_power()
+    elif event == constants.EVENT_END_TURN:
+        self.power.script = self.power.script[:-1]
+        self.power.quest_value = 0
+
+def See_the_Light(self, event):
+    minion = self.minion_choice(self.board.opponent)
+    if minion:
+        minion.create_and_apply_enchantment('321')
+        self.hand.append(minion)

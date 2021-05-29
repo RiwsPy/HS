@@ -25,7 +25,7 @@ class Power:
         self.hero_script = 'Default_script'
         self.minion_cost = 3
         self.roll_cost = 1
-        self.lst_bob_cost = constants.LEVEL_UP_COST
+        self.level_up_cost = constants.LEVEL_UP_COST
         self.quest_value = 0
         self.secret_limitation = []
 
