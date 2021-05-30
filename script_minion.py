@@ -381,7 +381,8 @@ def Charognard2_2(self, victim):
         self.create_and_apply_enchantment("41", is_premium=self.is_premium)
 
 def Poisson(self, victim):
-    self.copy_deathrattle(victim)
+    for _ in range(self.double_is_premium(1)):
+        self.copy_deathrattle(victim)
 
 def Init_poisson(self):
     try:
