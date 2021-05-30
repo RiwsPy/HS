@@ -15,7 +15,7 @@ class Card:
         self.init_state = 0
         self.type = 0
         self.cost = 0
-        self.script = {}
+        self._script = defaultdict(list)
         self.quest_value = 0
         self.init_attack = 0
         self.init_health = 0
@@ -37,12 +37,23 @@ class Card:
         return f'{self.name}'
 
     def calc_stat_from_scratch(self):
+        self.script = self.bob.all_card[self.key_number].get('script', {})
         old_health = self.health
         self.max_health = self.init_health
         self.attack = self.init_attack
+        self.state = self.init_state
         for enchant in self.enchantment:
             enchant.apply()
         self.health = min(self.max_health, old_health)
+
+    @property
+    def script(self):
+        return self._script
+
+    @script.setter
+    def script(self, value={}):
+        self._script = defaultdict(list)
+        self._script.update(value)
 
     @property
     def is_premium(self):
@@ -52,7 +63,7 @@ class Card:
         self.purge_fight_effects(owner)
         for key, value in self.bob.all_card[self.key_number].items():
             setattr(self, key, value)
-        self.script = self.script.copy()
+        #self.script = self.script.copy() # ???
         self.card_in = [self] # toutes les cartes fusionnées avec celle-ci (magnétisme, triple...)
         self.max_health = self.init_health
         self.health = self.init_health
@@ -65,7 +76,7 @@ class Card:
             print("ERROR minion initialize", self.name, type(owner))
         self.owner = owner
 
-    def create_effect(self, effect_key, **arg):
+    def create_effect(self, effect_key, **arg) -> enchantment.Enchantment:
         info = {
             **self.bob.all_effect.get(effect_key, {}),
             **{'key_number': effect_key},
@@ -74,31 +85,39 @@ class Card:
         return enchantment.Enchantment(info)
 
     def apply_enchantment_on(self, enchant):
-        if enchant.owner:
-            if enchant.owner == self:
-                return None
-            enchant.owner.enchantment.remove(enchant)
+        if not self.state & constants.STATE_DORMANT:
+            if enchant.owner:
+                if enchant.owner == self:
+                    return None
+                enchant.owner.enchantment.remove(enchant)
 
-        enchant.owner = self
+            enchant.owner = self
+            self.active_script_type(constants.EVENT_ADD_ENCHANTMENT_ON, enchant, self)
+            if enchant.apply() is not False:
+                self.enchantment.append(enchant)
 
-        if enchant.apply() is not False:
-            self.enchantment.append(enchant)
+            for minion in self.owner:
+                if minion != self:
+                    minion.active_script_type(constants.EVENT_ADD_ENCHANTMENT_ON, enchant, self)
 
     def adjacent_neighbors(self) -> list:
         if self.owner:
             return [minion            
                 for minion in [self.owner[self.position-1], self.owner[self.position+1]]
-                    if minion]
+                    if minion and not minion.state & constants.STATE_DORMANT]
         return []
 
-    def create_and_apply_enchantment(self, effect_key, nb=1, **arg):
+    def create_and_apply_enchantment(self, enchant_key, nb=1, **arg):
         for _ in range(nb):
-            new_enchantment = self.create_effect(effect_key, **arg)
+            new_enchantment = self.create_effect(enchant_key, **arg)
             self.apply_enchantment_on(new_enchantment)
 
-    def set_effect_on(self, effect_key, nb=1):
-        self.apply_effect_on(effect_key, -self.effects[effect_key])
-        self.apply_effect_on(effect_key, nb)
+    def remove_all_enchantment_key(self, enchant_key):
+        if self.enchantment:
+            for enchantment in self.enchantment[::-1]:
+                if enchantment.key_number == enchant_key:
+                    enchantment.remove()
+            self.calc_stat_from_scratch()
 
     """
     @property
@@ -164,11 +183,12 @@ class Card:
             infos = self.bob.all_card[source_key_number]
             self.init_attack = infos['init_attack']
             self.init_health = infos['init_health']
-            for key, value in self.bob.all_card[self.key_number].get('script', {}).items(): # retrait des scripts de la carte initiale
-                for effect in value:
-                    self.script[key].remove(effect)
-            self.add_script(source_key_number)
+            self.max_health = infos['init_health']
+            self.attack = infos['init_attack']
+            self.script = infos.get('script', {})
             self.key_number = source_key_number
+            self.calc_stat_from_scratch()
+            self.health = self.max_health # debug
 
         else: # habitué sans-visage, gestion de la vente ? la carte est enlevée de la main de bob?
             # ou bien seul l'habitué est enlevé ?
@@ -187,42 +207,23 @@ class Card:
     def is_type(self, typ):
         return self.type & typ
 
-    def combine_card(self, source):
-        # add source card stat to self card
-        self.attack += source.attack
-        self.health += source.health
-        self.state |= source.state
-        self.copy_deathrattle(source)
-        self.card_in.append(source)
-
     def set_deathrattle(self, source):
-        lst_script = source.script.get(constants.EVENT_DEATHRATTLE)
-        if lst_script:
-            self.script[constants.EVENT_DEATHRATTLE] = lst_script
+        self.script[constants.EVENT_DEATHRATTLE] = source.script[constants.EVENT_DEATHRATTLE]
 
     def copy_deathrattle(self, source):
         # copie des scripts (deathrattle) et les ajoutent aux siens
-        lst_script = source.script.get(constants.EVENT_DEATHRATTLE)
-        if lst_script:
-            if constants.EVENT_DEATHRATTLE not in self.script:
-                self.script[constants.EVENT_DEATHRATTLE] = lst_script
-            else:
-                self.script[constants.EVENT_DEATHRATTLE] += lst_script
+        self.add_script(
+            {constants.EVENT_DEATHRATTLE:
+                source.script[constants.EVENT_DEATHRATTLE]})
 
-    def add_deathrattle(self, deathrattle):
-        if constants.EVENT_DEATHRATTLE not in self.script:
-            self.script[constants.EVENT_DEATHRATTLE] = [deathrattle]
-        else:
-            self.script[constants.EVENT_DEATHRATTLE].append(deathrattle)
-
-    def add_script(self, source_key_number):
+    def copy_script(self, source_key_number):
         # ajoute tous les scripts présents dans source_key_number, à self
         infos = self.bob.all_card.get(source_key_number, {}).get('script', {})
+        self.add_script(infos)
+
+    def add_script(self, infos):
         for key, value in infos.items():
-            if key in self.script:
-                self.script[key].extend(value)
-            else:
-                self.script[key] = value
+            self.script[key] += value
 
     @property
     def attack(self):
@@ -262,8 +263,8 @@ class Card:
     def has_frenzy(self):
         return self.state_fight & constants.STATE_FRENZY and self.is_alive
 
-    def remove_state_fight(self, state):
-        self.state_fight &= constants.STATE_ALL - state
+    def remove_state(self, state):
+        self.state &= constants.STATE_ALL - state
 
     @property
     def position(self):
@@ -339,12 +340,18 @@ class Card:
                 self.active_script_type(constants.EVENT_PLAY_AURA)
                 self.active_script_type(constants.EVENT_BATTLECRY)
 
-                if self.owner[-1] != self and self.state & constants.STATE_MAGNETIC:
-                    target = self.owner[position+1]
-                    if target.type & constants.TYPE_MECH:
-                        target.combine_card(self)
-                        target.state &= (constants.STATE_ALL - constants.STATE_MAGNETIC)
+                if self.state & constants.STATE_MAGNETIC:
+                    target = self.owner[self.position+1]
+                    if target and target.type & constants.TYPE_MECH:
+                        self.remove_state(constants.STATE_MAGNETIC)
+                        target.create_and_apply_enchantment('86',
+                            a=self.attack,
+                            h=self.health,
+                            s=self.state,
+                            origin=self)
                         self.owner.remove(self)
+                        target.card_in.append(self)
+                        target.calc_stat_from_scratch()
             else:
                 self.owner.opponent.owner.active_event(constants.EVENT_BOB_PLAY, self)
         elif self.general == 'spell':

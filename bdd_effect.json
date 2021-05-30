@@ -1,8 +1,8 @@
 {
-"0": {"h":1, "a":1, "duration":-1, "name":"Default", "method":"add_stat"},
+"0": {"a":0, "duration":1, "name":"Default", "method":"add_stat"},
 "1": {"h":2, "a":2, "duration":-1, "name":"Raflelor", "method":"add_stat"},
 "2": {"a":1, "duration":-1, "name":"Piston", "method":"add_stat"},
-"3": {"h":2, "a":2, "duration":-1, "name":"Dragon_infamelique", "method":"add_stat"},
+"3": {"h":2, "a":2, "duration":-1, "name":"Bien nourri", "method":"add_stat"},
 "4": {"h":2, "a":2, "duration":-1, "name":"Colère tissée", "method":"add_stat"},
 "5": {"a":1, "duration":-1, "name":"Mande_flot", "method":"add_stat"},
 "6": {"h":1, "a":1, "duration":-1, "name":"Pillard_pirate", "method":"add_stat"},
@@ -49,7 +49,8 @@
 "47": {"s":8, "duration":-1, "name":"Adapt poison", "method":"add_stat"},
 "48": {"s":2, "duration":-1, "name":"Adapt divine shield", "method":"add_stat"},
 "49": {"s":16, "duration":-1, "name":"Adapt windfury", "method":"add_stat"},
-"50": {"h":1, "a":1, "duration":-1, "name":"Gaillarde des mers du Sud", "method":"add_stat"},
+"50": {"script":{"2048":["Amalgadon_repop"]}, "duration":-1, "name":"Amalgadon repop", "method":"add_script"},
+
 "51": {"h":2, "a":2, "duration":-1, "name":"Roi Bargagouille Battlecry", "method":"add_stat"},
 "52": {"h":2, "a":2, "duration":1, "name":"Roi Bargagouille Deathrattle", "method":"add_stat"},
 "53": {"h":1, "a":1, "s":1, "duration":-1, "name":"Défenseur d'Argus", "method":"add_stat"},
@@ -81,12 +82,14 @@
 "78": {"h":2, "a":2, "duration":-1, "name":"Mal'Ganis", "method":"add_stat"},
 
 "79": {"a":1, "duration":1, "name":"Serviteur diabolique", "method":"add_stat"},
-"80": {"h":2, "a":2, "duration":-1, "name":"Brute dos-hirsute", "method":"add_stat"},
+
 "81": {"h":1, "a":1, "duration":-1, "name":"Duo dynamique", "method":"add_stat"},
 "82": {"a":2, "duration":1, "name":"Tremble-terre", "method":"add_stat"},
 "83": {"h":1, "a":1, "duration":-1, "name":"Aggem Malépine", "method":"add_stat"},
 "84": {"s":2, "duration":1, "name":"Robuste", "method":"add_stat"},
 "85": {"s":2, "duration":-1, "name":"Super robuste", "method":"add_stat"},
+"86": {"duration":-1, "name":"Magnetisme", "method":"magnetism"},
+"87": {"h":1, "a":1, "duration":-1, "name":"Gaillarde des mers du Sud", "method":"add_stat"},
 
 
 "300": {"h":1, "a":1, "duration":-1, "name":"Millificent", "method":"add_stat"},

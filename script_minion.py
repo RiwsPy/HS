@@ -419,9 +419,7 @@ def adapt_spell(self, nb=0):
     if not nb:
         nb = random.randint(1, 8)
 
-    if nb == 8:
-        self.add_deathrattle('Amalgadon_repop')
-    elif nb > 0 and nb < 8:
+    if 1 <= nb <= 8:
         self.create_and_apply_enchantment(str(42+nb))
     else:
         print(f"Amalgadon adapt error n°{nb}")
@@ -457,7 +455,7 @@ def Gaillarde_des_mers_du_sud(self):
         for minion in self.owner.owner.minion_buy_this_turn:
             if minion.type & constants.TYPE_PIRATE:
                 bonus += 1
-        minion.create_and_apply_enchantment("50", is_premium=self.is_premium, nb=bonus)
+        minion.create_and_apply_enchantment("87", is_premium=self.is_premium, nb=bonus)
 
 def Pillard_dure_ecaille(self):
     for minion in self.owner:
