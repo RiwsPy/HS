@@ -1,124 +1,114 @@
-import constants
-import card
+from constants import Zone, General, LEVEL_MAX, HAND_SIZE, CARD_NB_COPY
+from entity import Card, Entity, card_db
+from typing import List, Generator
+from itertools import chain
+from utils import Card_list
 
-class Player_hand(list):
-    def __init__(self, owner):
-        list.__setitem__(self, slice(None), [])
-        self.owner = owner
+class Player_hand(Entity):
+    default_attr = {
 
-    def append(self, card, position=None) -> bool:
+    }
+    def __init__(self, **kwargs):
+        super().__init__("HAND", **kwargs)
+        self.cards = Card_list()
+
+    def append(self, *entities, position=None) -> None:
         """
             Try to add card to player's hand, remove it from the current owner (if any)
             position parameter is inconsistent,
             *param card: card_id to append
             *type card: card.Card
-            *return: True if the card is added, False otherwise
-            *rtype: bool
         """
-        if self.can_add_card():
-            if card.owner:
-                try:
-                    card.owner.remove(card)
-                except ValueError:
-                    pass
-            super().append(card)
-            card.owner = self
-            return True
-        return False
+        if entities:
+            for entity in entities[::-1]:
+                if entity.general in (General.MINION, General.SPELL):
+                    if self.can_add_card():
+                        super().append(entity)
+                        self.cards.append(entity)
+                #elif entity.general != General.ZONE:
+                #    super().append(entity)
 
-    def can_add_card(self) -> bool:
+    def remove(self, *entities) -> None:
+        super().remove(*entities)
+        for entity in entities:
+            try:
+                self.cards.remove(entity)
+            except ValueError:
+                pass
+
+    def can_add_card(self, card=None) -> bool:
         """
             Returns a boolean indicating if it is possible to add a card to player's hand
             *rtype: bool
         """
-        return len(self) < constants.HAND_SIZE
-
-    def create_card(self, *keys_number, atk_bonus=0, def_bonus=0) -> card:
-        """
-            Create a copy of each card in ``keys_number`` parameter to bob's hand
-            *param atk_bonus: attack bonus for each card
-            *param def_bonus: health_bonus for each card
-            *typ atk_bonus: int
-            *typ def_bonus: int
-            *return: last card_id created
-            *rtype: card.Card
-        """
-        card_id = None
-        for nb in keys_number:
-            card_id = card.Card(nb, self.owner.bob)
-            card_id.attack += atk_bonus
-            card_id.max_health += def_bonus
-            card_id.health += def_bonus
-            self.append(card_id)
-        return card_id
+        return len(self.cards) <= HAND_SIZE-1
 
 
-class Bob_hand(list):
-    # bob.hand renvoie une liste contenant toutes les cartes de Bob
-    # bob.hand.hand renvoie la liste selon leur niveau
-    def __init__(self, owner) -> None:
-        # un set / niveau (dont 0)
-        list.__setitem__(self, slice(None), [[], [], [], [], [], [], []])
-        self.owner = owner
+class Bob_hand(Entity):
+    default_attr = {
 
-    def append(self, card, position=None) -> bool:
+    }
+    def __init__(self, **kwargs) -> None:
+        super().__init__("HAND", entities=[
+            Card_list(),
+            Card_list(),
+            Card_list(),
+            Card_list(),
+            Card_list(),
+            Card_list(),
+            Card_list(),],
+            **kwargs)
+
+    def append(self, *entities, position=None):
         """
             Try to add card to bob's hand, remove it from the current owner (if any)
             position parameter is inconsistent,
             in order to be the same to Player_hand ``append`` method
             Card is reset before being added to Bob hand
-            *param card: card_id to append
-            *type card: card.Card
+            *param entities: card_ids to append
+            *type entities: entity.Card
             *return: True if the card is added, False otherwise
             *rtype: bool
         """
-        if card.owner:
-            try:
-                card.owner.remove(card)
-            except ValueError:
-                pass
-        if card.from_bob:
-            card.reinitialize() # la carte perd tous ses bonus
-            self[card.level].append(card)
-            card.owner = self
-        else:
-            card.owner = None
+        for crd in entities[::-1]:
+            crd.owner.remove(crd)
+            self.append(*crd.entities)
+            if crd.from_bob:
+                self.create_card_in(crd.dbfId)
         return True
 
-    def remove(self, card) -> None:
+    def remove(self, *cards) -> None:
         """
             Remove one card from bob's hand
             *param card: card_id to remove
-            *type card: card.Card
+            *type card: entity.Card
             *return: None
         """
-        self[card.level].remove(card)
+        for card in cards:
+            #self.game.owner.append(card)
+            self.entities[card.level].remove(card)
 
-    def discard(self, key) -> card:
+    def discard(self, id) -> Entity:
         """
-            Take out one card with ``key`` of bob's hand
+            Take out one card with ``id`` of bob's hand
             Only used by statistical algorithms
             *param key: card_key_number to remove
             *type key: str
             *return: card_id (or None if ``key`` doesn't exist)
-            *rtype: card.Card
+            *rtype: entity.Card
         """
-        minion_info = self.owner.all_card.get(key)
-        if minion_info:
-            for card in self[minion_info['level']]:
-                if card.key_number == key:
-                    self.remove(card)
-                    card.owner = None
-                    return card
-        return None
+        entity = self.search(id)
+        if entity:
+            self.remove(entity)
+        return entity
 
     def __len__(self) -> int:
-        return len(self.all_cards())
+        return len(self.cards)
 
-    def __iter__(self):
-        yield from (i for i in self.all_cards())
+    def __iter__(self) -> Generator:
+        yield from (i for i in self.cards)
 
-    def can_add_card(self) -> bool:
+    def can_add_card(self, card=None) -> bool:
         """
             Returns a boolean indicating if it is possible to add a card to bob's hand
             *return: True (always)
@@ -126,72 +116,38 @@ class Bob_hand(list):
         """
         return True
 
-    def nb_cards_of_tier_max(self, tier_max=constants.LEVEL_MAX, tier_min=1) -> int:
-        """
-            Returns number of cards between tier_min and tier_max to bob's hand
-            Only used by statistical algorithms
-            *param tier_max: card maximum level
-            *param tier_min: card minimum level
-            *type tier_max: int
-            *type tier_min: int
-            *rtype: int
-        """
-        nb = 0
-        for cards in self[tier_min:tier_max+1]:
-            nb += len(cards)
-        return nb
-
-    def cards_of_tier_max(self, tier_max=constants.LEVEL_MAX, tier_min=1) -> list:
+    def cards_of_tier_max(self, tier_max=LEVEL_MAX, tier_min=1) -> Card_list:
         """
             Return all cards in bob's hand with ``tier_min`` <= tier_card <= ``tier_max``
             *param tier_max: maximum level of wanted cards
             *param tier_min: minimum level of wanted cards
             *type tier_max: int
             *type tier_min: int
-            *rtype: list
+            *rtype: utils.Card_list
         """
-        result = []
-        for cards in self[tier_min:tier_max+1]:
-            result += cards
-        return result
-    all_cards = cards_of_tier_max
+        return Card_list(chain(*self.entities[tier_min:tier_max+1]))
 
-    def cards_type_of_tier_max(self, typ=0, tier_max=constants.LEVEL_MAX, tier_min=1) -> list:
+    @property
+    def cards(self) -> Card_list:
+        return self.cards_of_tier_max()
+
+    def create_card_in(self, *args, **kwargs) -> Card:
         """
-            Return all cards with matching type ``typ`` in bob's hand
-            with ``tier_min`` <= tier_card <= ``tier_max``
-
-            Similar to ``cards_of_tier_max`` with optional ``typ`` parameter
-            *typ: type of wanted cards
-            *param tier_max: maximum level of wanted cards
-            *param tier_min: minimum level of wanted cards
-            *type typ: int
-            *type tier_max: int
-            *type tier_min: int
-            *rtype: list
-        """
-        if not typ:
-            return self.cards_of_tier_max(tier_max=tier_max, tier_min=tier_min)
-
-        return [crd
-            for crd in self.cards_of_tier_max(tier_max, tier_min)
-                if crd.type & typ]
-
-    def create_card(self, *keys_number, atk_bonus=0, def_bonus=0) -> card:
-        """
-            Create a copy of each card in ``keys_number`` parameter to bob's hand
-            *param atk_bonus: attack bonus for each card
-            *param def_bonus: health_bonus for each card
-            *typ atk_bonus: int
-            *typ def_bonus: int
+            Create a copy of each card in ``entities_id`` parameter to bob's hand
             *return: last card_id created
-            *rtype: card.Card
+            *rtype: entity.Card
         """
         card_id = None
-        for key_number in keys_number:
-            card_id = card.Card(key_number, self.owner, owner=self)
-            card_id.attack += atk_bonus
-            card_id.max_health += def_bonus
-            card_id.health += def_bonus
-            self.append(card_id)
+        for id in args:
+            card_id = Card(id, **kwargs, from_bob=True)
+            card_id.owner = self
+            self.entities[card_id.level].append(card_id)
         return card_id
+
+    def search(self, id: str) -> Entity:
+        if id in self.game.card_can_collect:
+            card_lvl = self.card_db[id]['level']
+            for entity in self.entities[card_lvl]:
+                if entity.dbfId == id:
+                    return entity
+        return None

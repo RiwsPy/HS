@@ -1,206 +1,152 @@
-from collections import defaultdict
-import combat
-from operator import itemgetter
+from db_card import Card_data
+import game
+from constants import Type
+import time
 import json
-import random
-import player
-import constants
+import stats
+from entity import Entity, Meta_card_data
+from datetime import datetime
+from typing import Dict
 
-def arene(BOB, *players, TIER_MAX=6, TIER_MIN=1, pr=True, nb_turn=1, proba_dict={}):
-    NB_FIGHT = 5 # faire un tour/random ?
-    BOB.arene = True
+class arene:
+    def __init__(self) -> None:
+        self.debut = time.time()
+        self.g = game.Game(type_ban=0, is_arene=True, no_bob=True)
+        self.version = self.g.version
+        self.type_ban = str(Type.ALL - self.g.type_present)
 
-    lst_card_can_collect = BOB.card_of_tier_max(tier_max=TIER_MAX)
+    def fight_retro(self, retro=0, p1='aaa', p2='aaa'):
+        g = self.g
+        p1 = g.card_db[p1]
+        p2 = g.card_db[p2]
+        p_default = g.card_db['aaa']
+        pr = 'Sortie_tour2_retro_'
+        dic = g.db_arene
+        self.init_dic()
+        if search_in_dict(dic[self.version][self.type_ban], p1=p1.name, p2=p2.name, com=f'{pr}{retro}'):
+            print(f'retro {retro} déjà existante.')
+            return None
+        print(f'retro {retro} en cours...')
 
-    j1, j2 = players[:2]
-    j1 = player.Player(BOB, j1.pseudo, j1.hero.key)
-    j2 = player.Player(BOB, j2.pseudo, j2.hero.key)
-    j3 = player.Player(BOB, 'test1', '')
-    j4 = player.Player(BOB, 'test2', '')
-    j3.power.hero_script = 'Random_card_T2'
-    j4.power.hero_script = 'Random_card_T2'
-    result = {}
-
-    # proba linéaire pour j1
-    long = 1/len(lst_card_can_collect)
-    default_dict_proba = {minion: long
-        for minion in lst_card_can_collect}
-    if not proba_dict:
-        proba_dict[j2.pseudo] = default_dict_proba
-    proba_dict[j1.pseudo] = default_dict_proba
-
-    # proba pondérée pour j3, j4
-    lst_default_choice = ['116', '101', '111', '100', '113', '105', '112', '118', '109',
-        '107', '117', '114', '104', '103', '110', '108', '102']
-    lst_default_choice = [key_number
-            for key_number in lst_default_choice
-                if key_number in lst_card_can_collect]
-    lst_default_proba = j3.pick_best_card(lst_default_choice)
-    default_dict_proba = {key_number: proba
-        for key_number, proba in zip(lst_default_choice, lst_default_proba)}
-
-    proba_dict[j3.pseudo] = default_dict_proba
-    proba_dict[j4.pseudo] = default_dict_proba
-
-    for plyr in (j1, j2, j3, j4):
-        plyr.is_bot = True
-        result[plyr.pseudo] = {}
-        for card_test, info in lst_card_can_collect.items():
-            result[plyr.pseudo][card_test] = defaultdict(int)
-            result[plyr.pseudo][card_test]['name'] = info['name']
-
-    for card_test in lst_card_can_collect:
-        j1.card_sauv = card_test
-        for enemy_card in lst_card_can_collect:
-            j2.card_sauv = enemy_card
-            for other_card in lst_card_can_collect:
-                j3.card_sauv = other_card
-                j4.card_sauv = other_card
-                for _ in range(NB_FIGHT):
-                    #a = len(BOB.hand)
-                    BOB.go_party(j1, j2, j3, j4)
-
-                    for _ in range(nb_turn):
-                        BOB.begin_turn(recursive=False, no_bob=True)
-                        for playr in (j1, j2, j3, j4):
-                            playr.hp = playr.init_hp # pv réinit à chaque round pour éviter les cumuls
-                            playr.power.active_script_arene(playr.card_sauv)
-                        BOB.end_turn()
-
-                        if BOB.nb_turn == 1:
-                            champ = combat.Combat(j1, j2)
-                            gagnant, damage = champ.fight_initialisation()
-                            result = save_result(j1, j2, result, gagnant, damage, proba_dict)
-                        elif BOB.nb_turn == 2:
-                            champ = combat.Combat(j1, j3)
-                            gagnant, damage = champ.fight_initialisation()
-                            result = save_result(j1, j3, result, gagnant, damage, proba_dict)
-
-                            champ = combat.Combat(j2, j4)
-                            gagnant, damage = champ.fight_initialisation()
-                            result = save_result(j2, j4, result, gagnant, damage, proba_dict)
-
-                        #if a != len(BOB.hand):
-                        #    print(f'1 {card_test}, {enemy_card}, score {a}/{len(BOB.hand)}, {j2.board} {j2.hand}')
-
-    with open('stats_T1.json', 'w', encoding='utf-8') as file:
-        json.dump(result, file, indent=4, ensure_ascii=False)
-    return result
-
-def save_result(j1, j2, result, gagnant, damage, proba_dict):
-    proba_real = proba_dict[j1.pseudo][j1.card_sauv] * proba_dict[j2.pseudo][j2.card_sauv]
-
-    result[j1.pseudo][j1.card_sauv]['pv_loss'] += (j1.init_hp - j1.hp)*proba_real
-    result[j2.pseudo][j2.card_sauv]['pv_loss'] += (j2.init_hp - j2.hp)*proba_real
-
-    if gagnant:
-        if gagnant == j1:
-            result[j1.pseudo][j1.card_sauv]['pv_inflict'] += damage*proba_real
-            result[j1.pseudo][j1.card_sauv]['nb_win'] += 1*proba_real
-            result[j2.pseudo][j2.card_sauv]['pv_loss'] += damage*proba_real
-            result[j2.pseudo][j2.card_sauv]['nb_loss'] += 1*proba_real
+        if retro < 1:
+            cards_test = g.card_can_collect.filter(level=1)
         else:
-            result[j1.pseudo][j1.card_sauv]['pv_loss'] += damage*proba_real
-            result[j1.pseudo][j1.card_sauv]['nb_loss'] += 1*proba_real
-            result[j2.pseudo][j2.card_sauv]['pv_inflict'] += damage*proba_real
-            result[j2.pseudo][j2.card_sauv]['nb_win'] += 1*proba_real
-    else:
-        result[j1.pseudo][j1.card_sauv]['nb_draw'] += 1*proba_real
-        result[j2.pseudo][j2.card_sauv]['nb_draw'] += 1*proba_real
-
-    return result
-
-
-def arene_T2(BOB, *players, TIER_MAX=6, TIER_MIN=1, pr=True, nb_turn=1, proba_dict={}):
-    BOB.arene = True
-
-    lst_card_can_collect = BOB.card_of_tier_max(tier_max=2, tier_min=2)
-    cthun = BOB.all_card['116']
-    lst_card_can_collect.update({'116': cthun})
-
-    j1, j2 = players[:2]
-    j1 = player.Player(BOB, j1.pseudo, j1.hero.key)
-    j2 = player.Player(BOB, j2.pseudo, j2.hero.key)
-    result = {}
-
-    # proba linéaire pour j1
-    long = len(lst_card_can_collect)
-    default_dict_proba = {minion: 1/long
-        for minion in lst_card_can_collect}
-    if not proba_dict:
-        proba_dict[j2.pseudo] = default_dict_proba
-    proba_dict[j1.pseudo] = default_dict_proba
-    j2.is_bot = True
-
-    for plyr in (j1,):
-        plyr.is_bot = True
-        result[plyr.pseudo] = {}
-        for card_test, info in lst_card_can_collect.items():
-            result[plyr.pseudo][card_test] = defaultdict(int)
-            result[plyr.pseudo][card_test]['name'] = info['name']
-
-    option_j2 = [['213', '223', '117a'], # parieuse, Yo-oh et goutte d'eau
-                ['211', '210'], # gardien des glyphes, emprisonneur
-                ['223', '201'], # yo-oh, capitaine des mers du sud
-                ['101', '202'], # chef de guerre murloc, chasseur rochecave
-                ['204', '215'], # saurolisque, golem des moissons
-                ['103a', '203', '209']] # chat, gentille grand mère, chef de meute
-    for card_test in lst_card_can_collect:
-        for card_test2 in lst_card_can_collect:
-            j1.card_sauv = [card_test, card_test2]
-            for compo_j2 in option_j2:
-                j2.card_sauv = compo_j2
-                BOB.go_party(j1, j2)
-                BOB.begin_turn(recursive=False, no_bob=True)
-                #card = j1.hand.create_card(random.choice(lst_card_can_collect))
-                #card.play()
-                BOB.end_turn()
-                BOB.begin_turn(recursive=False, no_bob=True)
-                j1.level_up()
-                j2.level_up()
-                BOB.end_turn()
-                BOB.begin_turn(recursive=False, no_bob=True)
-                j1.hand.create_card(card_test, card_test2)
-                j2.hand.create_card(*compo_j2)
-                for card in j1.hand[::-1]:
-                    if card.script and constants.EVENT_INVOC in card.script:
-                        card.play()
-                for card in j1.hand[::-1]:
-                    if card.script and constants.EVENT_PLAY in card.script:
-                        card.play()
-                for card in j1.hand[::-1]:
-                    if card.script and constants.EVENT_BATTLECRY not in card.script:
-                        card.play()
-                for card in j1.hand[::-1]:
-                    card.play()
-                for card in j2.hand[::-1]:
-                    card.play()
-                BOB.end_turn()
-                champ = combat.Combat(j1, j2)
-                gagnant, damage = champ.fight_initialisation()
-                result = save_result2(j1, j2, result, gagnant, damage)
-
-    #with open('stats_T1.json', 'w', encoding='utf-8') as file:
-    #    json.dump(result, file, indent=4, ensure_ascii=False)
-    truc = [[info['name'], info['pv_loss']*7-info['pv_inflict']]
-        for info in result[j1.pseudo].values()]
-    truc = sorted(truc, key=itemgetter(1))
-    print(truc)
-
-    return result
-
-def save_result2(j1, j2, result, gagnant, damage):
-    for card_key_number in j1.card_sauv:
-        result[j1.pseudo][card_key_number]['pv_loss'] += (j1.init_hp - j1.hp)
-
-        if gagnant:
-            if gagnant == j1:
-                result[j1.pseudo][card_key_number]['pv_inflict'] += damage
-                result[j1.pseudo][card_key_number]['nb_win'] += 1
+            if p1 == 'aaa' and p2 == 'aaa':
+                stat_data = search_in_dict(
+                    dic[self.version][self.type_ban],
+                    p1=p1.name,
+                    p2=p2.name,
+                    com=f'{pr}{retro-1}')
+                if not stat_data:
+                    self.fight_retro(retro=retro-1, p1=p1, p2=p2)
+                    self.fight_retro(retro=retro, p1=p1, p2=p2)
+                    return None
             else:
-                result[j1.pseudo][card_key_number]['pv_loss'] += damage
-                result[j1.pseudo][card_key_number]['nb_loss'] += 1
-        else:
-            result[j1.pseudo][card_key_number]['nb_draw'] += 1
+                stat_data = search_in_dict(
+                    dic[self.version][self.type_ban],
+                    p1=p_default.name,
+                    p2=p_default.name,
+                    com=f'Sortie_tour2_retro_2')
+                if not stat_data:
+                    print('retro introuvable')
+                    return None
+            cards_test = Meta_card_data()
+            for card_dbfId, card_rating in stat_data['rating'].items():
+                crd = g.card_db[card_dbfId]
+                crd.rating = card_rating
+                cards_test.append(crd)
 
-    return result
+        result = self.fight(cards_test, p1, p2)
+
+        dic_add = {'data': 
+            {'p1': p1.name, 'p2': p2.name, 'com': f'{pr}{retro}'}}
+
+        dic[self.version][self.type_ban][str(datetime.now())] = dic_add
+        dic_add['espérance'] = round(stats.rating_esperance(result), 4)
+        dic_add['rating'] = ordered_rating(result)
+        self.save_json()
+
+        fin = time.time()
+        print(fin-self.debut)
+
+    def save_json(self):
+        with open('db_arene.json', 'w', encoding='utf8') as file:
+            json.dump(self.g.db_arene, file, indent=1, ensure_ascii=False)
+
+    def init_dic(self):
+        dic = self.g.db_arene
+        version = self.version
+        type_ban = self.type_ban
+        if version not in dic:
+            dic[version] = {}
+            dic[version][type_ban] = {}
+        elif type_ban not in dic[version]:
+            dic[version][type_ban] = {}
+
+    def fight(self, card_list, hero_p1, hero_p2):
+        g = self.g
+        NB_FIGHT = 10
+        for card_p1 in card_list:
+            generator_p2 = stats.card_proba(
+                            card_list,
+                            player_level=1,
+                            exclude_card=[card_p1])
+            card_p1.value = 0
+
+            for card_p2, proba_apparition_p2 in generator_p2:
+                proba_apparition_p2 /= NB_FIGHT
+                for _ in range(NB_FIGHT):
+                    g.party_begin('rivvers', 'notoum', hero_p1=hero_p1, hero_p2=hero_p2)
+                    j1, j2 = g.players
+                    for nb in range(2):
+                        g.begin_turn()
+                        j1.power.active_script_arene(card_p1)
+                        j2.power.active_script_arene(card_p2)
+                        g.end_turn()
+                        g.begin_fight()
+                        g.end_fight()
+
+                    card_p1.value += \
+                        calc_damage(j1, j2)*proba_apparition_p2
+
+        return card_list
+
+def ordered_rating(result: Meta_card_data) -> Dict[Card_data, int]:
+    result.sort('value', reverse=True)
+    return {card_id: round(card_id.value, 2)
+        for card_id in result}
+
+def calc_damage(p1: Entity, p2: Entity) -> int:
+    return (p2.max_health - p2.health)*3/5 / (p2.max_health/40) - \
+        (p1.max_health - p1.health)*5/3 / (p1.max_health/40)
+
+def search_in_dict(data: dict, **kwargs) -> dict:
+    for info_stat in data.values():
+        if info_stat['data'] == kwargs:
+            return info_stat
+    return {}
+
+def search_value_in_list(value, lst, lon=None):
+    if not lst:
+        return None
+    lon = lon or len(lst)
+    if lon <= 1:
+        if lst[0] == value:
+            return 0
+        return None
+    middle = lon//2
+    if lst[middle] > value:
+        return search_value_in_list(value, lst[0:middle], middle)
+    elif lst[middle] < value:
+        ret = search_value_in_list(value, lst[(middle+1):None], lon-middle-1)
+        if ret is not None:
+            return ret + middle + 1
+        return None
+    else:
+        return middle
+
+
+if __name__ == '__main__':
+    arene().fight_retro(retro=2, p1="aaa", p2="aaa") #61910
+
+

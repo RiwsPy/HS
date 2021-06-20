@@ -1,244 +1,199 @@
-import constants
-import player
-import card
+from utils import Card_list, Board_Card_list, hasevent
+from constants import General, NB_CARD_BY_LEVEL, State, Event, Type, Zone, BATTLE_SIZE, SECRET_SIZE, LEVEL_MAX
+from entity import Card
 import random
-import script_minion
+import script_event
 from collections import defaultdict
+from entity import Entity
+from typing import List
+from operator import itemgetter
 
 #TODO: bloquer les fonctions manuelles board en cours de combat
-class Board(list):
-    def __init__(self, owner):
-        list.__setitem__(self, slice(None), [])
-        self.owner = owner
-        self.aura = {} # dict(card_id: {'bonus': value, 'restr_type': type})
-        self.secret = defaultdict(set) # dict('0x1': set())
-        self.secret_key = []
-        self._opponent = None # pour Bob, id du joueur qui a accès à ce board
+class Board(Entity):
+    default_attr = {
+        'general': General.ZONE,
+        'zone_type': Zone.PLAY,
+        'opponent': None,
+        'next_opponent': None, # adversaire rencontré après un end_turn
+        'last_opponent': None,
 
-    def __getitem__(self, key):
-        try:
-            return super().__getitem__(key)
-        except IndexError:
-            pass
-        return None
+    }
+    def __init__(self, **kwargs):
+        super().__init__("BOARD", **kwargs)
+        self.cards = Board_Card_list()
+        self.cards_copy = self.cards.__class__()
+        self.entities_copy = self.entities.__class__()
+        self.secret = defaultdict(set) # dict('0x1': set())
+        #self.secret_key = []
+        #self.enchantment = []
 
     @property
-    def opponent(self):
-        return self._opponent
+    def nb_minions(self):
+        return len(self.cards.exclude(state=State.DORMANT))
 
-    @opponent.setter
-    def opponent(self, value):
-        self.refresh_aura()
-        self._opponent = value
+    @property
+    def level(self):
+        return self.owner.level
 
-    def copy(self, source):
-        self.clear()
-        self.extend(source)
-        self.owner = source.owner
-        self.opponent = source.opponent
-        self.secret = source.secret.copy() # dict('0x1': set())
-
-    def remove(self, card):
-        if card.general == 'minion':
-            card._position = card.position # sauvegarde
+    def remove(self, *cards):
+        super().remove(*cards)
+        for card in cards:
+            #if card in self.cards:
             try:
-                super().remove(card)
+                self.old_position = self.position
+                self.cards.remove(card)
             except ValueError:
-                pass
-            self.refresh_aura()
-        elif card.general == 'secret':
-            for key in card.script.keys():
-                self.secret[key].discard(card)
-            self.secret_key.remove(card.key_number)
+                print(f'{card} remove but not in {self}')
+                return
 
-    def append(self, card, position=constants.BATTLE_SIZE) -> bool:
-        if card.general == 'minion' and self.can_add_card():
-            if card.owner:
-                card.owner.remove(card)
+            if hasevent(card, Event.PLAY_AURA):
+                del self.controller.aura_active[card]
+                card.apply_met_on_all_children(self.remove_my_aura_action, self.controller)
+            for enchantment in card.entities:
+                if getattr(enchantment, 'aura', False):
+                    enchantment.remove()
+
+    def append(self, card, position=BATTLE_SIZE) -> bool:
+        # TODO : problème de positionnement en cas de repop multiple
+        # faire pop avant le minion d'après ou en dernier en cas d'inexistance
+        # TODO: gestion des secrets et sorts
+        # comment exclure le repop de Khadgar d'une nouvelle invocation ?
+        if card.owner is self and card in self.cards:
+            if position != card.position:
+                del self.cards[self.cards.index(card)]
+                self.cards.insert(position, card)
+            return True
+
+        if not self.can_add_card(card):
+            return False
+
+        if card.general == General.MINION:
+            old_owner = card.owner
+            card.owner.remove(card)
             card.owner = self
-            super().insert(position, card)
-            self.apply_aura(card)
-            return True
-        elif card.general == 'secret' and self.can_add_this_secret(card) \
-                and type(self.owner) is player.Player:
-            for key in card.script.keys():
-                self.secret[key].add(card)
-            self.secret_key.append(card.key_number)
-            if getattr(card, 'limitation', 0) == 1:
-                self.owner.power.secret_limition.append(card.key_number)
+            self.entities.append(card)
+            self.cards.insert(position, card)
+            card.active_aura()
+            self.active_global_event(Event.INVOC, self.controller, source=card)
+            if old_owner.zone_type == Zone.HAND and \
+                    old_owner.owner is self.owner:
+                self.active_global_event(Event.PLAY, self.controller, source=card)
+                card.active_local_event(Event.BATTLECRY)
+                if self.owner.general == General.HERO:
+                    self.owner.played_minions[self.owner.nb_turn] += card
             return True
 
         return False
 
-    def can_add_card(self):
-        return len(self) < constants.BATTLE_SIZE
-
-    def can_add_secret(self):
-        card_id = set()
-        for cards in self.secret.values():
-            card_id.add(cards)
-        return len(card_id) < constants.SECRET_SIZE
-
-    def can_add_this_secret(self, secret):
-        if secret.key_number not in self.secret_key and self.can_add_secret():
-            return True
-        return False
-
-    def create_card(self, *keys_number, atk_bonus=0, def_bonus=0):
-        # crée une carte sur le board mais sans la jouer
-        for nb in keys_number:
-            card_id = card.Card(nb, self.owner.bob)
-            card_id.attack += atk_bonus
-            card_id.health += def_bonus
-            self.append(card_id)
+    def create_card_in(self, id, position=BATTLE_SIZE, **kwargs):
+        """
+            Create card and append it in self
+        """
+        card_id = Card(id, **kwargs)
+        self.append(card_id, position)
         return card_id
 
-    def freeze(self):
-        if self:
-            if self[0].state & constants.STATE_FREEZE: # unfreeze
-                for minion in self:
-                    minion.state &= constants.STATE_ALL - constants.STATE_FREEZE
-            else: # freeze
-                for minion in self:
-                    if not minion.state & constants.STATE_DORMANT:
-                        minion.state |= constants.STATE_FREEZE
+    def can_add_card(self, card_id) -> bool:
+        if card_id.general == General.MINION:
+            return len(self.cards) <= BATTLE_SIZE-1
 
-    def drain_minion(self):
-        for minion in self[::-1]:
-            if not minion.state & constants.STATE_STILL_BOB:
-                self.owner.hand.append(minion)
+        if card_id.general == General.SPELL:
+            if not card_id.state & State.SECRET:
+                return True
 
-    def drain_all_minion(self):
-        for minion in self[::-1]:
-            if not minion.state & constants.STATE_DORMANT:
-                self.owner.hand.append(minion)
+            current_secrets = self.entities.filter_hex(state=State.SECRET)
 
-    def fill_minion(self):
-        player = self.opponent.owner
-        nb_card_to_play = max(0, min(constants.BATTLE_SIZE - len(self), player.nb_card_by_refresh))
-        bob_hand = self.owner.hand.cards_of_tier_max(tier_max=player.level)
+            if len(current_secrets) >= SECRET_SIZE:
+                return False
 
-        for _ in range(nb_card_to_play):
-            if bob_hand:
-                random.choice(bob_hand).play(board=self)
-            else:
-                print('main insuffisante !!!')
-                break
+            return card_id.dbfId not in set(secret.dbfId for secret in current_secrets)
 
-    def fill_minion_battlecry(self):
-        player = self.opponent.owner
-        nb_card_to_play = max(0, min(constants.BATTLE_SIZE - len(self), player.nb_card_by_refresh))
-        bob_hand = [minion
-            for minion in self.owner.hand.cards_of_tier_max(tier_max=player.level)
-                if minion.script and constants.EVENT_BATTLECRY in minion.script]
-
-        for _ in range(nb_card_to_play):
-            if bob_hand:
-                random.choice(bob_hand).play(board=self)
-
-    def fill_minion_temporal(self):
-        player = self.opponent.owner
-        nb_card_to_play = max(0, min(constants.BATTLE_SIZE - len(self), player.nb_card_by_refresh-1))
-        bob_hand = self.owner.hand.cards_of_tier_max(tier_max=player.level)
-
-        for _ in range(nb_card_to_play):
-            if bob_hand:
-                random.choice(bob_hand).play(board=self)
-
-        lvl = min(constants.LEVEL_MAX, player.level+1)
-        bob_hand = self.owner.hand.cards_of_tier_max(tier_max=lvl, tier_min=lvl)
-        if bob_hand:
-            random.choice(bob_hand).play(board=self)
-
-    def remove_aura(self, owner):
-        try:
-            del self.aura[owner]
-        except KeyError:
-            pass
-
-    def add_aura(self, owner, **infos):
-        if owner not in self.aura:
-            self.aura[owner] = defaultdict(int)
-        self.aura[owner].update(infos)
-        if 'method' in infos:
-            method = getattr(script_minion, infos['method'])
-            for minion in self:
-                method(owner, minion)
-
-    def apply_aura(self, minion):
-        for owner, infos in self.aura.items():
-            if 'method' in infos:
-                getattr(script_minion, infos['method'])(owner, minion)
-
-    def refresh_aura(self):
-        minion_with_aura = []
-        for minion in self:
-            for enchant in minion.enchantment[::-1]:
-                if enchant.type == 'aura':
-                    minion.enchantment.remove(enchant)
-                    minion_with_aura.append(minion)
-
-        self.aura.clear()
-        for minion in minion_with_aura:
-            minion.calc_stat_from_scratch()
-
-        self.owner.active_event(constants.EVENT_PLAY_AURA)
-
-    def nb_premium_card(self):
-        nb = 0
-        for minion in self:
-            if minion.is_premium:
-                nb += 1
-        return nb
+        return False
 
     def classification_by_type(self) -> dict:
         # exclu de fait les minions multi-type
-        return {typ: [minion 
-                    for minion in self
-                        if minion.type == typ]
+        return {typ: self.cards.filter(type=typ)
             for typ in [0, 1, 2, 4, 8, 16, 32, 64, 128]}
 
-    def one_minion_by_type(self) -> set:
+    def one_minion_by_type(self) -> Card_list:
         """
             Return a set which contains until one minion by type
         """
-        result = set()
-        for minion in self[:][::-1]:
-            if minion.type == constants.TYPE_ALL:
-                result.add(minion)
-
         tri = self.classification_by_type()
         del tri[0] # exclusion des types neutres
 
-        # first search: valide les minions étant seuls dans leur type
-        for typ, minions in tri.copy().items():
-            if minions:
-                if len(set(minions)) == 1:
-                    result.add(minions[0])
-                    del tri[typ]
-                    remove_all_occurences_in_dict(tri, minions[0])
-            else:
-                del tri[typ]
+        result = Card_list(random.choice(minions)
+                for minions in tri.values()
+                    if minions)
 
-        # second search
-        while tri:
-            for typ, minions in tri.items():
-                if minions:
-                    minion = random.choice(minions)
-                    result.add(minion)
-                    del tri[typ]
-                    remove_all_occurences_in_dict(tri, minion)
-                    break
-                else:
-                    del tri[typ]
-                    break
+        return result + self.cards.filter(type=Type.ALL)
 
-        return result
+    def auto_placement_card(self) -> None:
+        """
+            Sort all cards in the board based on low intelligence algorithm
+            self.cards is altered by the method
+        """
+        if len(self.cards) < 2:
+            return None
 
-def remove_all_occurences_in_dict(dic, occu):
-    new_dic = dic.copy()
-    for key, value in new_dic.items():
-        if occu in value:
-            while occu in value:
-                value.remove(occu)
-            dic[key] = value
+        # placement initial de la plus forte attaque à la moins
+        self.cards.sort(key=lambda x: (
+                        not x.state & State.CLEAVE,
+                        not x.event & Event.OVERKILL,
+                        x.event & Event.DIE,
+                        x.event & Event.INVOC,
+                        x.event & Event.PLAY_AURA,
+                        x.event & Event.HIT_BY,
+                        not x.event & Event.DEATHRATTLE,
+                        x.state & State.TAUNT,
+                        -x.attack,
+                        x.health))
+
+
+class Bob_board(Board):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    def freeze(self) -> None:
+        if self.cards:
+            if self.cards[0].state & State.FREEZE: # unfreeze
+                for minion in self.cards:
+                    minion.remove_attr(state=State.FREEZE)
+            else: # freeze
+                for minion in self.cards:
+                    minion.state |= State.FREEZE
+
+    def drain_minion(self) -> None:
+        self.owner.hand.append(
+            *self.cards.exclude_hex(state=State.STILL_BOB))
+
+    def drain_all_minion(self) -> None:
+        self.owner.hand.append(
+            *self.cards.exclude_hex(state=State.DORMANT))
+
+    def fill_minion(self, nb_card_to_play=0, entity_list=[]) -> None:
+        nb_card_to_play = nb_card_to_play or (self.owner.nb_card_by_refresh - self.nb_minions)
+        if nb_card_to_play >= 1:
+            entity_list = entity_list or self.owner.local_hand
+            random.shuffle(entity_list)
+            for card_id in entity_list[:nb_card_to_play]:
+                self.append(card_id)
+
+    def fill_minion_battlecry(self) -> None:
+        entity_list = self.owner.local_hand.filter_hex(event=Event.BATTLECRY)
+        self.fill_minion(entity_list=entity_list)
+
+    def fill_minion_temporal(self) -> None:
+        bob = self.owner
+        self.fill_minion(
+            nb_card_to_play = \
+            self.owner.nb_card_by_refresh - self.nb_minions - 1)
+
+        lvl = min(LEVEL_MAX, bob.level+1)
+        entity_list = bob.hand.cards_of_tier_max(tier_max=lvl, tier_min=lvl)
+        if entity_list:
+            self.append(random.choice(entity_list))
+
+class Graveyard(Card_list):
+    def __init__(self, owner):
+        self.owner = owner
