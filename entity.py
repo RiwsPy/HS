@@ -478,7 +478,7 @@ class Enchantment(Entity):
         old_owner.calc_stat_from_scratch()
 
     def remove_script(self):
-        self.script.clear()
+        self.method = ''
 
 
 class Hero_power(Entity):

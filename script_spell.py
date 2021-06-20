@@ -1,42 +1,29 @@
 import random
-import constants
-import script_functions
+from constants import State
 
 def Piece_dor(self): # self = card_id
-    self.owner.owner.gold += 1
+    self.controller.gold += 1
 
-def Recrutement_2(self):
-    self.owner.owner.discover(self, nb=3, lvl_min=2, lvl_max=2)
-
-def Recrutement_3(self):
-    self.owner.owner.discover(self, nb=3, lvl_min=3, lvl_max=3)
-
-def Recrutement_4(self):
-    self.owner.owner.discover(self, nb=3, lvl_min=4, lvl_max=4)
-
-def Recrutement_5(self):
-    self.owner.owner.discover(self, nb=3, lvl_min=5, lvl_max=5)
-
-def Recrutement_6(self):
-    self.owner.owner.discover(self, nb=3, lvl_min=6, lvl_max=6)
+def Recrutement(self):
+    self.controller.discover(self, nb=3, lvl_min=self.quest_value, lvl_max=self.quest_value)
 
 def Avenge(self):
     if self.owner.board:
         target = random.choice(self.owner.board)
-        target.create_and_apply_enchantment("1001")
+        target.create_and_apply_enchantment("1001_e")
         return True
     return False
 
 def Autodefense_matrix(self, card):
-    if not card.state & constants.STATE_DIVINE_SHIELD:
-        card.state |= constants.STATE_DIVINE_SHIELD
+    if not card.state & State.DIVINE_SHIELD:
+        card.state |= State.DIVINE_SHIELD
         return True
     return False
 
 def Competitive_spirit(self):
     if self.owner.board:
         for minion in self.owner.board:
-            minion.create_and_apply_enchantment("1000")
+            minion.create_and_apply_enchantment("1000_e")
         return True
     return False
 
@@ -63,13 +50,13 @@ def Redemption(self, card):
     pass
 
 def Blood_gem(self):
-    player = self.owner.owner
+    player = self.controller
     minion = player.minion_choice(player.board)
     if minion:
         bonus = 1
-        for info in minion.owner.aura.values():
+        for info in minion.controller.aura_active.values():
             bonus += info['boost_blood_gem']
-        minion.create_and_apply_enchantment("500", a=bonus, h=bonus)
+        minion.create_and_apply_enchantment("72191", a=bonus, h=bonus)
         return minion
     return False
 
@@ -77,7 +64,7 @@ def Banana(self):
     player = self.owner.owner
     minion = player.minion_choice(player.board)
     if minion:
-        minion.create_and_apply_enchantment("501")
+        minion.create_and_apply_enchantment("501_e")
         return minion
     return False
 
@@ -85,6 +72,6 @@ def Great_banana(self):
     player = self.owner.owner
     minion = player.minion_choice(player.board)
     if minion:
-        minion.create_and_apply_enchantment("502")
+        minion.create_and_apply_enchantment("502_e")
         return minion
     return False
