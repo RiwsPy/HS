@@ -1,304 +1,413 @@
-import player
+from action import attack
 import random
-import constants
-import card
-import power
+from constants import BATTLE_SIZE, LEVEL_MAX, Type, State, General
 
-def no_power(self, event):
-    pass
+class Graveyard_shift:
+    def use_power(self):
+        self.owner.health -= 2
+        self.owner.hand.create_card_in("1001")
+        return True
 
-def Graveyard_shift(self, event):
-    self.hp -= 2
-    return self.hand.create_card("1001")
+class Procrastinate:
+    def begin_turn(self):
+        if self.game.nb_turn < 3:
+            self.owner.gold = 0
+        elif self.game.nb_turn == 3:
+            self.owner.hand.create_card_in("1010", "1010")
 
-def Procrastinate(self, event):
-    if self.nb_turn <= 2:
-        self.gold = 0
-    elif self.nb_turn == 3:
-        self.hand.create_card("1010")
-        self.hand.create_card("1010")
+class Menagerist:
+    def begin_turn(self):
+        if self.game.nb_turn == 1:
+            self.owner.board.create_card_in("151")
 
-def Menagerist(self, event):
-    if self.nb_turn == 1:
-        self.board.create_card("151")
+class Avatar_of_nzoth:
+    def begin_turn(self):
+        if self.game.nb_turn == 1:
+            self.owner.board.create_card_in("154")
 
-def Avatar_of_nzoth(self, event):
-    if self.nb_turn == 1:
-        self.board.create_card("154")
+class Buried_treasure:
+    #TODO : les cartes sont-elles issues/retirées de la main de bob ?
+    #TODO : la probabilité d'obtention d'une carte dépend de sa présence dans la main ou sont équiprobables ?
+    def use_power(self):
+        self.quest_value += 1
+        if self.quest_value % 5 == 0:
+            card = random.choice(self.owner.bob.local_hand)
+            g_card = self.create_card(card.battlegroundsPremiumDbfId)
+            g_card.append(card)
+            for entity in self.game.hand.cards_of_tier_max(card.level, card.level):
+                if entity.dbfId == card.dbfId:
+                    g_card.append(entity)
+                    if len(g_card.entities) >= 3:
+                        break
+            self.owner.hand.append(g_card)
+        return True
 
-def Buried_treasure(self, event):
-    self.power.quest_value += 1
-    if self.power.quest_value%5 == 0 and self.hand.can_add_card():
-        lst = self.bob.hand.cards_of_tier_max(tier_max=self.level)
-        card = random.choice(lst)
-        lst.remove(card)
-        card_inn = [card]
-        for minion in lst[::-1]:
-            if minion.key_number == card.key_number:
-                lst.remove(minion)
-                card_inn.append(minion)
-                if len(card_inn) > 2:
-                    break
-        card_p = self.hand.create_card(card.key_number + '_p')
-        card_p.card_in = card_inn
+class Manastorm:
+    def begin_turn(self):
+        if self.game.nb_turn == 1:
+            for index, _ in enumerate(self.owner.bob.level_up_cost_list):
+                self.owner.bob.level_up_cost_list[index] += 1
 
-def All_patched_up(self, event):
-    self.init_hp = 55
+class Piggy_bank:
+    def use_power(self):
+        self.owner.gold += self.game.nb_turn
+        return True
 
-def Manastorm(self, event):
-    self.power.minion_cost = 2
-    self.power.roll_cost = 2
-    self.power.level_up_cost = constants.LEVEL_UP_COST_MILLHOUSE
+class Boon_of_light:
+    def use_power(self):
+        minion = self.choose_one_of_them(self.owner.board.cards)
+        if minion:
+            minion.buff(self.enchantment_id)
 
-def Piggy_bank(self, event):
-    self.gold += self.nb_turn
+class Pirate_parrrrty:
+    def buy(self, card):
+        if card.type & Type.PIRATE:
+            self.dec_power_cost()
 
-def Boon_of_light(self, event):
-    minion = self.minion_choice(self.board)
-    if minion:
-        minion.minion.create_and_apply_enchantment("317")
-        return minion
-    return None
+    def use_power(self):
+        self.cost = self.dbfId.cost
+        self.owner.discover(self, nb=1, typ=Type.PIRATE, lvl_max=self.level)
+        return True
 
-def Pirate_parrrrty(self, event, card=None):
-    if event == constants.EVENT_BUY and card.type & constants.TYPE_PIRATE:
-        self.power.dec_power_cost()
-    elif event == constants.EVENT_USE_POWER:
-        self.power.cost = power.BDD_POWER[self.power.id]['cost']
-        self.discover(self.power, nb=1, typ=constants.TYPE_PIRATE, lvl_max=self.level)
+class Queen_of_dragons:
+    def levelup(self):
+        if self.owner.level == 5:
+            self.owner.discover(self, nb=3, typ=Type.DRAGON, lvl_max=6)
+            self.owner.discover(self, nb=3, typ=Type.DRAGON, lvl_max=6)
 
-def Queen_of_dragons(self, event):
-    if self.level == 5:
-        self.discover(self.power, nb=3, typ=constants.TYPE_DRAGON, lvl_max=6)
-        self.discover(self.power, nb=3, typ=constants.TYPE_DRAGON, lvl_max=6)
+class Everbloom:
+    def levelup(self):
+        self.owner.gold += 2
 
-def Everbloom(self, event):
-    self.gold += 2
+class Clairvoyance:
+    def begin_turn(self):
+        if self.owner.bob.nb_free_roll < 1:
+            self.owner.bob.nb_free_roll = 1
 
-def Clairvoyance(self, event):
-    if self.nb_free_roll <= 0:
-        self.nb_free_roll = 1
-
-def Brick_by_brick(self, event):
-    if self.board:
-        random.choice(self.board).create_and_apply_enchantment("305")
-
-def Tavern_ligthing(self, event):
-    minion = self.minion_choice(self.board)
-    if minion:
-        minion.create_and_apply_enchantment("306", a=self.level, h=self.level)
-        return minion
-    return None
-
-def Bloodfury(self, event):
-    for minion in self.board:
-        if minion.type & constants.TYPE_DEMON:
-            minion.create_and_apply_enchantment("307")
-
-def Lead_explorer(self, event):
-    return self.hand.create_card("10"+str(self.level))
-
-def Avalanche(self, event):
-    self.power.quest_value += 1
-    if self.power.quest_value%3 == 0:
-        self.level_up_cost -= 3
-
-def Stay_frosty(self, event):
-    for minion in self.board.opponent:
-        if minion.state & constants.STATE_FREEZE:
-            minion.create_and_apply_enchantment("308")
-
-def Tinker(self, event, card):
-    if card.type & constants.TYPE_MECH:
-        card.create_and_apply_enchantment("300")
-
-def Die_insects(self, event):
-    self.power.quest_value += 1
-    if self.power.quest_value > 24:
-        self.power = power.Power(38, self)
-
-def Sulfuras(self, event):
-    # le bonus s'active-t-il deux fois si le board ne contient qu'un serviteur ?
-    if self.board:
-        self.board[0].create_and_apply_enchantment("309")
-        self.board[-1].create_and_apply_enchantment("309")
-
-def Puzzle_box(self, event):
-    op = self.bob.boards[self]
-    if op:
-        random_card = random.choice(op)
-        self.hand.append(random_card)
-        random_card.create_and_apply_enchantment("301")
-
-def A_tale_of_kings(self, event, card=None):  # will not change into the same Hero Power twice in a row
-    if event == constants.EVENT_BUY: # achat
-        if card.is_type(self.power.quest_value):
-            card.create_and_apply_enchantment("303")
-    elif event == constants.EVENT_BEGIN_TURN: # détermination du type concerné
-        possible_types = self.bob.type_not_ban & (0xFF - self.power.quest_value)
-        if possible_types > 0:
-            typ = 0
-            while not typ & possible_types:
-                typ = 2**random.randint(0, 6) # 1, 2, 4, 8, 16, 32, 64
-            self.power.quest_value = typ
-
-def Demon_hunter_training(self, event):
-    self.power.quest_value += 1
-    if self.power.quest_value > 4:
-        self.power = power.Power(6, self)
-
-def Prestidigitation(self, event):
-    self.discover_secret(nb=3)
-
-def Verdant_spheres(self, event, card):
-    self.power.quest_value += 1
-    if not self.power.quest_value % 3:
-        card.create_and_apply_enchantment("302")
-
-def Saturday_cthuns(self, event):
-    if event == constants.EVENT_USE_POWER:
-        self.power.quest_value += 1
-    elif event == constants.EVENT_END_TURN and self.board and self.power.is_disabled:
-        for _ in range(self.power.quest_value):
-            random.choice(self.board).create_and_apply_enchantment("304")
-
-def Sharpen_blades(self, event, card=None):
-    if event == constants.EVENT_USE_POWER:
-        if self.minion_buy_this_turn:
-            minion = self.minion_choice(self.board)
-            if minion:
-                bonus = len(self.minion_buy_this_turn)
-                minion.create_and_apply_enchantment("310", a=bonus, h=bonus)
-                return minion
+class Brick_by_brick:
+    def use_power(self):
+        if self.owner.board.cards:
+            random.choice(self.owner.board.cards).buff(self.enchantment_id)
+            return True
         return False
-    return None
 
-def Ill_take_that(self, event, attacker=None, victim=None):
-    if event == constants.EVENT_KILLER_ALLY and self.power.quest_value:
-        self.power.quest_value = 0
-        key = victim.key_number
-        if key in self.bob.card_can_collect:
-            for card in self.bob.card_can_collect:
-                if card.key_number == key:
-                    self.hand.append(card)
-                    return card
-        card = self.hand.create_card(key)
-        return card
-    elif event == constants.EVENT_USE_POWER:
-        if not self.power.quest_value:
-            self.power.quest_value = 1
-    elif event == constants.EVENT_BEGIN_TURN:
-        self.power.quest_value = 0
+class Tavern_lightning:
+    def use_power(self):
+        minion = self.choose_one_of_them(self.owner.board.cards)
+        if minion:
+            minion.buff(self.enchantment_id, attack=self.owner.level, health=self.owner.level)
+            return True
+        return False
 
-def Sprout_it_out(self, event, repop_id):
-    if self.opponent and type(self.opponent) is player.Player:
-        repop_id.minion.create_and_apply_enchantment("310")
-        repop_id.state_fight |= constants.STATE_TAUNT
+class Bloodfury:
+    def use_power(self):
+        for minion in self.owner.board.cards:
+            if minion.type & Type.DEMON:
+                minion.buff(self.enchantment_id)
+        return True
 
-def Dream_portal(self, event):
-    dragon_lst = self.bob.hand.cards_type_of_tier_max(typ=constants.TYPE_DRAGON, tier_max=self.level)
-    if dragon_lst:
-        random.choice(dragon_lst).play(board=self.board.opponent)
+class Lead_explorer:
+    def levelup(self):
+        crd = self.hand.create_card_in("1002")
+        crd.quest_value = self.owner.level
 
-def Battle_brand(self, event):
-    self.board.opponent.drain_all_minion()
-    self.board.opponent.fill_minion_battlecry()
+class Avalanche:
+    def play(self, card):
+        if card.type & Type.ELEMENTAL:
+            self.quest_value += 1
+            if self.quest_value % 3 == 0:
+                self.owner.bob.level_up_cost -= 3
 
-def Temporal_tavern(self, event):
-    self.board.opponent.drain_all_minion()
-    self.board.opponent.fill_minion_temporal()
+class Stay_frosty:
+    def end_turn(self):
+        for minion in self.owner.bob.board.cards:
+            if minion.state & State.FREEZE:
+                minion.buff(self.enchantment_id)
 
-def Bananarama(self, event):
-    if event == constants.EVENT_USE_POWER:
+class Tinker:
+    def play_aura(self):
+        self.controller.bob.aura_active[self] = Tinker.aura
+
+    def aura(self, target):
+        if target.general == General.MINION and \
+                target in target.controller.board.cards and \
+                target.type & Type.MECH:
+            target.buff(self.enchantment_id)
+
+    def begin_turn(self):
+        if self.game.nb_turn == 1:
+            Tinker.play_aura(self)
+
+class Die_insects:
+    def die(self, source, killer):
+        self.quest_value += 1
+        if self.quest_value >= 25:
+            self = self.create_card("64426")
+
+class Sulfuras:
+    def end_turn(self):
+        # le bonus s'active-t-il deux fois si le board ne contient qu'un seul serviteur ?
+        if self.owner.board.cards:
+            self.owner.board[0].buff(self.enchantment_id)
+            self.owner.board[-1].buff(self.enchantment_id)
+
+class Puzzle_box:
+    def use_power(self):
+        op = self.owner.bob.board.cards
+        if op:
+            random_card = random.choice(op)
+            self.owner.hand.append(random_card)
+            random_card.buff(self.enchantment_id)
+            return True
+        return False
+
+class A_tale_of_kings:
+    # will not change into the same Hero Power twice in a row
+    def buy(self, card):
+        if card.type & self.quest_value:
+            card.buff(self.enchantment_id)
+
+    def begin_turn(self):
+        possible_types = self.game.type_present & (Type.ALL - self.quest_value)
+        random_type = list(range(0, 8))
+        random.shuffle(random_type)
+        for typ in random_type:
+            if 2**typ & possible_types:
+                self.quest_value = 2**typ
+                break
+
+class Demon_hunter_training:
+    def roll(self):
+        self.quest_value += 1
+        if self.quest_value >= 5:
+            self = self.create_card("62035")
+
+class Prestidigitation:
+    use_power = lambda x: x.discover_secret(nb=3)
+
+class Verdant_spheres:
+    def buy(self, card):
+        self.quest_value += 1
+        if not self.quest_value % 3:
+            card.buff(self.enchantment_id)
+
+class Saturday_cthuns:
+    def use_power(self):
+        self.quest_value += 1
+        return True
+
+    def end_turn(self):
+        minions = self.owner.board.cards
+        if minions and not self.is_enabled:
+            for _ in range(self.quest_value):
+                random.choice(minions).buff(self.enchantment_id)
+
+class Sharpen_blades:
+    def use_power(self):
+        nb_minion = self.owner.bought_minions[self.owner.nb_turn]
+        if nb_minion >= 1:
+            minion = self.choose_one_of_them(self.owner.board.cards,
+                pr=f"Hero power : choisissez une cible :")
+            if minion:
+                minion.buff(self.enchantment_id, attack=nb_minion, health=nb_minion)
+                return True
+        return False
+
+class Ill_take_that:
+    def use_power(self):
+        self.quest_value = 1
+        return True
+
+    def begin_turn(self):
+        self.quest_value = 0
+
+    def die(self, source, killer):
+        if self.quest_value == 1 and source.owner is not self.owner.board:
+            self.quest_value = 0
+            self.owner.hand.append(
+                self.game.hand.search(source.dbfId) or
+                self.create_card(source.dbfId)
+            )
+
+class Sprout_it_out:
+    def invoc(self, source):
+        if self.owner.fight:
+            source.buff(self.enchantment_id)
+
+class Dream_portal:
+    def begin_turn(self):
+        dragon_lst = self.owner.bob.local_hand.filter_hex(type=Type.DRAGON)
+        if dragon_lst:
+            random.choice(dragon_lst).play(board=self.owner.bob.board)
+
+class Battle_brand:
+    def use_power(self):
+        self.owner.bob.board.drain_all_minion()
+        self.owner.bob.board.fill_minion_battlecry()
+        return True
+
+class Temporal_tavern:
+    def use_power(self):
+        self.owner.bob.board.drain_all_minion()
+        self.owner.bob.board.fill_minion_temporal()
+        return True
+
+class Bananarama:
+    def use_power(self):
         for _ in range(2):
             if random.randint(1, 3) == 1:
-                self.hand.create_card("1008")
+                self.owner.hand.create_card_in("1008")
             else:
-                self.hand.create_card("1007")
-    elif event == constants.EVENT_END_TURN and self.power.is_disabled:
-        for player in self.bob.boards:
-            if player != self:
-                player.hand.create_card("1007")
+                self.owner.hand.create_card_in("1007")
+        return True
 
-def Hat_trick(self, event, card=None):
-    brd = self.board.opponent
-    if brd:
-        for _ in range(2):
-            random.choice(brd).create_and_apply_enchantment("312")
+    def end_turn(self):
+        if not self.is_enabled:
+            for entity in self.game.entities.filter(general=General.HERO).exclude(self):
+                entity.hand.create_card_in("1007")
 
-def All_will_burn(self, event):
-    self.board.add_aura(self, method='Aile_de_mort')
-    if self.board.opponent:
-        self.board.opponent.add_aura(self, method='Aile_de_mort')
+class Hat_trick:
+    def sell(self, card):
+        brd = self.owner.opponent.board.cards
+        if brd:
+            for _ in range(2):
+                random.choice(brd).buff(self.enchantment_id)
 
-def Swatting_insects(self, event):
-    if self.board:
-        self.board[0].state_fight |= constants.STATE_ALAKIR
+class All_will_burn:
+    def play_aura(self):
+        self.aura_target = [self.controller, self.controller.opponent]
+        for entity in self.aura_target:
+            if self not in entity.aura_active:
+                entity.aura_active[self] = All_will_burn.aura
+                self.apply_met_on_all_children(All_will_burn.aura, entity)
 
-def Wingmen(self, event):
-    if self.board:
-        self.board[0].state_fight |= constants.STATE_ATTACK_IMMEDIATLY
-        self.board[-1].state_fight |= constants.STATE_ATTACK_IMMEDIATLY
+    def aura(self, target):
+        if target.general == General.MINION and \
+                target in target.controller.board.cards:
+            target.buff(self.enchantment_id, source=self, aura=True)
 
-def active_nomi_bonus(self, event, target):
-    pass
-    #if target.type & constants.TYPE_ELEMENTAL:
-    #    target.set_effect_on("14", self.bonus_nomi)
+    def end_fight(self):
+        self.aura_target = [self.controller, self.controller.opponent]
+        for entity in self.aura_target:
+            del entity.aura_active[self]
 
-def Imprison(self, event):
-    minion = self.minion_choice(self.board.opponent)
-    if minion:
-        minion.create_and_apply_enchantment("314")
+    def end_turn(self):
+        del self.controller.opponent.aura_active[self]
 
-def Reborn_rites(self, event):
-    minion = self.minion_choice(self.board)
-    if minion:
-        minion.create_and_apply_enchantment("316")
+    def first_strike(self):
+        All_will_burn.play_aura(self)
+    begin_turn = first_strike
 
-def Bloodbound(self, event):
-    self.owner.hand.create_card("1014")
-    self.owner.hand.create_card("1014")
+class Swatting_insects:
+    def first_strike(self):
+        if self.owner.board.cards:
+            self.owner.board.cards[0].buff(self.enchantment_id)
 
-def For_the_Horde(self, event, card):
-    if event == constants.EVENT_BUY and card and self.power.is_disabled:
-        card.create_and_apply_enchantment('318', a=self.bob.nb_turn)
+class Wingmen:
+    #TODO: non fonctionnel
+    def first_strike(self):
+        if self.board.cards:
+            self.owner.board.cards[0].state |= State.ATTACK_IMMEDIATLY
+            self.owner.board.cards[-1].state |= State.ATTACK_IMMEDIATLY
 
-def Wax_warband(self, event):
-    for minion in self.owner.board.one_minion_by_type():
-        minion.create_and_apply_enchantment('319')
-
-def Spirit_swap(self, event):
-    if event == constants.EVENT_USE_POWER:
-        minion = self.minion_choice(self.board + self.board.opponent)
+class Imprison:
+    #TODO: non fonctionnel
+    def use_power(self):
+        minion = self.choose_one_of_them(self.owner.board.opponent)
         if minion:
-            self.power.quest_value = minion
-            self.power.script += '2'
-            self.power.reset_power()
-    elif event == constants.EVENT_END_TURN:
-        self.power.quest_value = 0
+            minion.buff(self.enchantment_id)
+            #minion.add_script({str(Event.WAKE_UP): 'wake_up'})
+            return True
+        return False
 
-def Spirit_swap2(self, event):
-    if event == constants.EVENT_USE_POWER:
-        if type(self.power.quest_value) is card.Card:
-            choice = self.board + self.board.opponent
-            choice.remove(self.power.quest_value)
-            minion = self.minion_choice(choice)
+class Reborn_rites:
+    def use_power(self):
+        minion = self.choose_one_of_them(self.owner.board)
+        if minion:
+            minion.buff(self.enchantment_id)
+            return True
+        return False
+
+class Bloodbound:
+    levelup = lambda self: self.owner.hand.create_card_in("1014", "1014")
+
+class For_the_Horde:
+    def use_power(self):
+        self.quest_value = 1
+        return True
+
+    def end_turn(self):
+        self.quest_value = 0
+
+    def buy(self, card):
+        if self.quest_value == 1:
+            self.quest_value = 0
+            card.buff(self.enchantment_id, attack=self.game.nb_turn)
+
+class Wax_warband:
+    def use_power(self):
+        for minion in self.owner.board.one_minion_by_type():
+            minion.buff(self.enchantment_id)
+
+class Spirit_swap:
+    def use_power(self):
+        if self.quest_value == 0:
+            minion = self.choose_one_of_them(self.owner.board.cards + self.owner.board.opponent.cards)
             if minion:
-                # gestion des enchantements ?
-                self.power.script = self.script[:-1]
-                self.power.quest_value.create_and_apply_enchantment("320", a=minion.attack, h=minion.max_health)
-                self.power.quest_value = 0
+                self.quest_value = minion
         else:
-            print("Error vol'jin power")
-            self.power.script = self.power.script[:-1]
-            self.power.quest_value = 0
-            self.power.reset_power()
-    elif event == constants.EVENT_END_TURN:
-        self.power.script = self.power.script[:-1]
-        self.power.quest_value = 0
+            first_minion = self.quest_value
+            second_minion = self.choose_one_of_them(
+                        self.owner.board.cards.exclude(first_minion) + \
+                        self.owner.board.cards.opponent)
+            if second_minion:
+                second_minion.buff(self.enchantment_id, attack=first_minion.attack, health=first_minion.health)
+                first_minion.buff(self.enchantment_id, attack=second_minion.attack, health=second_minion.health)
+                self.quest_value = 0
+                return True
+        return False
 
-def See_the_Light(self, event):
-    minion = self.minion_choice(self.board.opponent)
-    if minion:
-        minion.create_and_apply_enchantment('321')
-        self.hand.append(minion)
+class See_the_Light:
+    def use_power(self):
+        minion = self.choose_one_of_them(self.owner.board.opponent)
+        if minion:
+            minion.buff(self.enchantment_id)
+            self.owner.hand.append(minion)
+            return True
+        return False
+
+class Prize_wall:
+    pass
+
+class Adventure:
+    pass
+
+class Trash_for_Treasor:
+    # découverte par le pouvoir, une carte peut se redécouvrir
+    pass
+
+class All_patched_up:
+    pass
+
+class Embrace_your_rage:
+    def use_power(self):
+        self.quest_value = 1
+        return True
+
+    def begin_turn(self):
+        self.quest_value = 0
+
+    def first_strike(self):
+        if self.quest_value:
+            card_lst = self.game.hand.cards_of_tier_max(
+                    tier_max=self.owner.level,
+                    tier_min=self.owner.level)
+            crd = random.choice(card_lst)
+            self.owner.board.create_card_in(crd.entity_id)
+            self.owner.hand.append(crd)
+
+class Spectral_sight:
+    #TODO, non fonctionnel > activation ?
+    def play_aura(self):
+        self.owner.bob.level_up_cost_list = [BATTLE_SIZE]*(LEVEL_MAX+1)
+        self.owner.bob.board.fill_minion()
