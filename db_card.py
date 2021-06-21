@@ -50,14 +50,14 @@ class Meta_card_data(list):
 
     def filter(self, **kwargs):
         return self.__class__(card
-            for card in self
-                for k, v in kwargs.items()
+            for k, v in kwargs.items()
+                for card in self
                     if card[k] == v)
 
     def filter_hex(self, **kwargs):
         return self.__class__(card
-            for card in self
-                for k, v in kwargs.items()
+            for k, v in kwargs.items()
+                for card in self
                     if card[k] & v)
 
     def exclude(self, *args, **kwargs):
@@ -66,8 +66,8 @@ class Meta_card_data(list):
                 if card not in args)
         if kwargs:
             return self.__class__(card
-                for card in copy
-                    for k, v in kwargs.items()
+                for k, v in kwargs.items()
+                    for card in copy
                         if card[k] != v)
         return copy
 
@@ -77,8 +77,8 @@ class Meta_card_data(list):
                 if card not in args)
         if kwargs:
             return self.__class__(card
-                for card in copy
-                    for k, v in kwargs.items()
+                for k, v in kwargs.items()
+                    for card in copy
                         if not card[k] & v)
         return copy
 

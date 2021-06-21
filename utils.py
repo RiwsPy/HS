@@ -39,14 +39,14 @@ class Card_list(list):
 
     def filter(self, **kwargs):
         return self.__class__(card
-            for card in self
-                for k, v in kwargs.items()
+            for k, v in kwargs.items()
+                for card in self
                     if getattr(card, k) == v)
 
     def filter_hex(self, **kwargs):
         return self.__class__(card
-            for card in self
-                for k, v in kwargs.items()
+            for k, v in kwargs.items()
+                for card in self
                     if getattr(card, k) & v)
 
     def exclude(self, *args, **kwargs):
@@ -55,8 +55,8 @@ class Card_list(list):
                 if card not in args)
         if kwargs:
             return self.__class__(card
-                for card in copy
-                    for k, v in kwargs.items()
+                for k, v in kwargs.items()
+                    for card in copy
                         if getattr(card, k) != v)
         return copy
 
@@ -66,8 +66,8 @@ class Card_list(list):
                 if card not in args)
         if kwargs:
             return self.__class__(card
-                for card in copy
-                    for k, v in kwargs.items()
+                for k, v in kwargs.items()
+                    for card in copy
                         if not getattr(card, k) & v)
         return copy
 
