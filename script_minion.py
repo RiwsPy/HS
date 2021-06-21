@@ -122,44 +122,40 @@ def Brise_siege_a(self):
     self.owner.add_aura(self, attack=self.double_if_premium(1), restr_type=Type.DEMON)
 
 class Chef_de_guerre_murloc:
-    def play_aura(self, entity):
-        for entity in self.my_zone.cards:
-            if self not in entity.aura_active:
-                entity.aura_active[self] = Chef_de_guerre_murloc.aura
-                self.apply_met_on_all_children(Chef_de_guerre_murloc.aura, entity)
+    def play_aura(self):
+        if self not in self.controller.aura_active:
+            self.controller.aura_active[self] = Chef_de_guerre_murloc.aura
+            self.apply_met_on_all_children(Chef_de_guerre_murloc.aura, self.controller)
 
     def aura(self, target):
         if target.type & Type.MURLOC and target is not self:
             target.buff('535', aura=True, source=self)
 
 class Chef_de_guerre_murloc_p:
-    def play_aura(self, entity):
-        for entity in self.my_zone.cards:
-            if self not in entity.aura_active:
-                entity.aura_active[self] = Chef_de_guerre_murloc_p.aura
-                self.apply_met_on_all_children(Chef_de_guerre_murloc_p.aura, entity)
+    def play_aura(self):
+        if self not in self.controller.aura_active:
+            self.controller.aura_active[self] = Chef_de_guerre_murloc_p.aura
+            self.apply_met_on_all_children(Chef_de_guerre_murloc_p.aura, self.controller)
 
     def aura(self, target):
         if target.type & Type.MURLOC and target is not self:
             target.buff('57406', aura=True, source=self)
 
 class Capitaine_des_mers:
-    def play_aura(self, entity):
-        for entity in self.my_zone.cards:
-            if self not in entity.aura_active:
-                entity.aura_active[self] = Capitaine_des_mers.aura
-                self.apply_met_on_all_children(Capitaine_des_mers.aura, entity)
+    def play_aura(self):
+        if self not in self.controller.aura_active:
+            self.controller.aura_active[self] = Capitaine_des_mers.aura
+            self.apply_met_on_all_children(Capitaine_des_mers.aura, self.controller)
 
     def aura(self, target):
         if target.type & Type.PIRATE and target is not self:
             target.buff('70472', aura=True, source=self)
 
 class Capitaine_des_mers_p:
-    def play_aura(self, entity):
-        for entity in self.my_zone.cards:
-            if self not in entity.aura_active:
-                entity.aura_active[self] = Capitaine_des_mers_p.aura
-                self.apply_met_on_all_children(Capitaine_des_mers_p.aura, entity)
+    def play_aura(self):
+        if self not in self.controller.aura_active:
+            self.controller.aura_active[self] = Capitaine_des_mers_p.aura
+            self.apply_met_on_all_children(Capitaine_des_mers_p.aura, self.controller)
 
     def aura(self, target):
         if target.type & Type.PIRATE and target is not self:

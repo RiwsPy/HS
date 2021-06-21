@@ -174,11 +174,11 @@ class Entity(object):
     def attack(self):
         bonus = 0
         if self.my_zone.zone_type == Zone.PLAY and \
-                self.dbfId in ('208', '208_p'): # vieux troubloeil
+                self.dbfId in ('736', '58382'): # vieux troubloeil
             for entity in self.owner.cards + self.owner.opponent.cards:
                 if entity.type & Type.MURLOC and entity is not self:
                     bonus += 1
-            if self.dbfId == '208_p':
+            if self.dbfId == '58382':
                 bonus *= 2
         return self._attack + bonus
 
@@ -332,13 +332,13 @@ class Entity(object):
             aura_buff(buff_source, self)
         # add entity aura and active it
         if hasevent(self, Event.PLAY_AURA):
-            self.controller.aura_active[self] = getattr(getattr(script_event, self.method), 'aura')
             getattr(getattr(script_event, self.method), 'play_aura')(self)
+            #self.controller.aura_active[self] = getattr(getattr(script_event, self.method), 'aura')
 
     def remove_my_aura_action(self, target) -> None:
-        for entity in target.entities[::-1]:
-            if getattr(entity, 'aura', False) and getattr(entity, 'source', None) is self:
-                entity.remove()
+        print(target)
+        if getattr(target, 'aura', False) and getattr(target, 'source', None) is self:
+            target.remove()
 
 
 class Minion(Entity):

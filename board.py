@@ -48,7 +48,7 @@ class Board(Entity):
 
             if hasevent(card, Event.PLAY_AURA):
                 del self.controller.aura_active[card]
-                card.apply_met_on_all_children(self.remove_my_aura_action, self.controller)
+                card.apply_met_on_all_children(Entity.remove_my_aura_action, card.controller)
             for enchantment in card.entities:
                 if getattr(enchantment, 'aura', False):
                     enchantment.remove()
