@@ -38,5 +38,6 @@ class player:
         self.bob.level_up_cost -= 1
         self.gold = self.nb_gold_by_turn()
         self.power.enable()
+        self.power.temp_counter = 0
         for entity in self.board.cards:
             entity.calc_stat_from_scratch(heal=True)

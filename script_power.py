@@ -215,15 +215,12 @@ class Sharpen_blades:
 
 class Ill_take_that:
     def use_power(self):
-        self.quest_value = 1
+        self.temp_counter = 1
         return True
 
-    def begin_turn(self):
-        self.quest_value = 0
-
     def die(self, source, killer):
-        if self.quest_value == 1 and source.owner is not self.owner.board:
-            self.quest_value = 0
+        if self.temp_counter == 1 and source.owner is not self.owner.board:
+            self.temp_counter = 0
             self.owner.hand.append(
                 self.game.hand.search(source.dbfId) or
                 self.create_card(source.dbfId)
@@ -329,19 +326,16 @@ class Reborn_rites:
         return False
 
 class Bloodbound:
-    levelup = lambda self: self.owner.hand.create_card_in("1014", "1014")
+    levelup = lambda self: self.owner.hand.create_card_in("70136", "70136")
 
 class For_the_Horde:
     def use_power(self):
-        self.quest_value = 1
+        self.temp_counter = 1
         return True
 
-    def end_turn(self):
-        self.quest_value = 0
-
     def buy(self, card):
-        if self.quest_value == 1:
-            self.quest_value = 0
+        if self.temp_counter == 1:
+            self.temp_counter = 0
             card.buff(self.enchantment_id, attack=self.game.nb_turn)
 
 class Wax_warband:
@@ -351,19 +345,19 @@ class Wax_warband:
 
 class Spirit_swap:
     def use_power(self):
-        if self.quest_value == 0:
+        if self.temp_counter == 0:
             minion = self.choose_one_of_them(self.owner.board.cards + self.owner.board.opponent.cards)
             if minion:
-                self.quest_value = minion
+                self.temp_counter = minion
         else:
-            first_minion = self.quest_value
+            first_minion = self.temp_counter
             second_minion = self.choose_one_of_them(
                         self.owner.board.cards.exclude(first_minion) + \
                         self.owner.board.cards.opponent)
             if second_minion:
                 second_minion.buff(self.enchantment_id, attack=first_minion.attack, health=first_minion.health)
                 first_minion.buff(self.enchantment_id, attack=second_minion.attack, health=second_minion.health)
-                self.quest_value = 0
+                self.temp_counter = 0
                 return True
         return False
 
@@ -391,14 +385,11 @@ class All_patched_up:
 
 class Embrace_your_rage:
     def use_power(self):
-        self.quest_value = 1
+        self.temp_counter = 1
         return True
 
-    def begin_turn(self):
-        self.quest_value = 0
-
     def first_strike(self):
-        if self.quest_value:
+        if self.temp_counter:
             card_lst = self.game.hand.cards_of_tier_max(
                     tier_max=self.owner.level,
                     tier_min=self.owner.level)

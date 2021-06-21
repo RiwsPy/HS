@@ -489,6 +489,7 @@ class Hero_power(Entity):
         'roll_cost': 1,
         'cost': 0,
         'is_enabled': True,
+        'temp_counter': 0, # set to 0 at 'begin_turn'
     }
 
     def __init__(self, id, **kwargs):
