@@ -1,11 +1,16 @@
 import random
-from constants import State
+from constants import State, Event, BLOOD_GEM
+import script_functions
 
-def Piece_dor(self): # self = card_id
-    self.controller.gold += 1
+class Piece_dor:
+    def play(self): # self = card_id
+        self.controller.gold += 1
+        return True
 
-def Recrutement(self):
-    self.controller.discover(self, nb=3, lvl_min=self.quest_value, lvl_max=self.quest_value)
+class Recrutement:
+    def play(self):
+        self.controller.discover(self, nb=3, lvl_min=self.quest_value, lvl_max=self.quest_value)
+        return True
 
 def Avenge(self):
     if self.owner.board:
@@ -49,29 +54,67 @@ def Sneak_trap(self, card):
 def Redemption(self, card):
     pass
 
-def Blood_gem(self):
-    player = self.controller
-    minion = player.minion_choice(player.board)
-    if minion:
-        bonus = 1
-        for info in minion.controller.aura_active.values():
-            bonus += info['boost_blood_gem']
-        minion.create_and_apply_enchantment("72191", a=bonus, h=bonus)
-        return minion
-    return False
+class Blood_gem:
+    def play(self) -> bool:
+        player = self.controller
+        if player.is_bot:
+            minion = Blood_gem.bot_play(self)
+        else:
+            minion = player.choose_one_of_them(player.board.cards)
 
-def Banana(self):
-    player = self.owner.owner
-    minion = player.minion_choice(player.board)
-    if minion:
-        minion.create_and_apply_enchantment("501_e")
-        return minion
-    return False
+        if minion:
+            bonus = 1
+            #for info in player.aura_active.values():
+            #    bonus += info['boost_blood_gem']
+            minion.buff(BLOOD_GEM, attack=bonus, max_health=bonus)
+            return True
+        return False
 
-def Great_banana(self):
-    player = self.owner.owner
-    minion = player.minion_choice(player.board)
-    if minion:
-        minion.create_and_apply_enchantment("502_e")
-        return minion
-    return False
+    def bot_play(self):
+        # au tour 3, les résultats sont meilleurs avec la méthode random.
+
+        # random method : 1.8
+        # ciblage de l'attaque la plus faible : 1.85
+        # ciblage de l'attaque la plus élevée : 1.4
+        # ciblage 'adapté' au tour ou attaque la plus élevée : 1.67
+        # ciblage 'adapté' au tour ou attaque la plus faible : 1.85
+
+        # protéger les State.aura du Zapp ?
+        targets = self.controller.board.cards
+        if not targets:
+            return None
+        elif len(targets) < 2:
+            return targets[0]
+        nb_turn = self.game.nb_turn
+        sorted_board = sorted(targets, reverse=True,
+                key=lambda x: (
+                not x.state & State.POISONOUS,
+                not x.state & State.ATTACK_WEAK,
+                x.state & State.CLEAVE,
+                x.state & State.DIVINE_SHIELD,
+                x.event & Event.OVERKILL,
+                x.event & Event.ADD_ENCHANTMENT_ON,
+                x.state & State.FRENZY,
+                nb_turn <= 5 and nb_turn - x.attack == 1,
+                nb_turn <= 5 and nb_turn - x.health == 0,
+                -x.attack,
+                ))
+        return sorted_board[0]
+
+class Banana:
+    def play(self):
+        player = self.controller
+        minion = player.choose_one_of_them(player.board.cards)
+        if minion:
+            minion.buff("501_e")
+            return True
+        return False
+
+class Great_banana:
+    def play(self):
+        player = self.controller
+        minion = player.choose_one_of_them(player.board.cards)
+        if minion:
+            minion.buff("502_e")
+            return True
+        return False

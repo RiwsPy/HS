@@ -26,6 +26,7 @@ class Entity(object):
     default_attr = {
         'quest_value': 0,
         'general': General.NONE,
+        'state': State.NONE,
         'attack': 0,
         'owner': Void,
         'from_bob': False,
@@ -155,7 +156,7 @@ class Entity(object):
             for target in args:
                 if target:
                     Enchantment(enchant_key, **kwargs).apply(target)
-        elif args is not None:
+        else:
             Enchantment(enchant_key, **kwargs).apply(self)
 
     @property
@@ -188,12 +189,12 @@ class Entity(object):
 
     @property
     def position(self):
-        if self.owner.general == General.ZONE and \
-                hasattr(self.owner, 'cards'):
-            try:
-                return self.owner.cards.index(self)
-            except ValueError:
-                pass
+        try:
+            return self.my_zone.cards.index(self)
+        except ValueError:
+            pass
+        except AttributeError:
+            pass
         return None
 
     @property
@@ -213,13 +214,9 @@ class Entity(object):
         target = self.search_target()
         if target:
             self.append_action(attack, self, target)
+            #print('prepare_attack', self, target)
 
     def search_target(self, *targets):
-        if self.general not in (General.MINION, General.HERO) or \
-                self.owner.general != General.ZONE or \
-                not self.owner.opponent.cards:
-            return None
-
         if not targets:
             if self.state & State.ATTACK_WEAK:
                 targets = self.attack_search_weak_style()
@@ -231,23 +228,26 @@ class Entity(object):
         return random.choice(targets)
 
     def attack_search_normal_style(self):
-        other_board = self.owner.opponent.cards.exclude(is_alive=False)
-        other_board = other_board.exclude_hex(state=State.NOT_TARGETABLE)
-        targets = other_board.filter(state=State.TAUNT) or other_board
-        return targets
+        other_board = self.my_zone.opponent.cards.\
+            exclude(is_alive=False).\
+            exclude_hex(state=State.NOT_TARGETABLE)
 
-    def attack_search_weak_style(self):
-        other_board = self.owner.opponent.cards.exclude(is_alive=False)
-        other_board = other_board.exclude_hex(state=State.NOT_TARGETABLE)
-        targets = [other_board[0]]
-        for minion in other_board[1:]:
-            atk = minion.attack
-            atk_min = targets[0].attack
-            if atk < atk_min:
-                targets = [minion]
-            elif atk == atk_min:
-                targets.append(minion)
-        return targets
+        return other_board.filter_hex(state=State.TAUNT) or other_board
+
+    def attack_search_weak_style(self) -> list:
+        other_board = self.my_zone.opponent.cards.\
+            exclude(is_alive=False).\
+            exclude_hex(state=State.NOT_TARGETABLE)
+
+        if not other_board:
+            return []
+
+        new_board = sorted(other_board, key=lambda x: x.attack)
+        for nb, card in enumerate(new_board):
+            if card.attack != new_board[0].attack:
+                break
+
+        return new_board[:nb+1]
 
     def choose_one_of_them(self, choice_list, pr: str=''):
         """
@@ -261,9 +261,9 @@ class Entity(object):
         long = len(choice_list)
         if long == 1:
             return choice_list[0]
-        elif self.controller.is_bot:
-            return choice_list[-1]
-        elif long >= 2:
+        elif self.controller.is_bot or self.game.is_arene:
+            return random.choice(choice_list)
+        elif long > 1:
             if pr:
                 print(pr)
             for nb, entity in enumerate(choice_list):
@@ -336,10 +336,21 @@ class Entity(object):
             #self.controller.aura_active[self] = getattr(getattr(script_event, self.method), 'aura')
 
     def remove_my_aura_action(self, target) -> None:
-        print(target)
         if getattr(target, 'aura', False) and getattr(target, 'source', None) is self:
             target.remove()
 
+    def search_id(self, target):
+        if target in Void.temp_list:
+            print(f'{target} found in {Void}')
+            return True
+
+        if target in self.entities:
+            print(f'{target} found in {self}')
+            return True
+        for entity in self.entities:
+            if entity.search_id(target):
+                break
+        return False
 
 class Minion(Entity):
     default_attr = {
@@ -377,7 +388,10 @@ class Minion(Entity):
                 return None
             board = self.controller.board
 
-        board.append(self, position)
+        if self.general == General.MINION:
+            board.append(self, position)
+        elif self.general == General.SPELL:
+            getattr(script_event, self.method).play(self)
 
     @property
     def is_premium(self):
@@ -395,7 +409,7 @@ class Minion(Entity):
         position = self.position
         controller = self.controller
         if position is None:
-            print(f'Error {self} position is None, zone : {self.my_zone.cards} {self.owner.owner}')
+            print(f'Error {self} position is None, zone : {self.my_zone.cards} {controller}')
         self.owner.remove(self)
         # la hyène est buffée après l'activation du râle
         # donc le poisson meure de la goule instable avant de récupérer son râle ?
@@ -438,7 +452,7 @@ class Enchantment(Entity):
             return None
 
         if hasattr(self, 'duration'):
-            if self.owner.general == General.NONE:
+            if self.owner.general == General.ZONE:
                 self.duration += target_id.game.nb_turn
             elif self.duration <= target_id.game.nb_turn:
                 super().remove()
@@ -464,6 +478,9 @@ class Enchantment(Entity):
         for attr in self.__class__.buff_attr_hex & set(dir(self)) & set(dir(target_id)):
             target_id[attr] |= self[attr]
 
+    def remove_event(self, target_id):
+        target_id.remove_attr(event=self.event)
+
     def set_stat(self, target_id):
         targetable_attr = self.__class__.buff_attr_add.copy()
         targetable_attr.union(self.__class__.buff_attr_hex)
@@ -476,9 +493,6 @@ class Enchantment(Entity):
         old_owner = self.owner
         super().remove(self)
         old_owner.calc_stat_from_scratch()
-
-    def remove_script(self):
-        self.method = ''
 
 
 class Hero_power(Entity):
@@ -512,16 +526,17 @@ class Hero_power(Entity):
         self.cost = max(0, self.cost - 1)
 
     def active_script_arene(self, *args, **kwargs) -> None:
-        if self.hero_script:
-            getattr(script_hero_arene, self.hero_script)(self.owner, *args, **kwargs)
+        met = getattr(script_hero_arene, self.hero_script)
+        if met:
+            getattr(met, f'turn_{self.game.nb_turn}')(self.owner, *args, **kwargs)
 
-    def use_power(self):
+    def use(self):
         if self.is_enabled:
             if self.owner.gold >= self.cost:
                 self.owner.gold -= self.cost
                 cls = getattr(script_event, self.method)
-                if hasattr(cls, Event(Event.USE_POWER).name):
-                    ret = getattr(cls, Event(Event.USE_POWER).name)(self)
+                if hasattr(cls, Event(Event.USE_POWER).method):
+                    ret = getattr(cls, Event(Event.USE_POWER).method)(self)
                     if ret:
                         self.dec_remain_use()
                         self.disable()
