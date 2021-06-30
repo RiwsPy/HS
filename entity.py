@@ -152,12 +152,9 @@ class Entity(object):
         return Card(id, **kwargs)
 
     def buff(self, enchant_key, *args, **kwargs):
-        if args:
-            for target in args:
-                if target:
-                    Enchantment(enchant_key, **kwargs).apply(target)
-        else:
-            Enchantment(enchant_key, **kwargs).apply(self)
+        for target in args:
+            if target:
+                Enchantment(enchant_key, source=self, **kwargs).apply(target)
 
     @property
     def controller(self):
@@ -394,13 +391,8 @@ class Minion(Entity):
             getattr(script_event, self.method).play(self)
 
     @property
-    def is_premium(self):
-        return self.dbfId[-2:] == '_p'
-
-    @property
     def is_alive(self):
         return self.health > 0 and not self.state & State.IS_POISONED
-
 
     def die(self, killer=None):
         if self.owner.zone_type != Zone.PLAY:
@@ -430,6 +422,7 @@ class Minion(Entity):
 class Enchantment(Entity):
     default_attr = {
         'aura': False,
+        'source': Void,
     }
 
     buff_attr_add = {
@@ -485,7 +478,7 @@ class Enchantment(Entity):
         targetable_attr = self.__class__.buff_attr_add.copy()
         targetable_attr.union(self.__class__.buff_attr_hex)
         #targetable_attr.discard('method')
-        
+
         for attr in targetable_attr & set(dir(self)) & set(dir(target_id)):
             target_id[attr] = self[attr]
 
