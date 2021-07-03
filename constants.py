@@ -1,6 +1,6 @@
 from typing import List
 
-VERSION = '20.4.2'
+VERSION = '20.8'
 BATTLE_SIZE = 7
 NB_PLAYER = 8
 HAND_SIZE = 10
@@ -12,6 +12,12 @@ MAX_GOLD = 10
 LEVEL_MAX = 6
 BOB_MINION_COST = 1
 DEFAULT_MINION_COST = 3
+
+class CardName:
+    BLOOD_GEM = "72191"
+    KHADGAR = "52502"
+    KHADGAR_P = "58380"
+
 
 class Rarity:
     INVALID = 0

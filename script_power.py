@@ -13,17 +13,20 @@ class Procrastinate:
         if self.game.nb_turn < 3:
             self.owner.gold = 0
         elif self.game.nb_turn == 3:
-            self.owner.hand.create_card_in("1010", "1010")
+            crd = self.owner.hand.create_card_in("1009")
+            crd.quest_value = 3
+            crd = self.owner.hand.create_card_in("1009")
+            crd.quest_value = 3
 
 class Menagerist:
     def begin_turn(self):
         if self.game.nb_turn == 1:
-            self.owner.board.create_card_in("151")
+            self.owner.board.create_card_in("59202")
 
 class Avatar_of_nzoth:
     def begin_turn(self):
         if self.game.nb_turn == 1:
-            self.owner.board.create_card_in("154")
+            self.owner.board.create_card_in("67213")
 
 class Buried_treasure:
     #TODO : les cartes sont-elles issues/retirées de la main de bob ?
@@ -57,7 +60,7 @@ class Boon_of_light:
     def use_power(self):
         minion = self.choose_one_of_them(self.owner.board.cards)
         if minion:
-            minion.buff(self.enchantment_id)
+            self.buff(self.enchantment_id, minion)
 
 class Pirate_parrrrty:
     def buy(self, card):
@@ -87,7 +90,7 @@ class Clairvoyance:
 class Brick_by_brick:
     def use_power(self):
         if self.owner.board.cards:
-            random.choice(self.owner.board.cards).buff(self.enchantment_id)
+            self.buff(self.enchantment_id, random.choice(self.owner.board.cards))
             return True
         return False
 
@@ -95,7 +98,7 @@ class Tavern_lightning:
     def use_power(self):
         minion = self.choose_one_of_them(self.owner.board.cards)
         if minion:
-            minion.buff(self.enchantment_id, attack=self.owner.level, health=self.owner.level)
+            self.buff(self.enchantment_id, minion, attack=self.owner.level, health=self.owner.level)
             return True
         return False
 
@@ -103,7 +106,7 @@ class Bloodfury:
     def use_power(self):
         for minion in self.owner.board.cards:
             if minion.type & Type.DEMON:
-                minion.buff(self.enchantment_id)
+                self.buff(self.enchantment_id, minion)
         return True
 
 class Lead_explorer:
@@ -122,7 +125,7 @@ class Stay_frosty:
     def end_turn(self):
         for minion in self.owner.bob.board.cards:
             if minion.state & State.FREEZE:
-                minion.buff(self.enchantment_id)
+                self.buff(self.enchantment_id, minion)
 
 class Tinker:
     def play_aura(self):
@@ -132,7 +135,7 @@ class Tinker:
         if target.general == General.MINION and \
                 target in target.controller.board.cards and \
                 target.type & Type.MECH:
-            target.buff(self.enchantment_id)
+            self.buff(self.enchantment_id, target)
 
     def begin_turn(self):
         if self.game.nb_turn == 1:
@@ -148,8 +151,8 @@ class Sulfuras:
     def end_turn(self):
         # le bonus s'active-t-il deux fois si le board ne contient qu'un seul serviteur ?
         if self.owner.board.cards:
-            self.owner.board[0].buff(self.enchantment_id)
-            self.owner.board[-1].buff(self.enchantment_id)
+            self.buff(self.enchantment_id, self.owner.board[0])
+            self.buff(self.enchantment_id, self.owner.board[-1])
 
 class Puzzle_box:
     def use_power(self):
@@ -157,7 +160,7 @@ class Puzzle_box:
         if op:
             random_card = random.choice(op)
             self.owner.hand.append(random_card)
-            random_card.buff(self.enchantment_id)
+            self.buff(self.enchantment_id, random_card)
             return True
         return False
 
@@ -165,7 +168,7 @@ class A_tale_of_kings:
     # will not change into the same Hero Power twice in a row
     def buy(self, card):
         if card.type & self.quest_value:
-            card.buff(self.enchantment_id)
+            self.buff(self.enchantment_id, card)
 
     def begin_turn(self):
         possible_types = self.game.type_present & (Type.ALL - self.quest_value)
@@ -189,7 +192,7 @@ class Verdant_spheres:
     def buy(self, card):
         self.quest_value += 1
         if not self.quest_value % 3:
-            card.buff(self.enchantment_id)
+            self.buff(self.enchantment_id, card)
 
 class Saturday_cthuns:
     def use_power(self):
@@ -200,7 +203,7 @@ class Saturday_cthuns:
         minions = self.owner.board.cards
         if minions and not self.is_enabled:
             for _ in range(self.quest_value):
-                random.choice(minions).buff(self.enchantment_id)
+                self.buff(self.enchantment_id, random.choice(minions))
 
 class Sharpen_blades:
     def use_power(self):
@@ -209,7 +212,7 @@ class Sharpen_blades:
             minion = self.choose_one_of_them(self.owner.board.cards,
                 pr=f"Hero power : choisissez une cible :")
             if minion:
-                minion.buff(self.enchantment_id, attack=nb_minion, health=nb_minion)
+                self.buff(self.enchantment_id, minion, attack=nb_minion, health=nb_minion)
                 return True
         return False
 
@@ -229,7 +232,7 @@ class Ill_take_that:
 class Sprout_it_out:
     def invoc(self, source):
         if self.owner.fight:
-            source.buff(self.enchantment_id)
+            self.buff(self.enchantment_id, source)
 
 class Dream_portal:
     def begin_turn(self):
@@ -252,7 +255,7 @@ class Temporal_tavern:
 class Bananarama:
     def use_power(self):
         for _ in range(2):
-            if random.randint(1, 3) == 1:
+            if random.randint(1, 2) == 1:
                 self.owner.hand.create_card_in("1008")
             else:
                 self.owner.hand.create_card_in("1007")
@@ -268,7 +271,7 @@ class Hat_trick:
         brd = self.owner.opponent.board.cards
         if brd:
             for _ in range(2):
-                random.choice(brd).buff(self.enchantment_id)
+                self.buff(self.enchantment_id, random.choice(brd))
 
 class All_will_burn:
     def play_aura(self):
@@ -281,7 +284,7 @@ class All_will_burn:
     def aura(self, target):
         if target.general == General.MINION and \
                 target in target.controller.board.cards:
-            target.buff(self.enchantment_id, source=self, aura=True)
+            self.buff(self.enchantment_id, target, aura=True)
 
     def end_fight(self):
         self.aura_target = [self.controller, self.controller.opponent]
@@ -298,7 +301,7 @@ class All_will_burn:
 class Swatting_insects:
     def first_strike(self):
         if self.owner.board.cards:
-            self.owner.board.cards[0].buff(self.enchantment_id)
+            self.buff(self.enchantment_id, self.owner.board.cards[0])
 
 class Wingmen:
     #TODO: non fonctionnel
@@ -312,7 +315,7 @@ class Imprison:
     def use_power(self):
         minion = self.choose_one_of_them(self.owner.board.opponent)
         if minion:
-            minion.buff(self.enchantment_id)
+            self.buff(self.enchantment_id, minion)
             #minion.add_script({str(Event.WAKE_UP): 'wake_up'})
             return True
         return False
@@ -321,7 +324,7 @@ class Reborn_rites:
     def use_power(self):
         minion = self.choose_one_of_them(self.owner.board)
         if minion:
-            minion.buff(self.enchantment_id)
+            self.buff(self.enchantment_id, minion)
             return True
         return False
 
@@ -336,12 +339,12 @@ class For_the_Horde:
     def buy(self, card):
         if self.temp_counter == 1:
             self.temp_counter = 0
-            card.buff(self.enchantment_id, attack=self.game.nb_turn)
+            self.buff(self.enchantment_id, card, attack=self.game.nb_turn)
 
 class Wax_warband:
     def use_power(self):
         for minion in self.owner.board.one_minion_by_type():
-            minion.buff(self.enchantment_id)
+            self.buff(self.enchantment_id, minion)
 
 class Spirit_swap:
     def use_power(self):
@@ -355,8 +358,8 @@ class Spirit_swap:
                         self.owner.board.cards.exclude(first_minion) + \
                         self.owner.board.cards.opponent)
             if second_minion:
-                second_minion.buff(self.enchantment_id, attack=first_minion.attack, health=first_minion.health)
-                first_minion.buff(self.enchantment_id, attack=second_minion.attack, health=second_minion.health)
+                self.buff(self.enchantment_id, second_minion, attack=first_minion.attack, health=first_minion.health)
+                self.buff(self.enchantment_id, first_minion, attack=second_minion.attack, health=second_minion.health)
                 self.temp_counter = 0
                 return True
         return False
@@ -365,7 +368,7 @@ class See_the_Light:
     def use_power(self):
         minion = self.choose_one_of_them(self.owner.board.opponent)
         if minion:
-            minion.buff(self.enchantment_id)
+            self.buff(self.enchantment_id, minion)
             self.owner.hand.append(minion)
             return True
         return False
