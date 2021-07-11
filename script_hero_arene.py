@@ -1,4 +1,4 @@
-from constants import Event
+from enums import Event
 
 class Default_script:
     def turn_1(self, *args, **kwargs):
@@ -92,11 +92,11 @@ class Roi_liche:
         if args:
             card = self.hand.create_card_in(args[0])
             card.play()
-            card.buff(self.power.enchantment_id)
+            self.buff(self.power.enchantment_id, card)
 
     def turn_2(self, *args, **kwargs):
         self.bob.level_up()
-        self.board.cards[0].buff(self.power.enchantment_id)
+        self.buff(self.power.enchantment_id, self.board.cards[0])
 
 class Y_Shaarj:
     def turn_1(self, *args, **kwargs):

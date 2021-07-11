@@ -1,12 +1,13 @@
 from collections import defaultdict
 import random
-from constants import BATTLE_SIZE, CARD_NB_COPY, General, State, Type, Event, Zone, DEFAULT_MINION_COST, MAX_TURN
+from enums import BATTLE_SIZE, CardName, General, State, Type, Event, Zone, DEFAULT_MINION_COST, MAX_TURN
 from typing import Dict, List
 from json import load
 from utils import Card_list, controller, game, hasevent, my_zone
 import script_event
 from action import *
 import script_hero_arene
+import script_minion_arene
 import void
 from db_card import CARD_DB, Card_data, Meta_card_data
 
@@ -126,7 +127,8 @@ class Entity(object):
                     entity.owner.entities.remove(entity)
                     #entity.owner = Void
                 except ValueError:
-                    print(f'{entity} not in owner.entities')
+                    pass
+                    #print(f'{entity} not in owner.entities')
 
     def remove_attr(self, **kwargs):
         for attr, value in kwargs.items():
@@ -144,7 +146,7 @@ class Entity(object):
         """
         card_id = None
         for id in args:
-            card_id = Card(id, **kwargs)
+            card_id = self.create_card(id, **kwargs)
             self.append(card_id)
         return card_id
 
@@ -349,6 +351,37 @@ class Entity(object):
                 break
         return False
 
+    def active_script_arene(self, *args, strat='', **kwargs) -> None:
+        if self.general == General.HERO_POWER:
+            met = getattr(script_hero_arene, self.hero_script)
+            if met:
+                getattr(met, f'turn_{self.game.nb_turn}')(self.owner, *args, **kwargs)
+        elif self.general == General.MINION:
+            met = getattr(script_minion_arene, self.method)
+            if met:
+                getattr(getattr(met, strat), f'turn_{self.game.nb_turn}')(self, *args, **kwargs)
+
+
+def khadgar_aura(function):
+    def double_invoc(self, *args, **kwargs):
+        card_id = function(self, *args, **kwargs)
+        if card_id:
+            for entity in self.my_zone.cards:
+                if entity.dbfId == CardName.KHADGAR:
+                    copy_minion_and_add(card_id)
+                elif entity.dbfId == CardName.KHADGAR_P:
+                    for _ in range(2):
+                        copy_minion_and_add(card_id)
+        return card_id
+    return double_invoc
+
+def copy_minion_and_add(source):
+    card_2 = source.create_card(source.dbfId)
+    card_2.copy_enchantment_from(source)
+    card_2.state = source.state
+    card_2.health = source.health
+    source.my_zone.append(card_2)
+
 class Minion(Entity):
     default_attr = {
         'health': 1,
@@ -412,12 +445,22 @@ class Minion(Entity):
         if self.state & State.REBORN:
             self.append_action(self.reborn, position)
 
+    def copy_enchantment_from(self, source):
+        for entity in source.entities:
+            if entity.general == General.ENCHANTMENT and not getattr(entity, 'aura', True):
+                Enchantment(entity.dbfId, **entity.dbfId.data).apply(self)
+
+    @khadgar_aura
     def reborn(self, position):
         minion = self.create_card(self.dbfId)
         minion.remove_attr(state=State.REBORN)
         minion.health = 1
         self.my_zone.append(minion, position=position)
+        return minion
 
+    @khadgar_aura
+    def invoc(self, repop_id, position):
+        return self.my_zone.create_card_in(repop_id, position=position)
 
 class Enchantment(Entity):
     default_attr = {
@@ -517,11 +560,6 @@ class Hero_power(Entity):
 
     def dec_power_cost(self) -> None:
         self.cost = max(0, self.cost - 1)
-
-    def active_script_arene(self, *args, **kwargs) -> None:
-        met = getattr(script_hero_arene, self.hero_script)
-        if met:
-            getattr(met, f'turn_{self.game.nb_turn}')(self.owner, *args, **kwargs)
 
     def use(self):
         if self.is_enabled:

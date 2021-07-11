@@ -1,8 +1,9 @@
-from constants import Zone, General, LEVEL_MAX, HAND_SIZE, CARD_NB_COPY
+from enums import Zone, General, Event, State, LEVEL_MAX, HAND_SIZE, CARD_NB_COPY
 from entity import Card, Entity, card_db
 from typing import List, Generator
 from itertools import chain
 from utils import Card_list
+import script_event
 
 class Player_hand(Entity):
     default_attr = {
@@ -43,6 +44,24 @@ class Player_hand(Entity):
         """
         return len(self.cards) <= HAND_SIZE-1
 
+    def auto_play(self):
+        self.cards.sort(key=lambda x:(
+                        x.general != General.MINION,
+                        not x.event & Event.INVOC,
+                        not x.event & Event.PLAY,
+                        not x.event & Event.PLAY_AURA,
+                        x.state & State.MODULAR,
+                        x.event & Event.BATTLECRY,
+                        x.level,
+                ), reverse=True)
+        for card in self.cards[::-1]:
+            if card.general == General.SPELL:
+                getattr(script_event, card.method).play(card)
+                self.remove(card)
+            else:
+                card.play()
+        if self.cards:
+            self.auto_play()
 
 class Bob_hand(Entity):
     default_attr = {

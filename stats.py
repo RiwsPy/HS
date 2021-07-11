@@ -15,6 +15,8 @@ def hypgeo(k, n, g, t) -> int:
         moyenne: n*g/t
         variance: n* ((t-n) / (t-1) * (g/t) * (t-g)/t)
     """
+    if g == t:
+        return int(bool(k))
     k = min(max(k, 0, n - t + g), n, g)
     return combin(g, k)*combin(t-g, n-k)/combin(t, n)
 
@@ -40,7 +42,7 @@ def rating_esperance(result: Meta_card_data, player_level) -> int:
 
     return esp
 
-def card_proba(card_list, player_level=LEVEL_MAX, exclude_card=[]) -> Tuple[str, int]:
+def card_proba(card_list, player_level=LEVEL_MAX, rating_type='', exclude_card=[]) -> Tuple[str, int]:
     # proba d'obtention de chaque carte pour le P2, sachant que P1 a acheté exclude_card
     # card_list contient le dbfId des cartes à prendre en compte
     # cas d'égalité entre 101 et 105 : [['100'], ['101', '105'], ['107']]
@@ -48,7 +50,7 @@ def card_proba(card_list, player_level=LEVEL_MAX, exclude_card=[]) -> Tuple[str,
     cumul_proba = 1
     ret = 0
     proba = 0
-    for card_id in ordered_card_rating(card_list):
+    for card_id in ordered_card_rating(card_list, rating_type=rating_type):
         cumul_proba_temp = 0
         for card in card_id:
             nb_temp = card.nb_copy - exclude_card.count(card)
@@ -117,13 +119,17 @@ def nb_collectible_card_of_tier_max(card_list, tier_max=LEVEL_MAX, tier_min=1) -
             result += card_dbfId.nb_copy
     return result
 
-def ordered_card_rating(data: Meta_card_data) -> Generator:
+def ordered_card_rating(data: Meta_card_data, rating_type='') -> Generator:
     """
         [['116'], ['111', '41245'], ...]
     """
     result = defaultdict(list)
-    for card_data in data:
-        result[card_data.rating].append(card_data)
+    if not rating_type:
+        for card_data in data:
+            result[card_data.rating].append(card_data)
+    else:
+        for card_data in data:
+            result[card_data.all_rating[rating_type]].append(card_data)
 
     #print(sorted(result.items(), key=itemgetter(0), reverse=True))
     for _, card_list in sorted(result.items(), key=itemgetter(0), reverse=True):
@@ -202,8 +208,65 @@ def esperance_2_cards(card_list, card_by_roll=3, nb_roll=0, _esperance_min=None)
 def esperance_2_cards_with_free_roll(card_list, card_by_roll=3):
     card_list.sort('rating')
 
-    esp_moy = esperance_2_cards(card_list, card_by_roll) # ~ 2
-    esp_max = esperance_1_card(card_list, card_by_roll) # ~ 1.18
+    esp_moy = esperance_2_cards(card_list, card_by_roll)
+    esp_max = esperance_1_card(card_list, card_by_roll)
+
+    combin_cumul = 0
+    nb_cumul = 0
+    nb_cumul_with_convervation = 0
+    nb_cumul_without_conservation = 0
+    nb_combin_conservation = 0
+    nb_card_checked = 0
+    for nb, cote_min in enumerate(card_list):
+        for cote_max in card_list[nb:]: # cote_max >= cote_min
+            if cote_min.rating == cote_max.rating:
+                nb_combin = combin(cote_max.nb_copy, card_by_roll)
+                if nb_card_checked:
+                    for nb in range(1, card_by_roll-1):
+                        nb_combin += combin(cote_max.nb_copy, card_by_roll-nb)*combin(nb_card_checked, nb)
+            else:
+                nb_combin = cote_max.nb_copy*combin(cote_min.nb_copy, card_by_roll-1)
+                if nb_card_checked:
+                    for nb in range(1, card_by_roll-1):
+                        nb_combin += cote_max.nb_copy*combin(cote_min.nb_copy, card_by_roll-1-nb)*combin(nb_card_checked, nb)
+
+            combin_cumul += nb_combin
+
+            if cote_min.rating >= esp_moy/2: # deux cartes > 1
+                nb_combin_conservation += nb_combin
+                nb_cumul += (cote_min.rating+cote_max.rating)*nb_combin
+                nb_cumul_with_convervation += (cote_min.rating+cote_max.rating)*nb_combin
+            elif cote_max.rating < esp_moy - esp_max: # deux cartes < 0.8
+                nb_cumul += esp_moy*nb_combin
+                nb_cumul_without_conservation += esp_moy*nb_combin
+            elif cote_max.rating >= esp_moy/2: # cote_max >= 1
+                if cote_min.rating < esp_moy - esp_max:
+                    nb_cumul += (cote_max.rating+esp_max)*nb_combin
+                    nb_cumul_without_conservation += (cote_max.rating+esp_max)*nb_combin
+                else:
+                    nb_combin_conservation += nb_combin
+                    nb_cumul += (cote_min.rating+cote_max.rating)*nb_combin
+                    nb_cumul_with_convervation += (cote_min.rating+cote_max.rating)*nb_combin
+            else: # 0.8 < cote_max < 1
+                nb_cumul += (cote_max.rating+esp_max)*nb_combin
+                nb_cumul_without_conservation += (cote_max.rating+esp_max)*nb_combin
+
+        nb_card_checked += cote_min.nb_copy
+
+    esperance = nb_cumul/combin(nb_card_checked, card_by_roll)
+    taux_de_conservation_du_roll = nb_combin_conservation/combin(nb_card_checked, card_by_roll)
+
+    if combin_cumul != combin(nb_card_checked, card_by_roll):
+        print(f'esperance_2_cards ERROR combin_cumul {combin_cumul} / {combin(nb_card_checked, card_by_roll)}')
+
+    return esperance, taux_de_conservation_du_roll, esp_moy
+
+
+def esperance_2_cards_with_free_roll_force(card_list, card_by_roll=3):
+    card_list.sort('rating')
+
+    esp_moy = esperance_2_cards(card_list, card_by_roll)
+    esp_max = esperance_1_card(card_list, card_by_roll)
 
     combin_cumul = 0
     nb_cumul = 0
@@ -230,11 +293,7 @@ def esperance_2_cards_with_free_roll(card_list, card_by_roll=3):
             elif cote_max.rating < esp_moy - esp_max: # deux cartes < 0.8
                 nb_cumul += esp_moy*nb_combin
             elif cote_max.rating >= esp_moy/2: # cote_max >= 1
-                if cote_min.rating < esp_moy - esp_max:
-                    nb_cumul += (cote_max.rating+esp_max)*nb_combin
-                else:
-                    nb_combin_conservation += nb_combin
-                    nb_cumul += (cote_min.rating+cote_max.rating)*nb_combin
+                nb_cumul += (cote_max.rating+esp_max)*nb_combin
             else: # 0.8 < cote_max < 1
                 nb_cumul += (cote_max.rating+esp_max)*nb_combin
 
@@ -247,6 +306,7 @@ def esperance_2_cards_with_free_roll(card_list, card_by_roll=3):
         print('esperance_2_cards ERROR combin_cumul')
 
     return esperance, taux_de_conservation_du_roll
+
 
 if __name__ == '__main__':
     print(hypgeo(0, 3, 16, 16))

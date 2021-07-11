@@ -1,20 +1,15 @@
-from constants import Event, State, General, Zone
+from enums import Event, State, General, Zone
 import random
 
 # self: entity.Entity
 def damage_resolve(self, *targets):
     for target in targets:
-        if target.general == General.MINION and not target.is_alive:
-            if target.my_zone.zone_type == Zone.PLAY:
-                target.die(self)
-            else:
-                print(f'{target} die in zone {target.my_zone.zone_type}')
-        elif target.general == General.HERO and not target.is_alive:
-            target.die()
+        if not target.is_alive and target in target.owner.entities:
+            target.die(killer=self)
 
 def damage_fight(self, target, nb=None, overkill=False):
     if target.general == General.ZONE:
-        targets = target.cards.exclude(is_alive=False)
+        targets = target.cards.exclude(is_alive=False).exclude_hex(state=State.NOT_TARGETABLE)
         if targets:
             target = random.choice(targets)
         else:

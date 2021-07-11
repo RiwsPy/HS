@@ -1,5 +1,6 @@
 import argparse
 from api import hearthstonejson
+from website import app
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -11,3 +12,4 @@ if __name__ == "__main__":
 
     if args.updateDB:
         hearthstonejson.call_api()
+    app.run()

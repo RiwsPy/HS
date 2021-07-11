@@ -1,5 +1,5 @@
 import random
-from constants import State, Event, BLOOD_GEM
+from enums import State, Event, CardName
 import script_functions
 
 class Piece_dor:
@@ -66,7 +66,7 @@ class Blood_gem:
             bonus = 1
             #for info in player.aura_active.values():
             #    bonus += info['boost_blood_gem']
-            minion.buff(BLOOD_GEM, attack=bonus, max_health=bonus)
+            self.buff(CardName.BLOOD_GEM, minion, attack=bonus, max_health=bonus)
             return True
         return False
 
@@ -106,7 +106,7 @@ class Banana:
         player = self.controller
         minion = player.choose_one_of_them(player.board.cards)
         if minion:
-            minion.buff("501_e")
+            self.buff("501_e", minion)
             return True
         return False
 
@@ -115,6 +115,6 @@ class Great_banana:
         player = self.controller
         minion = player.choose_one_of_them(player.board.cards)
         if minion:
-            minion.buff("502_e")
+            self.buff("502_e", minion)
             return True
         return False

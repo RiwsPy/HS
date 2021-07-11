@@ -1,15 +1,10 @@
 # coding : utf-8
 
 import random
-from constants import Type, State, Event, Rarity, BATTLE_SIZE, BLOOD_GEM
+from enums import Type, State, Event, Rarity, CardName, BATTLE_SIZE
 import script_functions
 from utils import *
 from action import *
-
-
-def invoc(self, repop_id, position, nb=1):
-    for i in range(nb):
-        self.my_zone.create_card_in(repop_id, position=position+i)
 
 # habitué sans-visage (partiel)
 def Murozond(self):
@@ -242,13 +237,9 @@ def Brann(self):
 def Baron_Vaillefendre(self):
     self.owner.add_aura(self, boost_deathrattle=self.double_if_premium(1))
 
-def Khadgar(self):
-    pass
-    #self.owner.add_aura(self, boost_invoc=self.double_if_premium(1))
-
-def Khadgar_p(self):
-    pass
-    #self.owner.add_aura(self, boost_invoc=self.double_if_premium(1))
+class Khadgar:
+    def play_aura(self):
+        pass
 
 def Raflelor(self):
     self.create_and_apply_enchantment("1_e", is_premium=self.is_premium, nb=self.owner.nb_premium_card())
@@ -532,10 +523,8 @@ def Charognard2_2(self, victim):
 
 class Poisson:
     def die(self, source, killer):
-        if source.my_zone is self.my_zone and \
-                source.event & Event.DEATHRATTLE:
-            #self.event |= Event.DEATHRATTLE
-            #self.method += source.method
+        if source.event & Event.DEATHRATTLE and\
+            source.my_zone is self.my_zone:
 
             self.buff('-2_e', self, method=source.method, event=Event.DEATHRATTLE)
 
@@ -633,52 +622,48 @@ def Roi_Bagargouille_death_p(self):
     Boost_other(self, "52_e", type=Type.MURLOC, is_premium=True)
 
 class Chasse_maree_murloc:
-    def battlecry(self):
-        self.my_zone.create_card_in('68469', position=self.position+1)
+    battlecry= lambda self: self.invoc('68469', self.position+1)
 
 class Chasse_maree_murloc_p:
-    def battlecry(self):
-        self.my_zone.create_card_in('57339', position=self.position+1)
+    battlecry= lambda self: self.invoc('57339', self.position+1)
 
 class Chat_de_gouttiere:
-    def battlecry(self):
-        self.my_zone.create_card_in('40425', position=self.position+1)
+    battlecry= lambda self: self.invoc('40425', self.position+1)
 
 class Chat_de_gouttiere_p:
-    def battlecry(self):
-        self.my_zone.create_card_in('60054', position=self.position+1)
+    battlecry= lambda self: self.invoc('60054', self.position+1)
 
 class Forban:
     def deathrattle(self, position):
-        self.my_zone.create_card_in('62213', position=position)
+        self.invoc('62213', position)
 
 class Forban_p:
     def deathrattle(self, position):
-        self.my_zone.create_card_in('62215', position=position)
+        self.invoc('62215', position)
 
 class Gentille_grand_mere:
     def deathrattle(self, position):
-        self.my_zone.create_card_in('39161', position=position)
+        self.invoc('39161', position)
 
 class Gentille_grand_mere_p:
     def deathrattle(self, position):
-        self.my_zone.create_card_in('57341', position=position)
+        self.invoc('57341', position)
 
 class Golem_des_moissons:
     def deathrattle(self, position):
-        self.my_zone.create_card_in('471', position=position)
+        self.invoc('471', position)
 
 class Golem_des_moissons_p:
     def deathrattle(self, position):
-        self.my_zone.create_card_in('57408', position=position)
+        self.invoc('57408', position)
 
 class Emprisonneur:
     def deathrattle(self, position):
-        self.my_zone.create_card_in('2779', position=position)
+        self.invoc('2779', position)
 
 class Emprisonneur_p:
     def deathrattle(self, position):
-        self.my_zone.create_card_in('58373', position=position)
+        self.invoc('58373', position)
 
 def Mecanoeuf(self):
     script_functions.invocation(self, "408a", 1, self.position)
@@ -1019,10 +1004,10 @@ class Forgeronne_des_tarides_p:
     hit_by= lambda self: Forgeronne_des_tarides.hit_by(self, '71534')
 
 class Chef_du_gang_des_diablotins:
-    hit_by= lambda self: invoc(self, '2779', self.position+1, nb=1)
+    hit_by= lambda self: self.invoc('2779', self.position+1)
 
 class Chef_du_gang_des_diablotins_p:
-    hit_by= lambda self: invoc(self, '58373', self.position+1, nb=1)
+    hit_by= lambda self: self.invoc('58373', self.position+1)
 
 def Rover_de_securite(self):
     script_functions.invocation(self, "410a", 1)
@@ -1051,16 +1036,24 @@ class Rejeton_p:
     deathrattle= lambda self, position: self.buff('58169', *self.my_zone.cards)
 
 class Clan_des_rats:
-    deathrattle= lambda self, position: invoc(self, '41839', position, nb=self.attack)
+    def deathrattle(self, position):
+        for nb in range(self.attack):
+            self.invoc('41839', position+nb)
 
 class Clan_des_rats_p:
-    deathrattle= lambda self, position: invoc(self, '58368', position, nb=self.attack)
+    def deathrattle(self, position):
+        for nb in range(self.attack):
+            self.invoc('58368', position+nb)
 
 class Loup_contamine:
-    deathrattle= lambda self, position: invoc(self, '38735', position, nb=2)
+    def deathrattle(self, position):
+        self.invoc('38735', position)
+        self.invoc('38735', position+1)
 
 class Loup_contamine_p:
-    deathrattle= lambda self, position: invoc(self, '58366', position, nb=2)
+    def deathrattle(self, position):
+        self.invoc('58366', position)
+        self.invoc('58366', position+1)
 
 def Criniere_des_savanes(self):
     script_functions.invocation(self, "405a", 2, self.position)
@@ -1084,10 +1077,16 @@ def Seigneur_du_vide_p(self):
     script_functions.invocation(self, "506a_p", 3, self.position)
 
 class Menace_Repliquante:
-    deathrattle= lambda self, position: invoc(self, '48842', position, 3)
+    def deathrattle(self, position):
+        self.invoc('48842', position)
+        self.invoc('48842', position+1)
+        self.invoc('48842', position+2)
 
 class Menace_Repliquante_p:
-    deathrattle= lambda self, position: invoc(self, '58377', position, 3)
+    def deathrattle(self, position):
+        self.invoc('58377', position)
+        self.invoc('58377', position+1)
+        self.invoc('58377', position+2)
 
 class Héroïne_altruiste:
     def deathrattle(self, position):
@@ -1147,26 +1146,26 @@ class Chauffard_huran_p:
 
 class Defense_robuste:
     def add_enchantment_on(self, enchantment, target):
-        if target is self and enchantment.dbfId == BLOOD_GEM:
+        if target is self and enchantment.dbfId == CardName.BLOOD_GEM:
             self.buff('70167', self)
             self.buff('70167_x', self)
 
 class Defense_robuste_p:
     def add_enchantment_on(self, enchantment, target):
-        if target is self and enchantment.dbfId == BLOOD_GEM:
+        if target is self and enchantment.dbfId == CardName.BLOOD_GEM:
             self.buff('70169', self)
             self.buff('70169_x', self)
 
 class Brute_dos_hirsute:
     def play(self, enchantment, target):
-        if target is self and enchantment.dbfId == BLOOD_GEM:
+        if target is self and enchantment.dbfId == CardName.BLOOD_GEM:
             enchantment.attack += 2
             enchantment.max_health += 2
             self.buff('92_e', self)
 
 class Brute_dos_hirsute_p:
     def play(self, enchantment, target):
-        if target is self and enchantment.dbfId == BLOOD_GEM:
+        if target is self and enchantment.dbfId == CardName.BLOOD_GEM:
             enchantment.attack += 4
             enchantment.max_health += 4
             self.buff('92_e', self)
@@ -1189,7 +1188,7 @@ class Necrolyte:
             for neighbour in minion.adjacent_neighbors():
                 change = False
                 for enchantment in neighbour.entities[::-1]:
-                    if enchantment.dbfId == BLOOD_GEM:
+                    if enchantment.dbfId == CardName.BLOOD_GEM:
                         enchantment.apply(minion)
                         change = True
                 if change:
@@ -1199,7 +1198,7 @@ class Necrolyte:
 class Porte_banniere_huran:
     def end_turn(self):
         for neighbour in self.adjacent_neighbors().filter_hex(type=Type.QUILBOAR):
-            self.buff(BLOOD_GEM, neighbour)
+            self.buff(CardName.BLOOD_GEM, neighbour)
 
 class Porte_banniere_huran_p:
     def end_turn(self):
@@ -1210,11 +1209,11 @@ def Cogneur(self):
     self.owner.owner.hand.create_card_in("70136")
 
 def Duo_dynamique(self, enchantment, target):
-    if target != self and enchantment.dbfId == BLOOD_GEM and target.type & Type.QUILBOAR:
+    if target != self and enchantment.dbfId == CardName.BLOOD_GEM and target.type & Type.QUILBOAR:
         self.create_and_apply_enchantment('81_e', is_premium=self.is_premium)
 
 def Tremble_terre(self, enchantment, target):
-    if self is target and enchantment.dbfId == BLOOD_GEM:
+    if self is target and enchantment.dbfId == CardName.BLOOD_GEM:
         for minion in self.owner:
             minion.create_and_apply_enchantment('82_e', is_premium=self.is_premium)
 
@@ -1224,7 +1223,7 @@ def Chevalier_dos_hirsute(self):
         self.state |= State.DIVINE_SHIELD
 
 def Aggem_malepine(self, enchantment, target):
-    if self is target and enchantment.dbfId == BLOOD_GEM:
+    if self is target and enchantment.dbfId == CardName.BLOOD_GEM:
         for minion in self.owner.one_minion_by_type():
             minion.create_and_apply_enchantment('83_e', is_premium=self.is_premium)
 
@@ -1236,7 +1235,7 @@ def Charlga(self):
     for minion in self.owner:
         if minion != self:
             for _ in range(nb_gem):
-                minion.create_and_apply_enchantment(BLOOD_GEM, is_premium=False)
+                minion.create_and_apply_enchantment(CardName.BLOOD_GEM, is_premium=False)
 
 def Capitaine_Plate_Defense(self):
     self.owner.add_aura(self, spend_gold=1, check='Capitaine_Plate_Defense_check')
@@ -1270,3 +1269,9 @@ class Yo_oh_ogre:
     def Yo_oh_ogre(self):
         self.append_action_with_priority(self.prepare_attack)
     """
+
+class Lieutenant_draconide:
+    pass
+
+class Acolyte_CThun:
+    pass

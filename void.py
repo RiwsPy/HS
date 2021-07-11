@@ -1,6 +1,9 @@
-from constants import Event, General, Zone, State, Type
+from enums import Event, General, Zone, State, Type
 
 class Void:
+    def __init__(self) -> None:
+        self.temp_list = []
+
     @property
     def general(self):
         return General.ZONE
@@ -27,7 +30,10 @@ class Void:
 
     def remove(self, *args, **kwargs):
         pass
-    append = remove
+    #append = remove
+
+    def append(self, entity):
+        self.temp_list.append(entity)
 
     @property
     def owner(self):

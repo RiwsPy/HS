@@ -1,6 +1,6 @@
 from action import attack
 import random
-from constants import BATTLE_SIZE, LEVEL_MAX, Type, State, General
+from enums import BATTLE_SIZE, LEVEL_MAX, Type, State, General
 
 class Graveyard_shift:
     def use_power(self):

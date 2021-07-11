@@ -1,5 +1,5 @@
 from utils import Card_list, Board_Card_list, hasevent
-from constants import General, NB_CARD_BY_LEVEL, State, Event, Type, Zone, BATTLE_SIZE, SECRET_SIZE, LEVEL_MAX
+from enums import General, NB_CARD_BY_LEVEL, State, Event, Type, Zone, BATTLE_SIZE, SECRET_SIZE, LEVEL_MAX
 from entity import Card
 import random
 import script_event
@@ -47,7 +47,11 @@ class Board(Entity):
                 return
 
             if hasevent(card, Event.PLAY_AURA):
-                del self.controller.aura_active[card]
+                try:
+                    del self.controller.aura_active[card]
+                except KeyError:
+                    pass
+                    #print(f'{card} not in aura_active to {self.controller}')
                 card.apply_met_on_all_children(Entity.remove_my_aura_action, card.controller)
             for enchantment in card.entities:
                 if getattr(enchantment, 'aura', False):
@@ -57,7 +61,6 @@ class Board(Entity):
         # TODO : problème de positionnement en cas de repop multiple
         # faire pop avant le minion d'après ou en dernier en cas d'inexistance
         # TODO: gestion des secrets et sorts
-        # comment exclure le repop de Khadgar d'une nouvelle invocation ?
         if card.owner is self and card in self.cards:
             if position != card.position:
                 del self.cards[self.cards.index(card)]
@@ -68,6 +71,8 @@ class Board(Entity):
             return False
 
         if card.general == General.MINION:
+            if position is None:
+                position = BATTLE_SIZE
             old_owner = card.owner
             card.owner.remove(card)
             card.owner = self
@@ -82,6 +87,8 @@ class Board(Entity):
                 if self.owner.general == General.HERO:
                     self.owner.played_minions[self.owner.nb_turn] += card
             return True
+        elif card.general == General.SPELL:
+            self.active_global_event(Event.PLAY, self.controller, source=card)
 
         return False
 
@@ -140,6 +147,7 @@ class Board(Entity):
         self.cards.sort(key=lambda x: (
                         not x.state & State.CLEAVE,
                         not x.event & Event.OVERKILL,
+                        not x.event & Event.ATK_ALLY,
                         x.event & Event.DIE,
                         x.event & Event.INVOC,
                         x.event & Event.PLAY_AURA,

@@ -1,5 +1,5 @@
 from collections import defaultdict
-from constants import Event, General, LEVEL_UP_COST, State, NB_CARD_BY_LEVEL, MAX_GOLD, \
+from enums import Event, General, LEVEL_UP_COST, State, NB_CARD_BY_LEVEL, MAX_GOLD, \
     GOLD_BY_TURN, LEVEL_MAX
 import board
 import hand
@@ -127,11 +127,14 @@ class Player(Entity):
             if buyer.can_buy_minion(cost=cost):
                 buyer.gold -= cost
                 self.gold += cost
+
+                card.active_local_event(Event.SELL, source=card)
+                self.active_global_event(Event.SELL, self.controller, source=card)
+                buyer.active_global_event(Event.BUY, buyer, source=card)
+
                 buyer.hand.append(card)
                 self.sold_minions[self.nb_turn].append(card)
                 buyer.bought_minions[self.nb_turn].append(card)
-                self.active_global_event(Event.SELL, self, card=card)
-                buyer.active_global_event(Event.BUY, buyer, card=card)
                 return card
         return None
 
@@ -187,7 +190,7 @@ class Bob(Player):
         self.level += 1
         self.level_up_cost = self.level_up_cost_list[self.level]
 
-        self.active_global_event(Event.LEVELUP, self.controller)
+        self.active_global_event(Event.LEVELUP, self.opponent)
 
         return True
 
@@ -266,7 +269,7 @@ class Bob(Player):
     def discover(self, origin, nb=3, typ=0, lvl_max=LEVEL_MAX, lvl_min=1):
             Découvre nb cartes de type typ, de niveau maximum lvl_max et de niveau minimum lvl_min
             Le joueur choisit ensuite l'une d'entre elle et l'ajoute dans sa main
-            *param typ: (cf constants.Type.XXX)
+            *param typ: (cf enums.Type.XXX)
             *return: liste des cartes à choisir
         if nb < 1:
             return None

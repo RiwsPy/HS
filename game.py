@@ -1,6 +1,6 @@
 from db_card import CARD_DB
 from utils import Card_list
-from constants import Type, General, Event, NB_PRESENT_TYPE, VERSION
+from enums import Type, General, Event, NB_PRESENT_TYPE, VERSION, State
 import random
 import player
 from entity import Entity
@@ -9,7 +9,8 @@ from itertools import chain
 import combat
 from stats import *
 import entity
-import json
+import stats
+import utils
 
 class Game(Entity):
     default_attr = {
@@ -31,9 +32,14 @@ class Game(Entity):
             self.type_present = Type.ALL - type_ban
 
         all_cards = entity.card_db()
-        self.craftable_card = all_cards.\
-            filter_hex(synergy=self.type_present).\
-            filter(ban=None)
+        if self.type_present:
+            self.craftable_card = all_cards.\
+                filter_hex(synergy=self.type_present).\
+                filter(ban=None)
+        else: # tous types ban
+            self.craftable_card = all_cards.\
+                filter(synergy=Type.ALL).\
+                filter(ban=None)
 
         self.craftable_hero = self.craftable_card.\
             filter(general=General.HERO)
@@ -41,7 +47,7 @@ class Game(Entity):
         self.card_can_collect = self.craftable_card.\
             filter(general=General.MINION).\
             filter(cant_collect=None)
-        
+
         self.hand = Bob_hand()
         self.hand.owner = self
 
@@ -53,29 +59,16 @@ class Game(Entity):
         #    for nb in TYPE_NAME }
         #self.nb_card_by_syn[card_synergy][card_level] += CARD_NB_COPY[card_level]
         #self.print_bdd_card()
-        if self.is_arene:
-            with open('db_arene.json', 'r') as file:
-                dic = json.load(file)
-            self.db_arene = dic
-            """
-            try:
-                data_stat = dic[self.version][str(Type.ALL - self.type_present)]
-            except KeyError:
-                return None
-            search = {'p1': 'Héros tout nul', 'p2': 'Héros tout nul', 'com': 'Sortie_tour2_retro_2'}
-            data = None
-            for info in data_stat.values():
-                if info['data'] == search:
-                    data = info['rating']
-                    esp = info['espérance']
-                    break
-            if data:
-                for card_id, rating in data.items():
-                    card_data = self.card_db[card_id]
-                    card_data.rating = rating
-                    card_data.esp = esp
-        """
 
+    def arene_on_creation(self):
+        minion_rating = utils.db_arene(
+            version=self.version,
+            type_ban=Type.ALL - self.type_present)
+        for card in self.card_can_collect:
+            try:
+                card.all_rating = minion_rating[card]['rating']
+            except KeyError:
+                card.all_rating = {}
 
     def reinit(self):
         self.entities = Card_list()
@@ -153,7 +146,7 @@ class Game(Entity):
             else:
                 hero_chosen = self.choose_one_of_them(self.craftable_hero[nb*4:nb*4+4],
                     pr=f'Choix du héros pour {player_name} :')
-            plyr = player.Player(player_name, hero_chosen, bob=bob)
+            plyr = player.Player(player_name, hero_chosen, bob=bob, is_bot=True)
             bob.board.opponent = plyr.board
             self.append(plyr)
 
@@ -163,45 +156,22 @@ class Game(Entity):
 
         return sum(lst[:NB_PRESENT_TYPE])
 
-
-
 if __name__ == "__main__":
     g = Game()
     g.party_begin('rivvers', 'notoum')
-    g.nb_turn += 1
+    g.nb_turn = 3
     p1 = g.players[0]
     p2 = g.players[1]
-    """
-        # hyène, roche en fusion, rejeton, défense robuste, chef du gang, 
-    p1.board.create_card_in('104')
-    p1.board.create_card_in('220')
-    p1.board.create_card_in('207')
-    p1.board.create_card_in('225')
-    p1.board.create_card_in('2288')
-    print(p1.board.cards)
-    p1.board.auto_placement_card()
-    print(p1.board.cards)
-    """
 
-    """
-    p1.board.create_card_in("116")
-    p2.board.create_card_in("205")
-    g.end_turn(p1, p2)
-    g.begin_fight(p1)
-    print(p1.board.cards)
-    """
-
-
-    """
-    crd = plyr_1.hand.create_card_in('120')
-    crd.play()
-    crd = plyr_2.hand.create_card_in('112')
-    crd.play()
-    winner, damage = plyr_1.fight.fight_initialisation()
-    print(winner, damage)
-    """
-
-
+    c1 = p1.hand.create_card_in('58380')
+    c1.play()
+    c3 = p1.hand.create_card_in('60558')
+    c3.play()
+    c3.remove_attr(state=State.DIVINE_SHIELD)
+    c3.die()
+    p1.active_action()
+    for entity in p1.board.cards:
+        print(entity.name, entity.attack, entity.health, entity.state)
 
 
 

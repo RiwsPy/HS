@@ -1,5 +1,5 @@
 import random
-from constants import BATTLE_SIZE, Event, State, General
+from enums import BATTLE_SIZE, Event, State, General
 from utils import *
 from action import *
 from typing import Tuple
@@ -84,16 +84,12 @@ class Combat:
 
     def next_round(self):
         # search first attacker
-        attacker_minion = None
         for i in range(BATTLE_SIZE):
             attacker_minion_position = (self.attacker.attack_case + i) % BATTLE_SIZE
             minion = self.attacker.cards[attacker_minion_position]
             if minion and minion.can_attack:
-                attacker_minion = minion
+                self.minion_attack(minion)
                 break
-
-        if attacker_minion:
-            self.minion_attack(attacker_minion)
 
     def minion_attack(self, attacker_minion):
         for _ in range(attacker_minion.how_many_time_can_I_attack()):
@@ -102,7 +98,8 @@ class Combat:
 
         if attacker_minion.is_alive:
             self.attacker.attack_case += 1
-            self.attacker.attack_case %= len(self.attacker.cards)
+            if self.attacker.cards:
+                self.attacker.attack_case %= len(self.attacker.cards)
 
     def calc_initiative(self, board_j1, board_j2):
         if len(board_j1.cards) > len(board_j2.cards) or \

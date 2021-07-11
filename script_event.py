@@ -1,5 +1,6 @@
 from script_minion import *
 from script_power import *
+from script_spell import *
 
 class no_method:
     pass
@@ -13,6 +14,8 @@ class player_board:
     def end_fight(self):
         self.cards = self.cards_copy[:]
         self.entities = self.entities_copy[:]
+        for card in self.entities:
+            card.owner = self
 
     def end_turn(self):
         self.cards_copy = self.cards[:]
