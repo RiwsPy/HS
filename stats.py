@@ -3,7 +3,7 @@ from db_card import Meta_card_data
 import math
 from operator import itemgetter
 from typing import Generator, Tuple, List
-from constants import LEVEL_MAX, CARD_NB_COPY, NB_CARD_BY_LEVEL
+from enums import LEVEL_MAX, CARD_NB_COPY, NB_CARD_BY_LEVEL
 fact = math.factorial
 
 combin = lambda n,k: fact(n)//(fact(k)*fact(n-k))

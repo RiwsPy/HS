@@ -1,6 +1,7 @@
+from os import stat
 from db_card import Card_data
 import game
-from constants import Type
+from enums import Type, VERSION
 import time
 import json
 import stats
@@ -28,29 +29,26 @@ class arene:
         self.version = self.g.version
         self.method = kwargs['method']
 
-        with open('db_arene.json', 'r') as file:
-            dic = json.load(file)
-        self.db_arene = dic
-        self.init_dic()
+        self.db_arene = db_arene(**kwargs)
         self.p1 = self.g.card_db[kwargs['p1']]
         self.p2 = self.g.card_db[kwargs['p2']]
-        self.retro = kwargs['retro']
+        self.retro = kwargs.get('retro', 0)
 
-        self.dic_add = {'kwargs': kwargs}
+        self.dic_add = kwargs
 
         self.begin()
 
 
     def begin(self):
-        if search_in_dict(self.db_arene[self.version][self.method], **self.dic_add):
+        if self.db_arene.search(version=self.version, **self.dic_add):
             print(f'retro {self.retro} déjà existante.')
             return None
         print(f'retro {self.retro} en cours...')
 
         if self.retro >= 1:
-            self.dic_add['kwargs']['retro'] -= 1
+            self.dic_add['retro'] -= 1
             cards_test = self.load_card_rating(self.dic_add, self.method)
-            self.dic_add['kwargs']['retro'] += 1
+            self.dic_add['retro'] += 1
         else:
             cards_test = Meta_card_data()
 
@@ -71,14 +69,14 @@ class arene:
         self.dic_add['espérance'] = esp
         self.dic_add['rating'] = ordered_rating(result)
 
-        self.save_json()
+        self.db_arene.save()
 
         fin = time.time()
         print(fin-self.debut)
 
     def load_card_rating(self, dic_add: dict, method) -> Meta_card_data:
         cards_test = Meta_card_data()
-        stat_data = search_in_dict(self.db_arene[self.version][method], **dic_add)
+        stat_data = self.db_arene.search(version=self.version, **dic_add)
         if stat_data:
             for card_dbfId, card_rating in stat_data['rating'].items():
                 crd = self.g.card_db[card_dbfId.split('_')[0]]
@@ -88,20 +86,6 @@ class arene:
             print(f'Retro {self.retro} de {method} introuvable.')
 
         return cards_test
-
-    def save_json(self):
-        with open('db_arene.json', 'w', encoding='utf8') as file:
-            json.dump(self.db_arene, file, indent=1, ensure_ascii=False)
-
-    def init_dic(self):
-        dic = self.db_arene
-        version = self.version
-        method = self.method
-        if version not in dic:
-            dic[version] = {}
-            dic[version][method] = {}
-        elif method not in dic[version]:
-            dic[version][method] = {}
 
     def base_T1(self, cards_test, p1, p2):
         cards_test = cards_test or self.g.card_can_collect.filter(level=1)
@@ -190,12 +174,12 @@ class arene:
             if not synergy & self.g.type_present:
                 del compo_turn_3[synergy]
         #cards_T2 = self.g.card_can_collect.filter_maxmin_level(level_max=2)
-        cards_T2 = self.load_card_rating({'kwargs':
+        cards_T2 = self.load_card_rating(
                         {"method": "base_T3",
                         "type_ban": self.type_ban,
                         "retro": 1,
                         "p1": "aaa",
-                        "p2": "aaa"}},
+                        "p2": "aaa"},
                         method = 'base_T3')
         if not cards_T2:
             return
@@ -235,12 +219,12 @@ class arene:
         cards_test = cards_test or self.g.card_can_collect.filter(level=1)
         self.fight_base_T2_to_T3(cards_test, p1, p2)
 
-        cards_list = self.load_card_rating({'kwargs':
+        cards_list = self.load_card_rating(
                 {"method": "base_T3",
                 "type_ban": self.type_ban,
                 "retro": 2,
                 "p1": "aaa",
-                "p2": "aaa"}},
+                "p2": "aaa"},
                 method = 'base_T3')
 
         # mousse du pont
@@ -249,8 +233,9 @@ class arene:
         cards_list['61055'].value += (esp_with_roll - esp_without_roll)*cards_list['61055'].counter
 
         # anomalie actualisante
-        esp_with_roll = stats.esperance_2_cards_with_free_roll(cards_list, 4)[0]
+        esp_with_roll, conservation_rate, esp_moy = stats.esperance_2_cards_with_free_roll(cards_list, 4)
         cards_list['64042'].value += (esp_with_roll - esp_without_roll)*cards_list['64042'].counter
+        cards_list['64042'].esp_moy = esp_moy
 
         return cards_test, 1
 
@@ -264,27 +249,27 @@ class arene:
                 del compo_turn_3[synergy]
         #cards_T2 = self.g.card_can_collect.filter_maxmin_level(level_max=2)
 
-        cards_T1_to_T3 = self.load_card_rating({'kwargs':
+        cards_T1_to_T3 = self.load_card_rating(
                         {"method": "base_T1_to_T3_no_refound",
                         "type_ban": self.type_ban,
                         "retro": 0,
                         "p1": "aaa",
-                        "p2": "aaa"}},
+                        "p2": "aaa"},
                         method = 'base_T1_to_T3_no_refound')
         for card in cards_T1_to_T3:
             self.g.card_db[card].T1_to_T3_rating = card.rating
 
-        cards_T2 = self.load_card_rating({'kwargs':
+        cards_T2 = self.load_card_rating(
                         {"method": "base_T3",
                         "type_ban": self.type_ban,
                         "retro": 2,
                         "p1": "aaa",
-                        "p2": "aaa"}},
+                        "p2": "aaa"},
                         method = 'base_T3')
         if not cards_T2:
             return
 
-        for card_p1 in [self.g.card_db["64042"]]: # card_list
+        for card_p1 in [self.g.card_db['64042']]: # card_list
             print(f'{card_p1.name} en cours...')
             generator_p2 = stats.card_proba(
                             cards_T2,
@@ -324,23 +309,25 @@ class arene:
 
     def base_T1_to_T3_extended(self, cards_test, p1, p2):
         if self.retro == 0:
-            cards_test = self.load_card_rating({'kwargs':
+            cards_test = self.load_card_rating(
                             {"method": "base_T2_to_T3",
                             "type_ban": self.type_ban,
                             "retro": 0,
                             "p1": "aaa",
-                            "p2": "aaa"}},
+                            "p2": "aaa"},
                             method = 'base_T2_to_T3')
             # 9.5/5 = 2/2 + 2/4 + 2/5, impact prévisionnel jusqu'au Tour 5
+            # TODO: valeur sous-évaluée pour l'anomalie actualisante > conservation_rate
+            ref_rating = self.g.card_db['59670']
             for card in cards_test:
                 card.value = card.rating*9.5/5
 
-            cards_test = self.load_card_rating({'kwargs':
+            cards_test = self.load_card_rating(
                             {"method": "base_T1",
                             "type_ban": self.type_ban,
                             "retro": 2,
                             "p1": "aaa",
-                            "p2": "aaa"}},
+                            "p2": "aaa"},
                             method = 'base_T1')
 
             for card in cards_test:
@@ -352,105 +339,25 @@ class arene:
                 card.value /= card.counter
                 card.counter = 1
 
-            cards_test = self.load_card_rating({'kwargs':
+            cards_test = self.load_card_rating(
                             {"method": "base_T2_to_T3",
                             "type_ban": self.type_ban,
                             "retro": 0,
                             "p1": "aaa",
-                            "p2": "aaa"}},
+                            "p2": "aaa"},
                             method = 'base_T2_to_T3')
             for card in cards_test:
                 card.value += card.rating*9.5/5
 
         return cards_test, 1
 
-    def test_esperance(self, cards_test, p1, p2):
-        return cards_test
-
-
-
-    def fight_base_T1_to_T3_x(self, card_list, hero_p1, hero_p2):
-        g = self.g
-        NB_FIGHT = 1
-
-        for synergy in compo_turn_3.copy():
-            if not synergy & self.g.type_present:
-                del compo_turn_3[synergy]
-
-        #cards_T1 = g.card_can_collect.filter(level=1)
-        cards_T1 = [g.card_db['976'],
-                    g.card_db['40426'],
-                    g.card_db['64038'],
-                    g.card_db['70147'],
-                    g.card_db['70143'],
-                    g.card_db['68469']]
-        cards_T1_other = [card
-                for card in g.card_can_collect.filter(level=1)
-                    if card not in cards_T1]
-
-        for card_p1 in cards_T1:
-            generator_p2 = stats.card_proba(
-                            card_list,
-                            player_level=2)
-            for card_p1_2, proba_p1_2 in generator_p2:
-                generator_p2_2 = stats.card_proba(
-                                card_list,
-                                player_level=2,
-                                exclude_card=[card_p1_2])
-                for card_p1_3, proba_p1_3 in generator_p2_2:
-                    for compo in compo_turn_3.values():
-                        for _ in range(NB_FIGHT):
-                            g.party_begin('rivvers', 'notoum', hero_p1=hero_p1, hero_p2=hero_p2)
-                            j1, j2 = g.players
-                            g.begin_turn()
-                            j1.power.active_script_arene(card_p1)
-                            j2.power.active_script_arene('68469')
-                            g.end_turn()
-                            g.begin_turn()
-                            j1.power.active_script_arene()
-                            j2.power.active_script_arene()
-                            g.end_turn()
-                            g.begin_turn()
-                            j1.power.active_script_arene(card_p1_2, card_p1_3)
-                            j2.power.active_script_arene(*compo)
-                            g.end_turn()
-                            g.begin_fight()
-                            g.end_fight()
-
-                            damage_value = calc_damage(j1, j2)
-                            proba_mult = proba_p1_2*proba_p1_3/NB_FIGHT
-                            if card_p1 == '68469':
-                                for card in cards_T1_other:
-                                    card.counter_2 += proba_mult
-                                    card.value_2 += damage_value*proba_mult
-                                    card_p1_2.counter += proba_mult
-                                    card_p1_3.counter += proba_mult
-                                    card_p1_2.value += damage_value*proba_mult
-                                    card_p1_3.value += damage_value*proba_mult
-                            else:
-                                card_p1.counter_2 += proba_mult
-                                card_p1.value_2 += damage_value*proba_mult
-                                card_p1_2.counter += proba_mult
-                                card_p1_3.counter += proba_mult
-                                card_p1_2.value += damage_value*proba_mult
-                                card_p1_3.value += damage_value*proba_mult
-
-        return card_list
-
 def ordered_rating(result: Meta_card_data) -> Dict[Card_data, int]:
-    result.sort('value', reverse=True)
     return {card_id + '_' + card_id.name: round(card_id.value, 2)
-        for card_id in result}
+        for card_id in sorted(result, lambda x: x.value, reverse=True)}
 
 def calc_damage(p1: Entity, p2: Entity) -> int:
     return (p2.max_health - p2.health)*3/5 / (p2.max_health/40) - \
         (p1.max_health - p1.health)*5/3 / (p1.max_health/40)
-
-def search_in_dict(data: dict, **kwargs) -> dict:
-    for info_stat in data.values():
-        if info_stat.get('kwargs') == kwargs['kwargs']:
-            return info_stat
-    return {}
 
 def search_value_in_list(value, lst, lon=None):
     if not lst:
@@ -471,5 +378,44 @@ def search_value_in_list(value, lst, lon=None):
     return middle
 
 
+class db_arene(dict):
+    filename = 'db_arene.json'
+
+    def __init__(self, version=VERSION, method='no_method', **kwargs):
+        with open(self.__class__.filename, 'r') as file:
+            super().__init__(**json.load(file))
+
+        if version not in self:
+            self[version] = {}
+            self[version][method] = {}
+        elif method not in self[version]:
+            self[version][method] = {}
+
+    def search(self, version=VERSION, **kwargs) -> dict:
+        for info_stat in self[version][kwargs['method']].values():
+            if info_stat.get('kwargs') == kwargs:
+                return info_stat
+        return {}
+
+    def search_minion_rate(self, minion, **kwargs) -> int:
+        for card, rate in self.search(**kwargs)['rating'].items():
+            if minion == card.split('_')[0]:
+                return rate
+        return 0
+
+    def save(self):
+        with open(self.__class__.filename, 'w', encoding='utf8') as file:
+            json.dump(self, file, indent=1, ensure_ascii=False)
+
 if __name__ == '__main__':
-    arene(method='base_T1_to_T3_extended', type_ban=0, retro=2, p1="aaa", p2="aaa") #61910
+    """
+    db = db_arene()
+    print(db.search_minion_rate('63614', **{
+     "method": "base_T1",
+     "type_ban": 0,
+     "retro": 0,
+     "p1": "aaa",
+     "p2": "aaa"}))
+    """
+
+    arene(method='base_T1', type_ban=0, retro=0, p1="aaa", p2="aaa")
