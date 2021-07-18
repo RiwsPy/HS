@@ -1,11 +1,12 @@
 from collections import defaultdict
-from enums import Event, General, LEVEL_UP_COST, State, NB_CARD_BY_LEVEL, MAX_GOLD, \
+from enums import Event, Type, LEVEL_UP_COST, State, NB_CARD_BY_LEVEL, MAX_GOLD, \
     GOLD_BY_TURN, LEVEL_MAX
 import board
 import hand
 from entity import Card, Entity
 from utils import Card_list
 from stats import *
+import random
 
 class Player(Entity):
     default_attr = {
@@ -33,7 +34,7 @@ class Player(Entity):
 
         self.pseudo = pseudo
         self.health = self.max_health
-        if self.general == General.HERO:
+        if self.type == Type.HERO:
             self.hand = hand.Player_hand()
             self.append(self.hand)
             self.board = board.Board(event=Event.ALL, method="player_board")
@@ -121,7 +122,7 @@ class Player(Entity):
         return False
 
     def sell_minion(self, card, buyer, cost=None) -> Entity:
-        if card.general == General.MINION and card in self.board.cards:
+        if card.type == Type.MINION and card in self.board.cards:
             if cost is None:
                 cost = buyer.minion_cost
             if buyer.can_buy_minion(cost=cost):
@@ -245,9 +246,6 @@ class Bob(Player):
 
 
 
-
-
-
 """
 
     def pick_random_card(self, lst_card):
@@ -269,7 +267,7 @@ class Bob(Player):
     def discover(self, origin, nb=3, typ=0, lvl_max=LEVEL_MAX, lvl_min=1):
             Découvre nb cartes de type typ, de niveau maximum lvl_max et de niveau minimum lvl_min
             Le joueur choisit ensuite l'une d'entre elle et l'ajoute dans sa main
-            *param typ: (cf enums.Type.XXX)
+            *param typ: (cf enums.Race.XXX)
             *return: liste des cartes à choisir
         if nb < 1:
             return None
@@ -326,7 +324,7 @@ class Bob(Player):
         # renvoie la "meilleure" carte que peut choisir un héros qui rencontre un héros précis au tour n°2
         # puis un héros "classique" au tour n°3
 
-        bob = self.bob.__class__(Type.ALL - self.bob.type_present)
+        bob = self.bob.__class__(Race.ALL - self.bob.type_present)
         players = [self.__class__(bob, plyr.name, plyr.hero.dbfId)
             for plyr in players]
 

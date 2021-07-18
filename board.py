@@ -1,5 +1,5 @@
 from utils import Card_list, Board_Card_list, hasevent
-from enums import General, NB_CARD_BY_LEVEL, State, Event, Type, Zone, BATTLE_SIZE, SECRET_SIZE, LEVEL_MAX
+from enums import Type, NB_CARD_BY_LEVEL, State, Event, Race, Zone, BATTLE_SIZE, SECRET_SIZE, LEVEL_MAX
 from entity import Card
 import random
 import script_event
@@ -11,7 +11,7 @@ from operator import itemgetter
 #TODO: bloquer les fonctions manuelles board en cours de combat
 class Board(Entity):
     default_attr = {
-        'general': General.ZONE,
+        'type': Type.ZONE,
         'zone_type': Zone.PLAY,
         'opponent': None,
         'next_opponent': None, # adversaire rencontré après un end_turn
@@ -70,7 +70,7 @@ class Board(Entity):
         if not self.can_add_card(card):
             return False
 
-        if card.general == General.MINION:
+        if card.type == Type.MINION:
             if position is None:
                 position = BATTLE_SIZE
             old_owner = card.owner
@@ -84,11 +84,13 @@ class Board(Entity):
                     old_owner.owner is self.owner:
                 self.active_global_event(Event.PLAY, self.controller, source=card)
                 card.active_local_event(Event.BATTLECRY)
-                if self.owner.general == General.HERO:
-                    self.owner.played_minions[self.owner.nb_turn] += card
+                if self.owner.type == Type.HERO:
+                    self.owner.played_minions[self.nb_turn] += card
+                self.active_global_event(Event.AFTER_PLAY, self.controller, source=card)
             return True
-        elif card.general == General.SPELL:
+        elif card.type == Type.SPELL:
             self.active_global_event(Event.PLAY, self.controller, source=card)
+            self.active_global_event(Event.AFTER_PLAY, self.controller, source=card)
 
         return False
 
@@ -97,14 +99,15 @@ class Board(Entity):
             Create card and append it in self
         """
         card_id = Card(id, **kwargs)
-        self.append(card_id, position)
-        return card_id
+        if self.append(card_id, position):
+            return card_id
+        return None
 
     def can_add_card(self, card_id) -> bool:
-        if card_id.general == General.MINION:
+        if card_id.type == Type.MINION:
             return len(self.cards) <= BATTLE_SIZE-1
 
-        if card_id.general == General.SPELL:
+        if card_id.type == Type.SPELL:
             if not card_id.state & State.SECRET:
                 return True
 
@@ -124,7 +127,7 @@ class Board(Entity):
 
     def one_minion_by_type(self) -> Card_list:
         """
-            Return a set which contains until one minion by type
+            Return a list which contains until one minion by type
         """
         tri = self.classification_by_type()
         del tri[0] # exclusion des types neutres
@@ -133,7 +136,7 @@ class Board(Entity):
                 for minions in tri.values()
                     if minions)
 
-        return result + self.cards.filter(type=Type.ALL)
+        return result + self.cards.filter(race=Race.ALL)
 
     def auto_placement_card(self) -> None:
         """

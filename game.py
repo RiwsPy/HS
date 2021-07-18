@@ -1,6 +1,6 @@
 from db_card import CARD_DB
 from utils import Card_list
-from enums import Type, General, Event, NB_PRESENT_TYPE, VERSION, State
+from enums import Race, Type, Event, NB_PRESENT_TYPE, VERSION, State
 import random
 import player
 from entity import Entity
@@ -9,8 +9,8 @@ from itertools import chain
 import combat
 from stats import *
 import entity
-import stats
 import utils
+from collections import deque
 
 class Game(Entity):
     default_attr = {
@@ -29,7 +29,7 @@ class Game(Entity):
         if type_ban is None:
             self.type_present = self.determine_present_type()
         else:
-            self.type_present = Type.ALL - type_ban
+            self.type_present = Race.ALL - type_ban
 
         all_cards = entity.card_db()
         if self.type_present:
@@ -38,14 +38,14 @@ class Game(Entity):
                 filter(ban=None)
         else: # tous types ban
             self.craftable_card = all_cards.\
-                filter(synergy=Type.ALL).\
+                filter(synergy=Race.ALL).\
                 filter(ban=None)
 
         self.craftable_hero = self.craftable_card.\
-            filter(general=General.HERO)
+            filter(type=Type.HERO)
 
         self.card_can_collect = self.craftable_card.\
-            filter(general=General.MINION).\
+            filter(type=Type.MINION).\
             filter(cant_collect=None)
 
         self.hand = Bob_hand()
@@ -56,14 +56,14 @@ class Game(Entity):
                 for dbfId in self.card_can_collect)))
 
         #self.nb_card_by_syn = { nb: [0]*(LEVEL_MAX+1)
-        #    for nb in TYPE_NAME }
+        #    for nb in RACE_NAME }
         #self.nb_card_by_syn[card_synergy][card_level] += CARD_NB_COPY[card_level]
         #self.print_bdd_card()
 
     def arene_on_creation(self):
         minion_rating = utils.db_arene(
             version=self.version,
-            type_ban=Type.ALL - self.type_present)
+            type_ban=Race.ALL - self.type_present)
         for card in self.card_can_collect:
             try:
                 card.all_rating = minion_rating[card]['rating']
@@ -74,8 +74,7 @@ class Game(Entity):
         self.entities = Card_list()
         self._nb_turn = 0
         #self.graveyard = Graveyard(self)
-        self.trigger_stack = []
-        self.action_stack = []
+        self.action_stack = deque()
         self.fights = []
 
     @property
@@ -99,7 +98,7 @@ class Game(Entity):
 
     @property
     def players(self):
-        return self.entities.filter(general=General.HERO)
+        return self.entities.filter(type=Type.HERO)
 
     def end_turn(self):
         self.active_global_event(Event.END_TURN, *self.entities)
@@ -151,7 +150,7 @@ class Game(Entity):
             self.append(plyr)
 
     def determine_present_type(self) -> int:
-        lst = Type.battleground_type()[:]
+        lst = Race.battleground_race()[:]
         random.shuffle(lst)
 
         return sum(lst[:NB_PRESENT_TYPE])
@@ -170,8 +169,8 @@ if __name__ == "__main__":
     c3.remove_attr(state=State.DIVINE_SHIELD)
     c3.die()
     p1.active_action()
-    for entity in p1.board.cards:
-        print(entity.name, entity.attack, entity.health, entity.state)
+    for minion in p1.board.cards[1].adjacent_neighbors():
+        print(minion.name, minion.attack, minion.position)
 
 
 
@@ -184,7 +183,7 @@ if __name__ == "__main__":
             len_max = max(len_max, len(synergy_name))
         separator = ' :'
 
-        with open('bdd_card', 'w', encoding='utf-8') as file:
+        with open('db_battlegrounds_extended', 'w', encoding='utf-8') as file:
             title = 'Présence des différentes synergies :\n'
             line_1 = ' '*(len_max+len(separator))
             for i in range(1, LEVEL_MAX+1):

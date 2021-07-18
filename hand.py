@@ -1,4 +1,4 @@
-from enums import Zone, General, Event, State, LEVEL_MAX, HAND_SIZE, CARD_NB_COPY
+from enums import Zone, Type, Event, State, LEVEL_MAX, HAND_SIZE, CARD_NB_COPY
 from entity import Card, Entity, card_db
 from typing import List, Generator
 from itertools import chain
@@ -22,11 +22,11 @@ class Player_hand(Entity):
         """
         if entities:
             for entity in entities[::-1]:
-                if entity.general in (General.MINION, General.SPELL):
+                if entity.type in (Type.MINION, Type.SPELL):
                     if self.can_add_card():
                         super().append(entity)
                         self.cards.append(entity)
-                #elif entity.general != General.ZONE:
+                #elif entity.type != Type.ZONE:
                 #    super().append(entity)
 
     def remove(self, *entities) -> None:
@@ -46,7 +46,7 @@ class Player_hand(Entity):
 
     def auto_play(self):
         self.cards.sort(key=lambda x:(
-                        x.general != General.MINION,
+                        x.type != Type.MINION,
                         not x.event & Event.INVOC,
                         not x.event & Event.PLAY,
                         not x.event & Event.PLAY_AURA,
@@ -55,7 +55,7 @@ class Player_hand(Entity):
                         x.level,
                 ), reverse=True)
         for card in self.cards[::-1]:
-            if card.general == General.SPELL:
+            if card.type == Type.SPELL:
                 getattr(script_event, card.method).play(card)
                 self.remove(card)
             else:
@@ -144,7 +144,7 @@ class Bob_hand(Entity):
             *type tier_min: int
             *rtype: utils.Card_list
         """
-        return Card_list(chain(*self.entities[tier_min:tier_max+1]))
+        return Card_list(*chain(*self.entities[tier_min:tier_max+1]))
 
     @property
     def cards(self) -> Card_list:

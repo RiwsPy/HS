@@ -1,4 +1,4 @@
-from enums import Event, State, General, Zone
+from enums import Event, State, Type, Zone
 import random
 
 # self: entity.Entity
@@ -8,7 +8,7 @@ def damage_resolve(self, *targets):
             target.die(killer=self)
 
 def damage_fight(self, target, nb=None, overkill=False):
-    if target.general == General.ZONE:
+    if target.type == Type.ZONE:
         targets = target.cards.exclude(is_alive=False).exclude_hex(state=State.NOT_TARGETABLE)
         if targets:
             target = random.choice(targets)

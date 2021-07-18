@@ -1,17 +1,19 @@
-from enums import General, LEVEL_MAX, VERSION
+from enums import Type, LEVEL_MAX, VERSION
 import json
+from types import GeneratorType
 
 def game(self):
     ret = self
-    while ret.general > General.GAME:
+    print(ret, ret.type)
+    while ret.type > Type.GAME:
         ret = ret.owner
-    if ret.general == General.GAME:
+    if ret.type == Type.GAME:
         return ret
     return None
 
 def hasevent(self, event) -> bool:
     ret = self
-    while ret.general > General.GAME:
+    while ret.type > Type.GAME:
         if not ret.event & event:
             return False
         ret = ret.owner
@@ -19,23 +21,29 @@ def hasevent(self, event) -> bool:
 
 def controller(self):
     ret = self
-    while ret.general > General.HERO:
+    while ret.type > Type.HERO:
         ret = ret.owner
     return ret
 
 def my_zone(self):
     ret = self
-    while ret.general > General.ZONE:
+    while ret.type > Type.ZONE:
         ret = ret.owner
-    if ret.general == General.ZONE:
+    if ret.type == Type.ZONE:
         return ret
     return None
 
 
 class Card_list(list):
+    def __init__(self, *args):
+        if len(args) == 1 and isinstance(args[0], GeneratorType):
+            list.__setitem__(self, slice(None), *args)
+        else:
+            list.__setitem__(self, slice(None), args)
+
     def __getitem__(self, value):
         if isinstance(value, slice):
-            return self.__class__(super().__getitem__(value))
+            return self.__class__(*super().__getitem__(value))
         return super().__getitem__(value)
 
     def filter(self, **kwargs):

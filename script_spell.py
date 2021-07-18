@@ -106,7 +106,7 @@ class Banana:
         player = self.controller
         minion = player.choose_one_of_them(player.board.cards)
         if minion:
-            self.buff("501_e", minion)
+            self.buff("53217", minion)
             return True
         return False
 
@@ -115,6 +115,6 @@ class Great_banana:
         player = self.controller
         minion = player.choose_one_of_them(player.board.cards)
         if minion:
-            self.buff("502_e", minion)
+            self.buff("65231", minion)
             return True
         return False

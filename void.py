@@ -1,12 +1,12 @@
-from enums import Event, General, Zone, State, Type
+from enums import Event, Type, Zone, State, Race
 
 class Void:
     def __init__(self) -> None:
         self.temp_list = []
 
     @property
-    def general(self):
-        return General.ZONE
+    def type(self):
+        return Type.ZONE
 
     @property
     def zone(self):
@@ -21,9 +21,9 @@ class Void:
         return State.NONE
 
     @property
-    def type(self):
-        return Type.NONE
-    synergy = type
+    def race(self):
+        return Race.NONE
+    synergy = race
 
     def __getattr__(self, attr):
         return None

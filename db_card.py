@@ -1,12 +1,12 @@
-from enums import General, LEVEL_MAX, Zone, Type, CARD_NB_COPY
+from enums import Race, LEVEL_MAX, Zone, Type, CARD_NB_COPY
 from json import load
 from types import GeneratorType
 
 class Card_data(str):
-    def __new__(cls, dbfId, **kwargs):
-        return super().__new__(cls, dbfId)
+    def __new__(cls, **kwargs):
+        return super().__new__(cls, str(kwargs['dbfId']))
 
-    def __init__(self, dbfId, **kwargs) -> None:
+    def __init__(self, **kwargs) -> None:
         self.data = kwargs
         self.value = 0
         self.all_rating = {}
@@ -97,18 +97,18 @@ class Meta_card_data(list):
 
 def charge_all_cards() -> Meta_card_data:
     db = Meta_card_data()
-    with open("bdd_card.json", "r", encoding="utf-8") as file:
+    with open("db_HStat.json", "r", encoding="utf-8") as file:
         # normalization
-        for key, value in load(file).items():
-            value['general'] = getattr(General, value.get('general', 'DEFAULT'))
+        for value in load(file):
+            value['type'] = getattr(Type, value.get('type', 'DEFAULT'))
             value['zone_type'] = getattr(Zone, value.get('zone_type', 'DEFAULT'))
-            value['synergy'] = Type(getattr(Type, value.get('synergy', 'ALL')))
-            value['type'] = Type(getattr(Type, value.get('type', 'DEFAULT')))
+            value['synergy'] = Race(getattr(Race, value.get('synergy', 'ALL')))
+            value['race'] = Race(getattr(Race, value.get('race', 'DEFAULT')))
             if 'state' in value:
                 value['state'] = int(value['state'], 16)
             if 'event' in value:
                 value['event'] = int(value['event'], 16)
-            db.append(Card_data(key, **value))
+            db.append(Card_data(**value))
 
     return db
 

@@ -1,5 +1,5 @@
 import random
-from enums import BATTLE_SIZE, Event, State, General
+from enums import BATTLE_SIZE, Event, State, Type
 from utils import *
 from action import *
 from typing import Tuple

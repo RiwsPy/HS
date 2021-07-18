@@ -1,11 +1,11 @@
 from action import attack
 import random
-from enums import BATTLE_SIZE, LEVEL_MAX, Type, State, General
+from enums import BATTLE_SIZE, LEVEL_MAX, Race, State, Type, CardName
 
 class Graveyard_shift:
     def use_power(self):
         self.owner.health -= 2
-        self.owner.hand.create_card_in("1001")
+        self.owner.hand.create_card_in(CardName.COIN)
         return True
 
 class Procrastinate:
@@ -13,9 +13,9 @@ class Procrastinate:
         if self.game.nb_turn < 3:
             self.owner.gold = 0
         elif self.game.nb_turn == 3:
-            crd = self.owner.hand.create_card_in("1009")
+            crd = self.owner.hand.create_card_in("59604")
             crd.quest_value = 3
-            crd = self.owner.hand.create_card_in("1009")
+            crd = self.owner.hand.create_card_in("59604")
             crd.quest_value = 3
 
 class Menagerist:
@@ -64,19 +64,19 @@ class Boon_of_light:
 
 class Pirate_parrrrty:
     def buy(self, card):
-        if card.type & Type.PIRATE:
+        if card.race & Race.PIRATE:
             self.dec_power_cost()
 
     def use_power(self):
         self.cost = self.dbfId.cost
-        self.owner.discover(self, nb=1, typ=Type.PIRATE, lvl_max=self.level)
+        self.owner.discover(self, nb=1, typ=Race.PIRATE, lvl_max=self.level)
         return True
 
 class Queen_of_dragons:
     def levelup(self):
         if self.owner.level == 5:
-            self.owner.discover(self, nb=3, typ=Type.DRAGON, lvl_max=6)
-            self.owner.discover(self, nb=3, typ=Type.DRAGON, lvl_max=6)
+            self.owner.discover(self, nb=3, typ=Race.DRAGON, lvl_max=6)
+            self.owner.discover(self, nb=3, typ=Race.DRAGON, lvl_max=6)
 
 class Everbloom:
     def levelup(self):
@@ -105,18 +105,18 @@ class Tavern_lightning:
 class Bloodfury:
     def use_power(self):
         for minion in self.owner.board.cards:
-            if minion.type & Type.DEMON:
+            if minion.race & Race.DEMON:
                 self.buff(self.enchantment_id, minion)
         return True
 
 class Lead_explorer:
     def levelup(self):
-        crd = self.hand.create_card_in("1002")
+        crd = self.hand.create_card_in("60265")
         crd.quest_value = self.owner.level
 
 class Avalanche:
     def play(self, card):
-        if card.type & Type.ELEMENTAL:
+        if card.race & Race.ELEMENTAL:
             self.quest_value += 1
             if self.quest_value % 3 == 0:
                 self.owner.bob.level_up_cost -= 3
@@ -132,9 +132,9 @@ class Tinker:
         self.controller.bob.aura_active[self] = Tinker.aura
 
     def aura(self, target):
-        if target.general == General.MINION and \
+        if target.type == Type.MINION and \
                 target in target.controller.board.cards and \
-                target.type & Type.MECH:
+                target.race & Race.MECH:
             self.buff(self.enchantment_id, target)
 
     def begin_turn(self):
@@ -171,7 +171,7 @@ class A_tale_of_kings:
             self.buff(self.enchantment_id, card)
 
     def begin_turn(self):
-        possible_types = self.game.type_present & (Type.ALL - self.quest_value)
+        possible_types = self.game.type_present & (Race.ALL - self.quest_value)
         random_type = list(range(0, 8))
         random.shuffle(random_type)
         for typ in random_type:
@@ -207,7 +207,7 @@ class Saturday_cthuns:
 
 class Sharpen_blades:
     def use_power(self):
-        nb_minion = self.owner.bought_minions[self.owner.nb_turn]
+        nb_minion = len(self.owner.bought_minions[self.owner.nb_turn])
         if nb_minion >= 1:
             minion = self.choose_one_of_them(self.owner.board.cards,
                 pr=f"Hero power : choisissez une cible :")
@@ -236,7 +236,7 @@ class Sprout_it_out:
 
 class Dream_portal:
     def begin_turn(self):
-        dragon_lst = self.owner.bob.local_hand.filter_hex(type=Type.DRAGON)
+        dragon_lst = self.owner.bob.local_hand.filter_hex(race=Race.DRAGON)
         if dragon_lst:
             random.choice(dragon_lst).play(board=self.owner.bob.board)
 
@@ -256,15 +256,15 @@ class Bananarama:
     def use_power(self):
         for _ in range(2):
             if random.randint(1, 2) == 1:
-                self.owner.hand.create_card_in("1008")
+                self.owner.hand.create_card_in("65230")
             else:
-                self.owner.hand.create_card_in("1007")
+                self.owner.hand.create_card_in("53215")
         return True
 
     def end_turn(self):
         if not self.is_enabled:
-            for entity in self.game.entities.filter(general=General.HERO).exclude(self):
-                entity.hand.create_card_in("1007")
+            for entity in self.game.entities.filter(type=Type.HERO).exclude(self):
+                entity.hand.create_card_in("53215")
 
 class Hat_trick:
     def sell(self, card):
@@ -282,7 +282,7 @@ class All_will_burn:
                 self.apply_met_on_all_children(All_will_burn.aura, entity)
 
     def aura(self, target):
-        if target.general == General.MINION and \
+        if target.type == Type.MINION and \
                 target in target.controller.board.cards:
             self.buff(self.enchantment_id, target, aura=True)
 

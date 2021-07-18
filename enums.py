@@ -14,6 +14,7 @@ BOB_MINION_COST = 1
 DEFAULT_MINION_COST = 3
 
 class CardName:
+    COIN = "58596"
     BLOOD_GEM = "72191"
     KHADGAR = "52502"
     KHADGAR_P = "58380"
@@ -36,22 +37,23 @@ GOLD_BY_TURN = [0, 3, 4, 5, 6, 7, 8, 9, 10]
 NB_CARD_BY_LEVEL = [0, 3, 4, 4, 5, 5, 6]
 NB_CARD_BY_LEVEL_ARANNA = BATTLE_SIZE
 
-class Type(int):
+class Race(int):
     NONE = 0x0
     BEAST = 0x1
     DEMON = 0x2
     DRAGON = 0x4
     ELEMENTAL = 0x8
-    MECH = 0x10
+    MECHANICAL = 0x10
     MURLOC = 0x20
     PIRATE = 0x40
     QUILBOAR = 0x80
     ALL = 0xFF
 
+    MECH = MECHANICAL
     DEFAULT = NONE
 
     @classmethod
-    def battleground_type(cls) -> List[int]:
+    def battleground_race(cls) -> List[int]:
         return [
             cls.BEAST, cls.DEMON, cls.DRAGON, cls.ELEMENTAL,
             cls.MECH, cls.MURLOC, cls.PIRATE, cls.QUILBOAR,
@@ -59,24 +61,24 @@ class Type(int):
 
     @property
     def name(self) -> str:
-        return TYPE_NAME.get(self, 'Inconnu')
+        return RACE_NAME.get(self, 'Inconnu')
 
     #def __getattribute__(self, name: str):
     #    if name.isupper():
     #        return self & getattr(Type, name)
     #    return getattr(self, name)
 
-TYPE_NAME = {
-    Type.NONE: "Neutre",
-    Type.BEAST: "Bête",
-    Type.DEMON: "Démon",
-    Type.DRAGON: "Dragon",
-    Type.ELEMENTAL: "Elémentaire",
-    Type.MECH: "Méca",
-    Type.MURLOC: "Murloc",
-    Type.PIRATE: "Pirate",
-    Type.QUILBOAR: "Huran",
-    Type.ALL: "Tout"}
+RACE_NAME = {
+    Race.NONE: "Neutre",
+    Race.BEAST: "Bête",
+    Race.DEMON: "Démon",
+    Race.DRAGON: "Dragon",
+    Race.ELEMENTAL: "Elémentaire",
+    Race.MECH: "Méca",
+    Race.MURLOC: "Murloc",
+    Race.PIRATE: "Pirate",
+    Race.QUILBOAR: "Huran",
+    Race.ALL: "Tout"}
 
 class State(int):
     NONE = 0x0
@@ -98,6 +100,7 @@ class State(int):
     IMMUNE = 0x8000
     SECRET = 0x10000
     ALL = 0xFFFFF
+    DEFAULT = NONE
 
             # vol de vie, silence, ne peut pas attaquer
     ALAKIR = TAUNT | DIVINE_SHIELD | WINDFURY
@@ -147,7 +150,7 @@ class Event(int):
     ATK_ALLY = 0x4000 # un allié attaque
     DEFEND_ALLY = 0x8000 # un allié est attaqué
 
-    KILLER_ALLY = 0x10000 # unused
+    AFTER_PLAY = 0x10000
 
     BOB_PLAY = 0x20000 # Millificent, Nomi ?
     ADD_ENCHANTMENT_ON = 0x40000 # Aggem, tremble-terre...
@@ -188,7 +191,7 @@ class Event(int):
         DIE: 'die',
         ATK_ALLY: 'atk_ally',
         DEFEND_ALLY: 'defend_ally',
-        KILLER_ALLY: 'killer_ally', # unused
+        AFTER_PLAY: 'after_play',
         BOB_PLAY: 'bob_play',
         ADD_ENCHANTMENT_ON: 'add_enchantment_on',
         HIT_BY: 'hit_by',
@@ -208,7 +211,7 @@ class Event(int):
     def method(self):
         return self.method_str[self]
 
-class General(int):
+class Type(int):
     NONE = 0
     GAME = 1
     PLAYER = 2
@@ -235,3 +238,4 @@ class Zone(int):
     SECRET = 7
     DEFAULT = NONE
 
+ADAPT_ENCHANTMENT = ['41692', '41068', '41069', '41071', '41210', '41073', '41072', '41693']

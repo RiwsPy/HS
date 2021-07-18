@@ -1,6 +1,7 @@
 from collections import defaultdict
 import random
-from enums import BATTLE_SIZE, CardName, General, State, Type, Event, Zone, DEFAULT_MINION_COST, MAX_TURN
+from enums import BATTLE_SIZE, CardName, Rarity, State, Race, Event, Zone, Type, \
+    DEFAULT_MINION_COST, ADAPT_ENCHANTMENT
 from typing import Dict, List
 from json import load
 from utils import Card_list, controller, game, hasevent, my_zone
@@ -26,8 +27,9 @@ def func_name(function):
 class Entity(object):
     default_attr = {
         'quest_value': 0,
-        'general': General.NONE,
-        'state': State.NONE,
+        'type': Type.DEFAULT,
+        'race': Race.DEFAULT,
+        'state': State.DEFAULT,
         'attack': 0,
         'owner': Void,
         'from_bob': False,
@@ -36,6 +38,7 @@ class Entity(object):
         'cost': 0,
         'method': 'no_method',
         'zone_type': Zone.NONE,
+        'rarity': Rarity.DEFAULT,
     }
     def __init__(self, id, **kwargs) -> None:
         self.entities = Card_list()
@@ -44,10 +47,10 @@ class Entity(object):
             **self.__class__.default_attr,
             **CARD_DB[id].data,
             **kwargs}
-        self.dbfId = Card_data(id, **db)
 
         for key, data in db.items():
             setattr(self, key, data)
+        self.dbfId = Card_data(**db)
 
     def __repr__(self) -> str:
         #if hasattr(self, 'name'):
@@ -71,13 +74,21 @@ class Entity(object):
     def card_db(self):
         return CARD_DB
 
+    @property
+    def level(self):
+        return self.techLevel
+
+    @level.setter
+    def level(self, value):
+        self.techLevel = value
+
     def reset(self, id=None) -> None:
         self.__init__(id or self.dbfId)
 
     def append_action(self, method, *args, order=None, **kwargs):
         if self.game:
             if order is None:
-                self.game.action_stack.insert(0, [(method, args, kwargs)])
+                self.game.action_stack.appendleft([(method, args, kwargs)])
             else:
                 self.game.action_stack[order].append((method, args, kwargs))
         else:
@@ -121,7 +132,7 @@ class Entity(object):
 
     def remove(self, *entities):
         for entity in entities:
-            if entity.owner.general >= General.GAME:
+            if entity.owner.type >= Type.GAME:
                 #self.game.owner.append(entity) # before .remove, if self is in entities...
                 try:
                     entity.owner.entities.remove(entity)
@@ -176,7 +187,7 @@ class Entity(object):
         if self.my_zone.zone_type == Zone.PLAY and \
                 self.dbfId in ('736', '58382'): # vieux troubloeil
             for entity in self.owner.cards + self.owner.opponent.cards:
-                if entity.type & Type.MURLOC and entity is not self:
+                if entity.race & Race.MURLOC and entity is not self:
                     bonus += 1
             if self.dbfId == '58382':
                 bonus *= 2
@@ -190,9 +201,7 @@ class Entity(object):
     def position(self):
         try:
             return self.my_zone.cards.index(self)
-        except ValueError:
-            pass
-        except AttributeError:
+        except (ValueError, AttributeError):
             pass
         return None
 
@@ -248,21 +257,20 @@ class Entity(object):
 
         return new_board[:nb+1]
 
-    def choose_one_of_them(self, choice_list, pr: str=''):
+    def choose_one_of_them(self, choice_list: list, pr: str=''):
         """
-            player chooses one card omong ``choice_list`` iterable
+            player chooses one card omong ``choice_list`` list
             *return: chosen card or None
-            *rtype: iterable content
+            *rtype: list content
         """
-        if not choice_list:
+        if not choice_list or not self.controller:
             return None
 
-        long = len(choice_list)
-        if long == 1:
+        if len(choice_list) == 1:
             return choice_list[0]
         elif self.controller.is_bot or self.game.is_arene:
             return random.choice(choice_list)
-        elif long > 1:
+        else:
             if pr:
                 print(pr)
             for nb, entity in enumerate(choice_list):
@@ -283,12 +291,18 @@ class Entity(object):
         self.game.hand.append(*self.entities)
 
     def adjacent_neighbors(self) -> Card_list:
-        if self in self.my_zone.cards:
-            return Card_list(minion
-                for minion in (
-                    self.my_zone.cards[self.position-1],
-                    self.my_zone.cards[self.position+1])
+        position = self.position
+
+        if position is not None:
+            zone = self.my_zone.cards
+            if position == 0:
+                if zone[1]:
+                    return Card_list(zone[1])
+            else:
+                return Card_list(minion
+                for minion in zone[position-1:position+2:2]
                     if minion)
+
         return Card_list()
 
     @property
@@ -306,7 +320,7 @@ class Entity(object):
         self.attack = self.dbfId.attack
         self.method = self.dbfId.method[:]
         for entity in self.entities[::-1]:
-            if entity.general == General.ENCHANTMENT:
+            if entity.type == Type.ENCHANTMENT:
                 entity.apply(self)
         #for entity, aura_met in self.controller.active_aura.items():
         #    aura_met(entity, self)
@@ -352,11 +366,11 @@ class Entity(object):
         return False
 
     def active_script_arene(self, *args, strat='', **kwargs) -> None:
-        if self.general == General.HERO_POWER:
+        if self.type == Type.HERO_POWER:
             met = getattr(script_hero_arene, self.hero_script)
             if met:
                 getattr(met, f'turn_{self.game.nb_turn}')(self.owner, *args, **kwargs)
-        elif self.general == General.MINION:
+        elif self.type == Type.MINION:
             met = getattr(script_minion_arene, self.method)
             if met:
                 getattr(getattr(met, strat), f'turn_{self.game.nb_turn}')(self, *args, **kwargs)
@@ -384,6 +398,7 @@ def copy_minion_and_add(source):
 
 class Minion(Entity):
     default_attr = {
+        'techLevel': 1,
         'health': 1,
         'attack': 1,
         'state': State.DEFAULT,
@@ -394,7 +409,7 @@ class Minion(Entity):
         self._max_health = self.health
 
     def __repr__(self) -> str:
-        #if self.general == General.MINION:
+        #if self.type == Type.MINION:
         #    return f'{self.name} ({self.attack}-{self.health})'
         return f'{self.name}'
 
@@ -418,9 +433,9 @@ class Minion(Entity):
                 return None
             board = self.controller.board
 
-        if self.general == General.MINION:
+        if self.type == Type.MINION:
             board.append(self, position)
-        elif self.general == General.SPELL:
+        elif self.type == Type.SPELL:
             getattr(script_event, self.method).play(self)
 
     @property
@@ -447,8 +462,37 @@ class Minion(Entity):
 
     def copy_enchantment_from(self, source):
         for entity in source.entities:
-            if entity.general == General.ENCHANTMENT and not getattr(entity, 'aura', True):
+            if entity.type == Type.ENCHANTMENT and not getattr(entity, 'aura', True):
                 Enchantment(entity.dbfId, **entity.dbfId.data).apply(self)
+
+    def add_adapt(self, nb=0):
+        if not nb:
+            enchantment_id = random.choice(ADAPT_ENCHANTMENT)
+        else:
+            try:
+                enchantment_id = ADAPT_ENCHANTMENT[nb]
+            except KeyError:
+                print(f'add_adapt error : unknown adapt n°{nb}')
+
+        self.buff(enchantment_id, self)
+
+    def discover(self, card_list: Card_list, nb: int=3) -> Entity:
+        #TODO: Warning, problem if the card is moving during the discover
+        card_list = card_list.copy()
+        random.shuffle(card_list)
+        list_card_choice = Card_list()
+        exclude_dbfid = {self.dbfId}
+
+        for card in card_list:
+            if card.dbfId not in exclude_dbfid:
+                list_card_choice.append(card)
+                if len(list_card_choice) >= nb:
+                    break
+                exclude_dbfid.add(card.dbfId)
+
+        return self.choose_one_of_them(list_card_choice)
+        
+
 
     @khadgar_aura
     def reborn(self, position):
@@ -459,8 +503,11 @@ class Minion(Entity):
         return minion
 
     @khadgar_aura
-    def invoc(self, repop_id, position):
-        return self.my_zone.create_card_in(repop_id, position=position)
+    def invoc(self, repop_id, position, enchantment_id=''):
+        minion_id = self.my_zone.create_card_in(repop_id, position=position)
+        if enchantment_id:
+            self.buff(enchantment_id, repop_id)
+        return minion_id
 
 class Enchantment(Entity):
     default_attr = {
@@ -488,7 +535,7 @@ class Enchantment(Entity):
             return None
 
         if hasattr(self, 'duration'):
-            if self.owner.general == General.ZONE:
+            if self.owner.type == Type.ZONE:
                 self.duration += target_id.game.nb_turn
             elif self.duration <= target_id.game.nb_turn:
                 super().remove()
@@ -506,7 +553,7 @@ class Enchantment(Entity):
                 target_id.append(self)
             getattr(self, self.script)(target_id)
             if self.owner is not target_id:
-                self.active_global_event(Event.ADD_ENCHANTMENT_ON, self.controller)
+                self.active_global_event(Event.ADD_ENCHANTMENT_ON, self.controller, target_id)
 
     def add_stat(self, target_id):
         for attr in self.__class__.buff_attr_add & set(dir(self)) & set(dir(target_id)):
@@ -574,13 +621,13 @@ class Hero_power(Entity):
 
 class Card:
     init_class = {
-        General.MINION: Minion,
-        General.ENCHANTMENT: Enchantment,
-        General.HERO_POWER: Hero_power,
+        Type.MINION: Minion,
+        Type.ENCHANTMENT: Enchantment,
+        Type.HERO_POWER: Hero_power,
     }
 
     def __new__(cls, id, **kwargs):
-        return cls.init_class.get(card_db()[id]['general'], Entity)(id, **kwargs)
+        return cls.init_class.get(card_db()[id]['type'], Entity)(id, **kwargs)
 
 
 if __name__ == "__main__":

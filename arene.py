@@ -1,7 +1,7 @@
 from os import stat
 from db_card import Card_data
 import game
-from enums import Type, VERSION
+from enums import Race, VERSION
 import time
 import json
 import stats
@@ -10,15 +10,15 @@ from datetime import datetime
 from typing import Dict
 
 compo_turn_3 = { # by synergy
-    Type.ALL: ('38797', '65661', '64040'), # rejeton, ritualiste tourmenté, goutte d'eau
-    Type.BEAST: ('39481', '59940'), # gentille grand mère, chef de meute
-    Type.DEMON: ('59937', '59186'), # emprisonneur, surveillant Nathrezim
-    Type.DRAGON: ('61029', '60621'), # gardien des glyphes, régisseur du temps
-    Type.ELEMENTAL: ('64056', '64296', '64040'), # élémentaire en fête, roche en fusion, goutte
-    Type.MECH: ('49279', '778'), # groboum, golem des moissons
-    Type.MURLOC: ('1063', '736'), # chef de guerre, vieux troubloeil
-    Type.PIRATE: ('61060', '680'), # yo-ho, capitaine des mers du sud
-    Type.QUILBOAR: ('70153', '70162'), # prophète du sanglier, défense robuste
+    Race.ALL: ('38797', '65661', '64040'), # rejeton, ritualiste tourmenté, goutte d'eau
+    Race.BEAST: ('39481', '59940'), # gentille grand mère, chef de meute
+    Race.DEMON: ('59937', '59186'), # emprisonneur, surveillant Nathrezim
+    Race.DRAGON: ('61029', '60621'), # gardien des glyphes, régisseur du temps
+    Race.ELEMENTAL: ('64056', '64296', '64040'), # élémentaire en fête, roche en fusion, goutte
+    Race.MECH: ('49279', '778'), # groboum, golem des moissons
+    Race.MURLOC: ('1063', '736'), # chef de guerre, vieux troubloeil
+    Race.PIRATE: ('61060', '680'), # yo-ho, capitaine des mers du sud
+    Race.QUILBOAR: ('70153', '70162'), # prophète du sanglier, défense robuste
 }
 
 class arene:
