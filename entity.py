@@ -77,10 +77,10 @@ class Entity(object):
     @property
     def level(self):
         return self.techLevel
-
-    @level.setter
-    def level(self, value):
-        self.techLevel = value
+    
+    @property
+    def method(self):
+        return self.id
 
     def reset(self, id=None) -> None:
         self.__init__(id or self.dbfId)
