@@ -2,13 +2,15 @@ from action import attack
 import random
 from enums import BATTLE_SIZE, LEVEL_MAX, Race, State, Type, CardName
 
-class Graveyard_shift:
+class TB_BaconShop_HP_049:
+    # Baz'hial
     def use_power(self):
         self.owner.health -= 2
         self.owner.hand.create_card_in(CardName.COIN)
         return True
 
-class Procrastinate:
+class TB_BaconShop_HP_044:
+    # AFK
     def begin_turn(self):
         if self.game.nb_turn < 3:
             self.owner.gold = 0
@@ -18,17 +20,20 @@ class Procrastinate:
             crd = self.owner.hand.create_card_in("59604")
             crd.quest_value = 3
 
-class Menagerist:
+class TB_BaconShop_HP_033:
+    # Le Conservateur
     def begin_turn(self):
         if self.game.nb_turn == 1:
             self.owner.board.create_card_in("59202")
 
-class Avatar_of_nzoth:
+class TB_BaconShop_HP_105:
+    # N'Zoth
     def begin_turn(self):
         if self.game.nb_turn == 1:
             self.owner.board.create_card_in("67213")
 
-class Buried_treasure:
+class TB_BaconShop_HP_074:
+    # Capitaine Eudora
     #TODO : les cartes sont-elles issues/retirées de la main de bob ?
     #TODO : la probabilité d'obtention d'une carte dépend de sa présence dans la main ou sont équiprobables ?
     def use_power(self):
@@ -45,24 +50,29 @@ class Buried_treasure:
             self.owner.hand.append(g_card)
         return True
 
-class Manastorm:
+class TB_BaconShop_HP_054:
+    # Millhouse
+    # + utilisation de l'enchantment 60406
     def begin_turn(self):
         if self.game.nb_turn == 1:
             for index, _ in enumerate(self.owner.bob.level_up_cost_list):
                 self.owner.bob.level_up_cost_list[index] += 1
 
-class Piggy_bank:
+class TB_BaconShop_HP_076:
+    # Capitaine céleste Kragg
     def use_power(self):
         self.owner.gold += self.game.nb_turn
         return True
 
-class Boon_of_light:
+class TB_BaconShop_HP_010:
+    # Georges
     def use_power(self):
         minion = self.choose_one_of_them(self.owner.board.cards)
         if minion:
             self.buff(self.enchantment_id, minion)
 
-class Pirate_parrrrty:
+class TB_BaconShop_HP_072:
+    # Neunoeil
     def buy(self, card):
         if card.race & Race.PIRATE:
             self.dec_power_cost()
@@ -72,29 +82,34 @@ class Pirate_parrrrty:
         self.owner.discover(self, nb=1, typ=Race.PIRATE, lvl_max=self.level)
         return True
 
-class Queen_of_dragons:
+class TB_BaconShop_HP_064:
+    # Alexstrasa
     def levelup(self):
         if self.owner.level == 5:
             self.owner.discover(self, nb=3, typ=Race.DRAGON, lvl_max=6)
             self.owner.discover(self, nb=3, typ=Race.DRAGON, lvl_max=6)
 
-class Everbloom:
+class TB_BaconShop_HP_082:
+    # Omu
     def levelup(self):
         self.owner.gold += 2
 
-class Clairvoyance:
+class TB_BaconShop_HP_063:
+    # Nozdormu
     def begin_turn(self):
         if self.owner.bob.nb_free_roll < 1:
             self.owner.bob.nb_free_roll = 1
 
-class Brick_by_brick:
+class TB_BaconShop_HP_040:
+    # Pyraride
     def use_power(self):
         if self.owner.board.cards:
             self.buff(self.enchantment_id, random.choice(self.owner.board.cards))
             return True
         return False
 
-class Tavern_lightning:
+class TB_BaconShop_HP_085:
+    # Rakanishu
     def use_power(self):
         minion = self.choose_one_of_them(self.owner.board.cards)
         if minion:
@@ -102,34 +117,39 @@ class Tavern_lightning:
             return True
         return False
 
-class Bloodfury:
+class TB_BaconShop_HP_036:
+    # Jaraxxus
     def use_power(self):
         for minion in self.owner.board.cards:
             if minion.race & Race.DEMON:
                 self.buff(self.enchantment_id, minion)
         return True
 
-class Lead_explorer:
+class TB_BaconShop_HP_047:
+    # Elise
     def levelup(self):
         crd = self.hand.create_card_in("60265")
         crd.quest_value = self.owner.level
 
-class Avalanche:
+class TB_BaconShop_HP_088:
+    # Chenva'laa
     def play(self, card):
         if card.race & Race.ELEMENTAL:
             self.quest_value += 1
             if self.quest_value % 3 == 0:
                 self.owner.bob.level_up_cost -= 3
 
-class Stay_frosty:
+class TB_BaconShop_HP_014:
+    # Sindragosa
     def end_turn(self):
         for minion in self.owner.bob.board.cards:
             if minion.state & State.FREEZE:
                 self.buff(self.enchantment_id, minion)
 
-class Tinker:
+class TB_BaconShop_HP_015:
+    # Millificent
     def play_aura(self):
-        self.controller.bob.aura_active[self] = Tinker.aura
+        self.controller.bob.aura_active[self] = TB_BaconShop_HP_015.aura
 
     def aura(self, target):
         if target.type == Type.MINION and \
@@ -139,22 +159,25 @@ class Tinker:
 
     def begin_turn(self):
         if self.game.nb_turn == 1:
-            Tinker.play_aura(self)
+            TB_BaconShop_HP_015.play_aura(self)
 
-class Die_insects:
+class TB_BaconShop_HP_087:
+    # Ragnaros
     def die(self, source, killer):
         self.quest_value += 1
         if self.quest_value >= 25:
             self = self.create_card("64426")
 
-class Sulfuras:
+class TB_BaconShop_HP_087t:
+    # Ragnaros II
     def end_turn(self):
         # le bonus s'active-t-il deux fois si le board ne contient qu'un seul serviteur ?
         if self.owner.board.cards:
             self.buff(self.enchantment_id, self.owner.board[0])
             self.buff(self.enchantment_id, self.owner.board[-1])
 
-class Puzzle_box:
+class TB_BaconShop_HP_039:
+    # Yogg
     def use_power(self):
         op = self.owner.bob.board.cards
         if op:
@@ -164,7 +187,10 @@ class Puzzle_box:
             return True
         return False
 
-class A_tale_of_kings:
+class TB_BaconShop_HP_041:
+    # 1 pouvoir pour chaque type: 59839, 59853, 59852, 59854, 62277, 64220, 71081, 60922
+
+    # Le roi des Rats
     # will not change into the same Hero Power twice in a row
     def buy(self, card):
         if card.type & self.quest_value:
@@ -179,22 +205,26 @@ class A_tale_of_kings:
                 self.quest_value = 2**typ
                 break
 
-class Demon_hunter_training:
+class TB_BaconShop_HP_065:
+    # Aranna
     def roll(self):
         self.quest_value += 1
         if self.quest_value >= 5:
             self = self.create_card("62035")
 
-class Prestidigitation:
+class TB_BaconShop_HP_020:
+    # Akazamzarak
     use_power = lambda x: x.discover_secret(nb=3)
 
-class Verdant_spheres:
+class TB_BaconShop_HP_066:
+    # Kael Thas
     def buy(self, card):
         self.quest_value += 1
         if not self.quest_value % 3:
             self.buff(self.enchantment_id, card)
 
-class Saturday_cthuns:
+class TB_BaconShop_HP_104:
+    # C'Thun
     def use_power(self):
         self.quest_value += 1
         return True
@@ -205,7 +235,8 @@ class Saturday_cthuns:
             for _ in range(self.quest_value):
                 self.buff(self.enchantment_id, random.choice(minions))
 
-class Sharpen_blades:
+class TB_BaconShop_HP_001:
+    # Edwin
     def use_power(self):
         nb_minion = len(self.owner.bought_minions[self.owner.nb_turn])
         if nb_minion >= 1:
@@ -216,7 +247,8 @@ class Sharpen_blades:
                 return True
         return False
 
-class Ill_take_that:
+class TB_BaconShop_HP_053:
+    # Rafaam
     def use_power(self):
         self.temp_counter = 1
         return True
@@ -229,30 +261,35 @@ class Ill_take_that:
                 self.create_card(source.dbfId)
             )
 
-class Sprout_it_out:
+class TB_BaconShop_HP_107:
+    # Grisebranche
     def invoc(self, source):
         if self.owner.fight:
             self.buff(self.enchantment_id, source)
 
-class Dream_portal:
+class TB_BaconShop_HP_062:
+    # Ysera
     def begin_turn(self):
         dragon_lst = self.owner.bob.local_hand.filter_hex(race=Race.DRAGON)
         if dragon_lst:
             random.choice(dragon_lst).play(board=self.owner.bob.board)
 
-class Battle_brand:
+class TB_BaconShop_HP_048:
+    # Brann
     def use_power(self):
         self.owner.bob.board.drain_all_minion()
         self.owner.bob.board.fill_minion_battlecry()
         return True
 
-class Temporal_tavern:
+class TB_BaconShop_HP_028:
+    # Toki
     def use_power(self):
         self.owner.bob.board.drain_all_minion()
         self.owner.bob.board.fill_minion_temporal()
         return True
 
-class Bananarama:
+class TB_BaconShop_HP_038:
+    # Mukla
     def use_power(self):
         for _ in range(2):
             if random.randint(1, 2) == 1:
@@ -266,20 +303,22 @@ class Bananarama:
             for entity in self.game.entities.filter(type=Type.HERO).exclude(self):
                 entity.hand.create_card_in("53215")
 
-class Hat_trick:
+class TB_BaconShop_HP_042:
+    # Daryl
     def sell(self, card):
         brd = self.owner.opponent.board.cards
         if brd:
             for _ in range(2):
                 self.buff(self.enchantment_id, random.choice(brd))
 
-class All_will_burn:
+class TB_BaconShop_HP_061:
+    # Aile de mort
     def play_aura(self):
         self.aura_target = [self.controller, self.controller.opponent]
         for entity in self.aura_target:
             if self not in entity.aura_active:
-                entity.aura_active[self] = All_will_burn.aura
-                self.apply_met_on_all_children(All_will_burn.aura, entity)
+                entity.aura_active[self] = TB_BaconShop_HP_061.aura
+                self.apply_met_on_all_children(TB_BaconShop_HP_061.aura, entity)
 
     def aura(self, target):
         if target.type == Type.MINION and \
@@ -295,22 +334,26 @@ class All_will_burn:
         del self.controller.opponent.aura_active[self]
 
     def first_strike(self):
-        All_will_burn.play_aura(self)
+        TB_BaconShop_HP_061.play_aura(self)
     begin_turn = first_strike
 
-class Swatting_insects:
+class TB_BaconShop_HP_086:
+    # Al'Akir
     def first_strike(self):
         if self.owner.board.cards:
             self.buff(self.enchantment_id, self.owner.board.cards[0])
 
-class Wingmen:
+class TB_BaconShop_HP_069:
+    # Illidan
     #TODO: non fonctionnel
     def first_strike(self):
         if self.board.cards:
-            self.owner.board.cards[0].state |= State.ATTACK_IMMEDIATLY
-            self.owner.board.cards[-1].state |= State.ATTACK_IMMEDIATLY
+            self.buff('63161', self.owner.board.cards[0])
+            if len(self.board.cards) >= 2:
+                self.buff('63161', self.owner.board.cards[-1])
 
-class Imprison:
+class TB_BaconShop_HP_068:
+    # Maiev
     #TODO: non fonctionnel
     def use_power(self):
         minion = self.choose_one_of_them(self.owner.board.opponent)
@@ -320,7 +363,8 @@ class Imprison:
             return True
         return False
 
-class Reborn_rites:
+class TB_BaconShop_HP_024:
+    # Roi-liche
     def use_power(self):
         minion = self.choose_one_of_them(self.owner.board)
         if minion:
@@ -328,10 +372,12 @@ class Reborn_rites:
             return True
         return False
 
-class Bloodbound:
+class BG20_HERO_103p:
+    # Nécrorateur
     levelup = lambda self: self.owner.hand.create_card_in("70136", "70136")
 
-class For_the_Horde:
+class BG20_HERO_102p:
+    # Saurcroc
     def use_power(self):
         self.temp_counter = 1
         return True
@@ -339,14 +385,16 @@ class For_the_Horde:
     def buy(self, card):
         if self.temp_counter == 1:
             self.temp_counter = 0
-            self.buff(self.enchantment_id, card, attack=self.game.nb_turn)
+            self.buff(self.enchantment_id, card, attack=self.game.nb_turn+1)
 
-class Wax_warband:
+class TB_BaconShop_HP_037a:
+    # Cirène
     def use_power(self):
         for minion in self.owner.board.one_minion_by_type():
             self.buff(self.enchantment_id, minion)
 
-class Spirit_swap:
+class BG20_HERO_201p: # + BG20_HERO_201p2
+    # Vol'jin
     def use_power(self):
         if self.temp_counter == 0:
             minion = self.choose_one_of_them(self.owner.board.cards + self.owner.board.opponent.cards)
@@ -364,7 +412,8 @@ class Spirit_swap:
                 return True
         return False
 
-class See_the_Light:
+class BG20_HERO_101p:
+    # Xyrella
     def use_power(self):
         minion = self.choose_one_of_them(self.owner.board.opponent)
         if minion:
@@ -373,20 +422,25 @@ class See_the_Light:
             return True
         return False
 
-class Prize_wall:
+class TB_BaconShop_HP_106:
+    # Tickatus
     pass
 
-class Adventure:
+class TB_BaconShop_HP_057:
+    # Sir Finley
     pass
 
-class Trash_for_Treasor:
+class TB_BaconShop_HP_075:
+    # Double-crochet
     # découverte par le pouvoir, une carte peut se redécouvrir
     pass
 
-class All_patched_up:
+class TB_BaconShop_HP_035:
+    # Le Recousu
     pass
 
-class Embrace_your_rage:
+class TB_BaconShop_HP_103:
+    # Y'Sharrj
     def use_power(self):
         self.temp_counter = 1
         return True
@@ -400,8 +454,70 @@ class Embrace_your_rage:
             self.owner.board.create_card_in(crd.entity_id)
             self.owner.hand.append(crd)
 
-class Spectral_sight:
+class TB_BaconShop_HP_065t2:
+    # Aranna II
     #TODO, non fonctionnel > activation ?
     def play_aura(self):
         self.owner.bob.level_up_cost_list = [BATTLE_SIZE]*(LEVEL_MAX+1)
         self.owner.bob.board.fill_minion()
+
+class TB_BaconShop_HP_022:
+    # Carniflore
+    pass
+
+class TB_BaconShop_HP_056:
+    # Fongimancien
+    pass
+
+class TB_BaconShop_HP_084:
+    # Jandice
+    pass
+
+class TB_BaconShop_HP_080:
+    # Chaton
+    pass
+
+class TB_BaconShop_HP_052:
+    # Malygos
+    pass
+
+class TB_BaconShop_HP_046:
+    # Reno Jackson
+    pass
+
+class TB_BaconShop_HP_081:
+    # Seigneur Barov
+    pass
+
+class TB_BaconShop_HP_101:
+    # Silas
+    pass
+
+class TB_BaconShop_HP_077:
+    # Tess
+    pass
+
+class TB_BaconShop_HP_102:
+    # Zephris
+    pass
+
+class BG20_HERO_280p:
+    # Kurtrus I
+    pass
+
+class BG20_HERO_280p2:
+    # Kurtrus II
+    pass
+
+class BG20_HERO_280p2e2:
+    # Kurtrus III
+    pass
+
+class BG20_HERO_242p:
+    # Guff Totem-Runique
+    pass
+
+class BG20_HERO_301p:
+    # Mutanus le Dévoreur
+    pass
+

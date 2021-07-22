@@ -311,6 +311,15 @@
   "type": "MINION"
  },
  {
+  "cardClass": "NEUTRAL",
+  "dbfId": 71268,
+  "id": "BG20_106e",
+  "name": "Retourné",
+  "set": "BATTLEGROUNDS",
+  "text": "+0 ATQ.",
+  "type": "ENCHANTMENT"
+ },
+ {
   "attack": 1,
   "battlegroundsPremiumDbfId": 70146,
   "cardClass": "NEUTRAL",
@@ -929,6 +938,141 @@
   "name": "Esprit échangé",
   "set": "BATTLEGROUNDS",
   "text": "Caractéristiques échangées avec un autre serviteur.",
+  "type": "ENCHANTMENT"
+ },
+ {
+  "battlegroundsHero": true,
+  "cardClass": "DRUID",
+  "dbfId": 68129,
+  "health": 40,
+  "id": "BG20_HERO_242",
+  "name": "Guff Totem-Runique",
+  "set": "BATTLEGROUNDS",
+  "type": "HERO"
+ },
+ {
+  "cardClass": "DRUID",
+  "cost": 1,
+  "dbfId": 68130,
+  "id": "BG20_HERO_242p",
+  "name": "Équilibre naturel",
+  "set": "BATTLEGROUNDS",
+  "text": "Donne +1/+1 à un serviteur allié de chaque niveau de taverne.",
+  "type": "HERO_POWER"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "dbfId": 68131,
+  "id": "BG20_HERO_242pe",
+  "name": "Effet bœuf de Guff",
+  "set": "BATTLEGROUNDS",
+  "text": "+1/+1.",
+  "type": "ENCHANTMENT"
+ },
+ {
+  "battlegroundsHero": true,
+  "cardClass": "DEMONHUNTER",
+  "dbfId": 74631,
+  "health": 40,
+  "id": "BG20_HERO_280",
+  "name": "Kurtrus Chutecendre",
+  "set": "BATTLEGROUNDS",
+  "type": "HERO"
+ },
+ {
+  "cardClass": "DEMONHUNTER",
+  "cost": 0,
+  "dbfId": 74632,
+  "hideCost": true,
+  "id": "BG20_HERO_280p",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "name": "Combat final",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nRecrutez 3 serviteurs en 1 tour pour leur donner +2/+2 et pour améliorer cet effet. <i>(Encore 3 !)</i>",
+  "type": "HERO_POWER"
+ },
+ {
+  "cardClass": "DEMONHUNTER",
+  "cost": 0,
+  "dbfId": 74635,
+  "hideCost": true,
+  "id": "BG20_HERO_280p2",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "name": "Montée en puissance",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nRecrutez 4 serviteurs en 1 tour pour donner +2/+2 à votre main et votre plateau, et pour améliorer cet effet. <i>(Encore 4 !)</i>",
+  "type": "HERO_POWER"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "dbfId": 74634,
+  "id": "BG20_HERO_280p2e",
+  "name": "Puissance",
+  "set": "BATTLEGROUNDS",
+  "text": "+2/+2.",
+  "type": "ENCHANTMENT"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "dbfId": 74656,
+  "id": "BG20_HERO_280p2e2",
+  "mechanics": [
+   "ENCHANTMENT_INVISIBLE"
+  ],
+  "name": "Marqué pour le combat",
+  "set": "BATTLEGROUNDS",
+  "text": "Sera amélioré par Combat final.",
+  "type": "ENCHANTMENT"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "dbfId": 74639,
+  "id": "BG20_HERO_280p3e2",
+  "name": "Portail fermé",
+  "set": "BATTLEGROUNDS",
+  "text": "+2/+2.",
+  "type": "ENCHANTMENT"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "dbfId": 74633,
+  "id": "BG20_HERO_280pe",
+  "name": "Préparation au combat",
+  "set": "BATTLEGROUNDS",
+  "text": "+2/+2.",
+  "type": "ENCHANTMENT"
+ },
+ {
+  "battlegroundsHero": true,
+  "cardClass": "NEUTRAL",
+  "dbfId": 71916,
+  "health": 40,
+  "id": "BG20_HERO_301",
+  "name": "Mutanus le Dévoreur",
+  "set": "BATTLEGROUNDS",
+  "type": "HERO"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "dbfId": 71914,
+  "id": "BG20_HERO_301p",
+  "name": "Dévoration",
+  "set": "BATTLEGROUNDS",
+  "text": "Retire un serviteur allié. Crache ses caractéristiques sur un autre. Vous gagnez 1 pièce d’or.",
+  "type": "HERO_POWER"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "dbfId": 71915,
+  "id": "BG20_HERO_301pe",
+  "name": "Crachat reçu",
+  "set": "BATTLEGROUNDS",
+  "text": "Caractéristiques augmentées.",
   "type": "ENCHANTMENT"
  },
  {
@@ -2849,6 +2993,18 @@
   "type": "MINION"
  },
  {
+  "cardClass": "NEUTRAL",
+  "dbfId": 48546,
+  "id": "BOT_312e",
+  "mechanics": [
+   "MODULAR"
+  ],
+  "name": "Menace répliquante",
+  "set": "BOOMSDAY",
+  "text": "<b>Râle d’agonie :</b> invoque trois microbots 1/1.",
+  "type": "ENCHANTMENT"
+ },
+ {
   "artist": "Vladimir Kafanov",
   "attack": 1,
   "cardClass": "NEUTRAL",
@@ -2941,6 +3097,18 @@
   "techLevel": 4,
   "text": "<b>Magnétisme</b>\n<b>Bouclier divin</b>\n<b>Provocation</b>",
   "type": "MINION"
+ },
+ {
+  "cardClass": "PALADIN",
+  "dbfId": 49003,
+  "id": "BOT_911e",
+  "mechanics": [
+   "MODULAR"
+  ],
+  "name": "Ennuy-o-module",
+  "set": "BOOMSDAY",
+  "text": "<b>Provocation</b>\n<b>Bouclier divin</b>",
+  "type": "ENCHANTMENT"
  },
  {
   "artist": "Steve Prescott",
@@ -5558,6 +5726,15 @@
   "type": "HERO_POWER"
  },
  {
+  "cardClass": "DEMONHUNTER",
+  "dbfId": 63161,
+  "id": "TB_BaconShop_HP_069e",
+  "name": "Fidèles lieutenants",
+  "set": "BATTLEGROUNDS",
+  "text": "+2 ATQ et attaque immédiatement.",
+  "type": "ENCHANTMENT"
+ },
+ {
   "cardClass": "NEUTRAL",
   "cost": 3,
   "dbfId": 62243,
@@ -5893,6 +6070,16 @@
   "set": "BATTLEGROUNDS",
   "text": "<b>Découvre</b> un serviteur de <b>niveau de taverne 0</b>.",
   "type": "SPELL"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "dbfId": 57110,
+  "health": 60,
+  "hideStats": true,
+  "id": "TB_BaconShopBob",
+  "name": "Taverne de Bob",
+  "set": "BATTLEGROUNDS",
+  "type": "HERO"
  },
  {
   "attack": 4,
@@ -6244,6 +6431,18 @@
   "type": "MINION"
  },
  {
+  "cardClass": "NEUTRAL",
+  "dbfId": 60294,
+  "id": "TB_BaconUps_032e",
+  "mechanics": [
+   "MODULAR"
+  ],
+  "name": "Menace répliquante",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Râle d’agonie :</b> invoque trois microbots 2/2.",
+  "type": "ENCHANTMENT"
+ },
+ {
   "attack": 2,
   "cardClass": "NEUTRAL",
   "cost": 1,
@@ -6320,13 +6519,22 @@
   "type": "ENCHANTMENT"
  },
  {
-  "cardClass": "NEUTRAL",
-  "dbfId": 58386,
-  "id": "TB_BaconUps_038e",
-  "name": "Commandé",
+  "attack": 0,
+  "battlegroundsNormalDbfId": 49169,
+  "cardClass": "PALADIN",
+  "cost": 5,
+  "dbfId": 58387,
+  "health": 10,
+  "id": "TB_BaconUps_039",
+  "mechanics": [
+   "DEATHRATTLE"
+  ],
+  "name": "Mécanœuf",
+  "race": "MECHANICAL",
+  "rarity": "COMMON",
   "set": "BATTLEGROUNDS",
-  "text": "Le commandant de phalange donne +4 ATQ à ce serviteur.",
-  "type": "ENCHANTMENT"
+  "text": "<b>Râle d’agonie :</b> invoque un robosaure 16/16.",
+  "type": "MINION"
  },
  {
   "attack": 16,
@@ -7272,6 +7480,18 @@
   "type": "MINION"
  },
  {
+  "cardClass": "PALADIN",
+  "dbfId": 60328,
+  "id": "TB_BaconUps_099e",
+  "mechanics": [
+   "MODULAR"
+  ],
+  "name": "Ennuy-o-module",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Provocation</b>\n<b>Bouclier divin</b>",
+  "type": "ENCHANTMENT"
+ },
+ {
   "attack": 12,
   "battlegroundsNormalDbfId": 60247,
   "cardClass": "NEUTRAL",
@@ -7564,6 +7784,15 @@
   "set": "BATTLEGROUNDS",
   "text": "Chaque fois qu’il attaque, triple son Attaque.",
   "type": "MINION"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "dbfId": 61031,
+  "id": "TB_BaconUps_115e",
+  "name": "Souffle froid",
+  "set": "BATTLEGROUNDS",
+  "text": "Multiple l’Attaque.",
+  "type": "ENCHANTMENT"
  },
  {
   "attack": 12,

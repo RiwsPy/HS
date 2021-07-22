@@ -706,7 +706,7 @@ class TB_BaconUps_115:
     # Gardien des glyphes premium
     def atk_ally(self, attacker):
         if self is attacker:
-            self.buff("61030", self, attack=self.attack*2)
+            self.buff("61031", self, attack=self.attack*2)
 
 class BGS_019:
     # Dragonnet rouge
@@ -1466,7 +1466,7 @@ class TB_BaconUps_309:
         for _ in range(2):
             self.invoc('67729', position)
 
-class Amalgadon_repop:
+class UNG_999t2e:
     def deathrattle(self, position):
         for _ in range(2):
             self.invoc('41067', position)
@@ -1647,15 +1647,19 @@ class BG20_207_G:
 
 class BG20_106:
     # Tremble-terre
-    def add_enchantment_on(self, enchantment, target, enchantment_id='82_e'):
+    def add_enchantment_on(self, enchantment, target, enchantment_id='71268'):
         if self is target and enchantment.dbfId == CardName.BLOOD_GEM:
             for minion in self.owner:
                 if minion is not self:
-                    self.buff(enchantment_id, minion)
+                    self.buff(enchantment_id, minion, attack=2)
 
 class BG20_106_G:
     # Tremble-terre premium
-    add_enchantment_on= lambda self, enchantment, target: BG20_106.add_enchantment_on(self, enchantment, target, '-82_e')
+    def add_enchantment_on(self, enchantment, target, enchantment_id='71268'):
+        if self is target and enchantment.dbfId == CardName.BLOOD_GEM:
+            for minion in self.owner:
+                if minion is not self:
+                    self.buff(enchantment_id, minion, attack=4)
 
 class BG20_204:
     # Chevalier dos-hirsute
