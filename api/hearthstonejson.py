@@ -21,18 +21,23 @@ def save_battlegrounds_cards():
         all_cards = json.load(file)
     lst = []
     dic = {}
+    unknow_dbfId = {}
     for card in all_cards:
         dbfId = card['dbfId']
         if str(dbfId) in battlegrounds_cards:
             battlegrounds_cards.discard(str(dbfId))
             dic[str(dbfId)] = card
             lst.append(card)
+        elif card['set'] == "BATTLEGROUNDS":
+            unknow_dbfId[dbfId] = card['name']
+
 
     with open('db_battlegrounds.json', 'w') as file:
         json.dump(lst, file, indent=1, ensure_ascii=False)
-    print('dbfId non trouvés :')
-    for id in battlegrounds_cards:
-        print(id)
+    print(f'{len(battlegrounds_cards)} dbfId non trouvés') # 23
+    print(f'{len(unknow_dbfId)} éléments inconnus') # 186
+    for dbfId, name in unknow_dbfId.items():
+        print(f'  {dbfId}, {name}')
 
     ret = []
     for key, value in data.items():

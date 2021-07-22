@@ -40,6 +40,7 @@ class Player(Entity):
             self.board = board.Board(event=Event.ALL, method="player_board")
             self.append(self.board)
         self.power = Card(self.power_id)
+        self.method = 'player'
         self.append(self.power)
 
     def __repr__(self) -> str:
@@ -160,12 +161,14 @@ class Bob(Player):
     }
 
     def __init__(self, **attr) -> None:
-        super().__init__('Bob', "Tavern", **attr,
+        super().__init__('Bob', "57110", **attr,
             level_up_cost_list=LEVEL_UP_COST[:],
             nb_minion_by_refresh_list=NB_CARD_BY_LEVEL[:],
             )
         self.level_up_cost = self.level_up_cost_list[self.level]
 
+        self.type = Type.BOB
+        self.method = 'bob'
         self.board = board.Bob_board()
         self.append(self.board)
         self.power = Card(self.power_id)

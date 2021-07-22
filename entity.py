@@ -82,6 +82,10 @@ class Entity(object):
     def method(self):
         return self.id
 
+    @method.setter
+    def method(self, value):
+        self.id = value
+
     def reset(self, id=None) -> None:
         self.__init__(id or self.dbfId)
 
@@ -592,6 +596,7 @@ class Hero_power(Entity):
     def __init__(self, id, **kwargs):
         super().__init__(id, **kwargs)
         if hasattr(self, 'max_health'):
+            print('ook')
             self.health = self.max_health
 
     def enable(self) -> None:
