@@ -2,6 +2,7 @@ from script_minion import *
 from script_power import *
 from script_spell import *
 from script_minion_ban import *
+from script_enchantment import *
 from board import Board, Bob_board, Graveyard, Secret_board, Player_board
 from game import Game
 from player import Player, Bob

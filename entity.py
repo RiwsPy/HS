@@ -42,7 +42,7 @@ class Entity:
     default_attr = {
         'quest_value': 0,
         'type': Type.DEFAULT,
-        'attack': 0,
+        #'attack': 0,
         'owner': Void,
         'from_bob': False,
         'ban': 0, # utile ? techniquement une carte ban n'a pas à être créée ?
@@ -54,12 +54,12 @@ class Entity:
         'name': '',
         'temp_counter': 0, # set to 0 during each 'turn_on' sequence
     }
-    def __init__(self, id, **kwargs) -> None:
+    def __init__(self, dbfId, **kwargs) -> None:
         self.entities = Card_list()
         db = {
             **Entity.default_attr,
             **getattr(self.__class__, 'default_attr', {}),
-            **CARD_DB[id].data,
+            **CARD_DB[dbfId].data,
             **kwargs}
 
         for key, data in db.items():
@@ -180,7 +180,9 @@ class Entity:
     def buff(self, enchantment_dbfId, *args, **kwargs):
         for target in args:
             if target:
-                Enchantment(enchantment_dbfId, source=self, **kwargs).apply(target)
+                #Enchantment(enchantment_dbfId, source=self, **kwargs).apply(target)
+                enchant = Card(enchantment_dbfId, source=self, **kwargs)
+                Sequence('ENHANCE', enchant, target=target).start_and_close()
 
     @property
     def controller(self):
@@ -299,14 +301,6 @@ class Entity:
             for mechanic, value in old_mechanics.items():
                 setattr(self, mechanic, value)
 
-    def apply_met_on_all_children(self, met, *targets, **kwargs) -> None:
-        if targets:
-            entities_list = []
-            for entity in targets:
-                met(self, entity, **kwargs)
-                entities_list += entity.entities
-            self.apply_met_on_all_children(met, *entities_list, **kwargs)
-
     def search_id(self, target):
         if target in Void.temp_list:
             print(f'{target} found in {Void}')
@@ -355,8 +349,8 @@ class Minion(Entity):
         'attack': 1,
     }
 
-    def __init__(self, id, **kwargs):
-        super().__init__(id, **kwargs)
+    def __init__(self, dbfId, **kwargs):
+        super().__init__(dbfId, **kwargs)
         self._max_health = self.health
 
     def __repr__(self) -> str:
@@ -434,8 +428,10 @@ class Minion(Entity):
     def die_start(self, sequence):
         if self.type == Type.MINION and self.in_fight_sequence:
             if self.AURA:
+                print('die de', sequence.source)
                 for entity in self.controller.field:
-                    if entity.type == Type.ENCHANTMENT and entity.source is self and entity.aura:
+                    if entity.type == Type.ENCHANTMENT: # and entity.source is self and entity.aura:
+                        print(entity, entity.source, entity.aura)
                         sequence(entity.remove)
             sequence(self.controller.graveyard.append, self)
         else:
@@ -445,10 +441,11 @@ class Minion(Entity):
     def copy_enchantment_from(self, source: Entity) -> None:
         for entity in source.entities:
             if entity.type == Type.ENCHANTMENT and not getattr(entity, 'aura', False):
-                attrs = entity.__dict__
-                for attr in Enchantment.copy_enchant_data_to_del:
-                    del attrs[attr]
-                Enchantment(entity.dbfId, **attrs).apply(self)
+                attrs = entity.__dict__.copy()
+                del attrs['dbfId']
+                enchant = Card(entity.dbfId, **attrs)
+                self.append(enchant)
+                enchant.apply()
 
     def add_adapt(self, nb: int=0) -> None:
         if not nb:
@@ -657,13 +654,8 @@ class Enchantment(Entity):
         'mecanics', # list
     }
 
-    copy_enchant_data_to_del = [
-        'id',
-    ]
-
-
-    def __init__(self, id, **kwargs):
-        super().__init__(id, **kwargs)
+    def __init__(self, dbfId, **kwargs):
+        super().__init__(dbfId, **kwargs)
 
         if not hasattr(self, 'duration'):
             if self.source.in_fight_sequence:
@@ -675,20 +667,19 @@ class Enchantment(Entity):
         else:
             self.duration += self.source.game.nb_turn
 
-    def apply(self, target_id: Entity) -> None:
-        if target_id is None or target_id.DORMANT:
+    def enhance_start(self, sequence: Sequence) -> None:
+        target = sequence.target
+        if target is None or target.DORMANT or self.duration <= target.nb_turn:
+            sequence.is_valid = False
             return None
 
-        if self.duration <= target_id.game.nb_turn:
-            super().remove()
-            return None
+        target.append(self)
+        self.apply()
 
-        if hasattr(self, 'script'):
-            if self.owner is not target_id:
-                target_id.append(self)
-                with Sequence('ENHANCE', target_id, enchantment=self):
-                    getattr(self, self.script)(target_id)
+    def apply(self) -> None:
+        pass
 
+    """
     def add_stat(self, target_id):
         for attr in self.__class__.buff_attr_add & set(dir(self)) & set(dir(target_id)):
             target_id[attr] += self[attr]
@@ -702,10 +693,12 @@ class Enchantment(Entity):
     def set_stat(self, target_id):
         for attr in self.__class__.buff_attr_add & set(dir(self)) & set(dir(target_id)):
             target_id[attr] = self[attr]
+    """
 
     def remove(self):
         old_owner = self.owner
         super().remove(self)
+        # uniquement si en cas de modification de caractéristiques ?
         old_owner.calc_stat_from_scratch()
 
 
@@ -721,8 +714,8 @@ class Hero_power(Entity):
         'card_by_roll_mod': 0,
     }
 
-    def __init__(self, id, **kwargs):
-        super().__init__(id, **kwargs)
+    def __init__(self, dbfId, **kwargs):
+        super().__init__(dbfId, **kwargs)
         if hasattr(self, 'max_health'):
             self.health = self.max_health
 
@@ -747,7 +740,7 @@ class Hero_power(Entity):
                         self.owner.gold -= self.cost
                         self.dec_remain_use()
                         self.disable()
-    
+
     @property
     def board(self):
         return self.owner.board
@@ -759,8 +752,8 @@ class Spell(Entity):
 
     def play(self, sequence=None):
         if sequence is None:
-            if not self.in_fight_sequence:
-                # cost
+            if not self.in_fight_sequence and self.cost <= self.controller.gold:
+                self.controller.gold -= self.cost
                 with Sequence('PLAY', self) as seq:
                     #TODO: conterspell effect ?
                     if seq.is_valid:

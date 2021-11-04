@@ -556,9 +556,25 @@ class TB_BaconShop_HP_081(Hero_power):
     # Seigneur Barov
     pass
 
+
 class TB_BaconShop_HP_101(Hero_power):
     # Silas
-    pass
+    # Considéré que la probabilité d'apparition d'un ticket est de 1/3
+    # Cette valeur fait suite à un retour d'expérience non à une valeur officielle
+    def summon_on(self, sequence):
+        if sequence.source.controller is self.controller.bob and random.randint(0, 2) == 0:
+            self.buff(self.enchantment_dbfId, sequence.source)
+
+    def buy_off(self, sequence):
+        for entity in sequence.source.entities:
+            if entity.dbfId == self.enchantment_dbfId:
+                self.quest_value += 1
+                entity.remove()
+                break
+
+        if self.quest_value % 3 == 0:
+            self.owner.hand.create_card_in(64484, quest_value=self.owner.level)
+
 
 class TB_BaconShop_HP_077(Hero_power):
     # Tess

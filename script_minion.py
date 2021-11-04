@@ -7,7 +7,6 @@ from action import *
 from entity import Entity, Minion
 from sequence import Sequence
 
-
 class battlecry_select_one_minion_and_buff_it(Minion):
     # buff battlecry, only minions of the same synergy can be targeted
     def play_start(self, sequence: Sequence):
@@ -66,7 +65,8 @@ class battlecry_buff_myself(Minion):
 
 class BGS_043(Minion):
     # Murozond
-    def battlecry(self):
+    nb_strike = 1
+    def battlecry(self, sequence):
         pass
 """
     board_adv = self.owner.owner.last_opponent.real_board
@@ -108,35 +108,26 @@ def Murozond_p(self):
 """
 
 
-
-class MTB_BaconUps_110(Minion):
+class MTB_BaconUps_110(BGS_043):
     # Murozond premium
-    def battlecry(self):
-        pass
+    nb_strike = 2
 
 
 class BGS_113(Minion):
     # Habitue_sans_visage
-    def battlecry(self):
+    def battlecry(self, sequence):
         # comment se passe la gestion lors de la revente, la copie est enlevée de la taverne ou est-ce 
         # l'habitué ?
         pass
-
-
-class TB_BaconUps_305(Minion):
-    # Habitue_sans_visage premium
-    def battecry(self):
-        pass
+TB_BaconUps_305= BGS_113 # Habitue_sans_visage premium
 
 
 class BGS_104(Minion):
     # Nomi
+    #TODO: à compléter, n'affecte pas les serviteurs déjà présents dans la taverne
     bonus_value = 1
     def play_off(self, sequence):
-        # l'event s'active seulement après un cri de guerre, ce n'est donc pas un PLAY
-        # mais un event AFTER_PLAY (nomi buff les elems générés par l'élémentaire de stase,
-        # après que ce dernier soit joué)
-        #TODO
+        # s'active après le battlecry de l'élémentaire de stase
         source = sequence.source
         if self.controller is source.controller and source.race.ELEMENTAL:
             self.buff(self.enchantment_dbfId,
@@ -535,19 +526,8 @@ class BGS_045(Minion):
     # Gardien des glyphes
     def combat_start(self, sequence):
         super().combat_start(sequence)
-        self.buff(self.enchantment_dbfId, self, attack=self.bonus_value)
-
-    @property
-    def bonus_value(self) -> int:
-        return self.attack
-
-
-class TB_BaconUps_115(BGS_045):
-    # Gardien des glyphes premium
-    @property
-    def bonus_value(self) -> int:
-        return self.attack*2
-
+        self.buff(self.enchantment_dbfId, self)
+TB_BaconUps_115= BGS_045 # Gardien des glyphes premium
 
 class BGS_019(Minion):
     # Dragonnet rouge
@@ -1186,32 +1166,32 @@ class BG20_101_G(BG20_101):
 
 class BG20_102(Minion):
     # Défense robuste
-    def enhance(self, sequence):
-        if sequence.enchantment.dbfId == CardName.BLOOD_GEM_ENCHANTMENT:
+    def enhance_off(self, sequence):
+        if sequence.target is self and\
+                sequence.source.dbfId == CardName.BLOOD_GEM_ENCHANTMENT:
             self.buff(self.enchantment_dbfId, self)
             self.buff(-70167, self) # ??
 
 
 class BG20_102_G(BG20_102):
     # Défense robuste premium
-    def enhance(self, sequence):
-        self.buff(self.enchantment_dbfId, self)
+    def enhance_off(self, sequence):
+        if sequence.target is self and\
+                sequence.source.dbfId == CardName.BLOOD_GEM_ENCHANTMENT:
+            self.buff(self.enchantment_dbfId, self)
 
 
 class BG20_103(Minion):
     # Brute dos-hirsute
     bonus_value = 2
 
-    def enhance_start(self, sequence):
-        if sequence.enchantment.dbfId == CardName.BLOOD_GEM_ENCHANTMENT and self.temp_counter == 0:
-            sequence.enchantment.attack += self.__class__.bonus_value
-            sequence.enchantment.max_health += self.__class__.bonus_value
+    def enhance_on(self, sequence):
+        if sequence.target is self and\
+                sequence.source.dbfId == CardName.BLOOD_GEM_ENCHANTMENT and\
+                self.temp_counter == 0:
+            sequence.source.attack += self.__class__.bonus_value
+            sequence.source.max_health += self.__class__.bonus_value
             self.temp_counter += 1
-        else:
-            sequence.is_valid = False
-
-    def enhance(self, sequence):
-        self.buff(self.enchantment_dbfId, self)
 
 
 class BG20_103_G(BG20_103):
@@ -1279,9 +1259,11 @@ BG20_104_G= BG20_104
 class BG20_207(Minion):
     # Duo dynamique
     def enhance_off(self, sequence):
-        source = sequence.source
-        if self.owner is source.owner and source.race.HURAN and\
-                sequence.enchantment.dbfId == CardName.BLOOD_GEM_ENCHANTMENT:
+        target = sequence.target
+        if self.controller is target.controller and\
+                target.race.HURAN and\
+                sequence.source.dbfId == CardName.BLOOD_GEM_ENCHANTMENT and\
+                self is not sequence.target:
             self.buff(self.enchantment_dbfId, self)
 BG20_207_G= BG20_207 # Duo dynamique premium
 
@@ -1289,9 +1271,10 @@ BG20_207_G= BG20_207 # Duo dynamique premium
 class BG20_106(Minion):
     bonus_value = 2
     # Tremble-terre
-    def enhance(self, sequence):
-        if sequence.enchantment.dbfId == CardName.BLOOD_GEM_ENCHANTMENT:
-            for minion in self.owner.cards.exlude(self):
+    def enhance_off(self, sequence):
+        if sequence.target is self and\
+                sequence.source.dbfId == CardName.BLOOD_GEM_ENCHANTMENT:
+            for minion in self.my_zone.cards.exlude(self):
                 self.buff(self.enchantment_dbfId, minion, attack=self.__class__.bonus_value)
 
 
@@ -1310,24 +1293,22 @@ BG20_204_G= BG20_204
 
 class BG20_302(Minion):
     # Aggem malépine
-    def enhance(self, sequence):
-        if sequence.enchantment.dbfId == CardName.BLOOD_GEM_ENCHANTMENT:
+    def enhance_off(self, sequence):
+        if sequence.source.dbfId == CardName.BLOOD_GEM_ENCHANTMENT and\
+                self is sequence.target:
             for minion in self.my_zone.cards.one_minion_by_type():
                 self.buff(self.enchantment_dbfId, minion)
-
-
-class BG20_302_G(BG20_302):
-    # Aggem malépine premium
-    pass
+BG20_302_G= BG20_302 # Aggem malépine premium
 
 
 class BG20_205(Minion):
     # Agamaggan
     bonus_value = 1
-    def enhance_start(self, sequence):
-        if sequence.enchantment.dbfId == CardName.BLOOD_GEM_ENCHANTMENT:
-            sequence.enchantment.attack += self.__class__.bonus_value
-            sequence.enchantment.max_health += self.__class__.bonus_value
+    def enhance_on(self, sequence):
+        if sequence.source.dbfId == CardName.BLOOD_GEM_ENCHANTMENT and\
+                self.controller is sequence.source.controller:
+            sequence.source.attack += self.__class__.bonus_value
+            sequence.source.max_health += self.__class__.bonus_value
 
 class BG20_205_G(Minion):
     # Agamaggan premium
@@ -1760,10 +1741,11 @@ class BG19_010_Gt(Minion):
 
 class BG21_013(Minion):
     # Contrebandier dragonnet
-    def enhance_on(self, sequence):
-        for target in sequence.targets:
-            if target.race.DRAGON and target.owner is self.owner and sequence.enchantment.attack > 0:
-                sequence(self.buff, self.enchantment_dbfId)
+    def enhance_off(self, sequence):
+        if sequence.target.race.DRAGON and\
+                sequence.target.controller is self.controller and\
+                getattr(sequence.source, 'attack', 0) > 0:
+            sequence(self.buff, self.enchantment_dbfId)
 BG21_013_G= BG21_013 # Contrebandier dragonnet premium
 
 
@@ -1869,19 +1851,20 @@ class BG21_002_G(BG21_002):
 class BG21_015(Minion):
     # Tarecgosa
     #TODO: rendre compatible avec le bonus de Nadina ou Héroïne altruiste
-    def enhance_start(self, sequence):
-        if self.in_fight_sequence:
+    def enhance_on(self, sequence):
+        if self.in_fight_sequence and sequence.target is self:
             try:
-                del sequence.enchantment.duration
+                del sequence.source.duration
             except AttributeError:
                 pass
 
 
 class BG21_015_G(BG21_015):
     # Tarecgosa premium
-    def enhance(self, sequence):
-        if self.in_fight_sequence:
-            getattr(sequence.enchantment, self.script)(self)
+    def enhance_on(self, sequence):
+        if self.in_fight_sequence and sequence.target is self:
+            super().enhance_on(sequence)
+            #TODO: copy
 
 
 class BG21_007(Minion):
@@ -2044,8 +2027,8 @@ class BG21_036(Minion):
     def enhance_on(self, sequence):
         if sequence.source.my_zone is self.my_zone and\
                 sequence.source.race.ELEMENTAL and\
-                (sequence.enchantment.attack > 0 or\
-                sequence.enchantment.max_health > 0):
+                (getattr(sequence.source, 'attack', 0) > 0 or\
+                getattr(sequence.source, 'max_health', 0) > 0):
             sequence(self.buff, self.enchantment_dbfId, self)
 
 

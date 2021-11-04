@@ -152,7 +152,7 @@ class Bob_hand(Entity):
     def cards(self) -> Card_list:
         return self.cards_of_tier_max()
 
-    def create_card_in(self, *args, **kwargs):
+    def create_card_in(self, *args, **kwargs) -> Entity:
         """
             Create a copy of each card in ``entities_id`` parameter to bob's hand
             *return: last card_id created
