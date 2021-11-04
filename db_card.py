@@ -1,10 +1,10 @@
-from enums import Race, LEVEL_MAX, Zone, Type, CARD_NB_COPY
+from enums import Race, LEVEL_MAX, Zone, Type, CARD_NB_COPY, state_list
 from json import load
 from types import GeneratorType
 
-class Card_data(str):
+class Card_data(int):
     def __new__(cls, **kwargs):
-        return super().__new__(cls, str(kwargs['dbfId']))
+        return super().__new__(cls, kwargs['dbfId'])
 
     def __init__(self, **kwargs) -> None:
         self.data = kwargs
@@ -26,6 +26,10 @@ class Card_data(str):
 
     def __getitem__(self, key):
         return getattr(self, str(key))
+
+    @property
+    def level(self):
+        return self.techLevel
 
     @property
     def nb_copy(self):
@@ -52,9 +56,11 @@ class Meta_card_data(list):
         super().sort(key=lambda x: x[attr], reverse=reverse)
 
     def __getitem__(self, value):
-        if isinstance(value, str):
+        # problème avec random.shuffle si dbfId <= len(self) ??
+        try:
             return super().__getitem__(self.index(value))
-        return super().__getitem__(value)
+        except ValueError:
+            return super().__getitem__(value)
 
     def filter(self, **kwargs):
         return self.__class__(card
@@ -97,19 +103,21 @@ class Meta_card_data(list):
 
 def charge_all_cards() -> Meta_card_data:
     db = Meta_card_data()
-    with open("db_HStat.json", "r", encoding="utf-8") as file:
+
+    with open("db/HStat.json", "r", encoding="utf-8") as file:
         # normalization
         for value in load(file):
             value['type'] = getattr(Type, value.get('type', 'DEFAULT'))
             value['zone_type'] = getattr(Zone, value.get('zone_type', 'DEFAULT'))
-            value['synergy'] = Race(getattr(Race, value.get('synergy', 'ALL')))
-            value['race'] = Race(getattr(Race, value.get('race', 'DEFAULT')))
-            if 'state' in value:
-                value['state'] = int(value['state'], 16)
-            if 'event' in value:
-                value['event'] = int(value['event'], 16)
-            db.append(Card_data(**value))
+            value['synergy'] = Race(value.get('synergy', 'ALL'))
+            value['race'] = Race(value.get('race', 'DEFAULT'))
+            value['type'] = Type(value.get('type', 'DEFAULT'))
+            if 'mechanics' not in value:
+                value['mechanics'] = []
+            for mechanic in state_list:
+                value[mechanic] = mechanic in value['mechanics']
 
+            db.append(Card_data(**value))
     return db
 
 CARD_DB = charge_all_cards()

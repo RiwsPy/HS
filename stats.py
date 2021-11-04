@@ -45,7 +45,7 @@ def rating_esperance(result: Meta_card_data, player_level) -> int:
 def card_proba(card_list, player_level=LEVEL_MAX, rating_type='', exclude_card=[]) -> Tuple[str, int]:
     # proba d'obtention de chaque carte pour le P2, sachant que P1 a acheté exclude_card
     # card_list contient le dbfId des cartes à prendre en compte
-    # cas d'égalité entre 101 et 105 : [['100'], ['101', '105'], ['107']]
+    # cas d'égalité entre 101 et 105 : [[100], [101, 105], [107]]
     nb_card_in_bob = nb_collectible_card_of_tier_max(card_list, tier_max=player_level) - len(exclude_card)
     cumul_proba = 1
     ret = 0
@@ -86,7 +86,7 @@ def card_proba_nozdormu(card_list, player_level=LEVEL_MAX, exclude_card=[]):
     nb_card_in_bob = nb_collectible_card_of_tier_max(card_list, tier_max=player_level) - len(exclude_card)
     cumul_proba = 1
 
-    card_id_to_spwawn_proba = defaultdict(int)
+    card_id_to_spawn_proba = defaultdict(int)
     for card_ids in card_list:
         cumul_proba_temp = 0
         cumul_nb_temp = 0
@@ -104,12 +104,12 @@ def card_proba_nozdormu(card_list, player_level=LEVEL_MAX, exclude_card=[]):
 
         ret = cumul_proba_temp / len(card_ids)
         for card in card_ids:
-            card_id_to_spwawn_proba[card] += ret
+            card_id_to_spawn_proba[card] += ret
         cumul_proba -= cumul_proba_temp
         nb_card_in_bob -= cumul_nb_temp
 
     for card_id, rating in card_proba(card_list, player_level):
-        yield card_id, card_id_to_spwawn_proba[card_id]+rating*cumul_proba
+        yield card_id, card_id_to_spawn_proba[card_id]+rating*cumul_proba
 
 
 def nb_collectible_card_of_tier_max(card_list, tier_max=LEVEL_MAX, tier_min=1) -> int:
@@ -121,7 +121,7 @@ def nb_collectible_card_of_tier_max(card_list, tier_max=LEVEL_MAX, tier_min=1) -
 
 def ordered_card_rating(data: Meta_card_data, rating_type='') -> Generator:
     """
-        [['116'], ['111', '41245'], ...]
+        [[116], [111, 41245], ...]
     """
     result = defaultdict(list)
     if not rating_type:

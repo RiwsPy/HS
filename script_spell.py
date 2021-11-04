@@ -1,96 +1,143 @@
 import random
-from enums import State, Event, CardName
-import script_functions
+from enums import Event, CardName, FIELD_SIZE
+from entity import Spell
 
-class TB_BaconShop_HP_008a:
+#TODO: automatic die for card.SECRET ?
+# > empêche l'utilisation du nb_strike car le self.die() serait activé plusieurs fois
+
+class TB_BaconShop_HP_008a(Spell):
     # Pièce d'or
-    def play(self): # self = card_id
+    def cast(self, sequence): # self = card_id
         self.controller.gold += 1
-        return True
 
-class TB_BaconShop_HP_047t:
+
+class TB_BaconShop_HP_047t(Spell):
     # Carte de recrutement
-    def play(self):
+    def cast(self, sequence):
         self.controller.discover(self, nb=3, lvl_min=self.quest_value, lvl_max=self.quest_value)
-        return True
 TB_BaconShop_HP_101t2= TB_BaconShop_HP_047t # Trophée
 TB_BaconShop_Triples_01= TB_BaconShop_HP_047t # Récompense de triple
 
 
-class TB_Bacon_Secrets_08:
+class TB_Bacon_Secrets_08(Spell):
     # Vengeance
-    def play(self):
-        if self.owner.board:
-            target = random.choice(self.owner.board)
-            target.create_and_apply_enchantment("1812")
-            return True
-        return False
+    def die_off(self, sequence):
+        if sequence.source.controller is self.controller and self.controller.board.size > 0:
+            self.buff(self.enchantment_dbfId, random.choice(self.controller.board.cards))
+            self.die()
 
-class TB_Bacon_Secrets_07:
+
+class TB_Bacon_Secrets_07(Spell):
     # Matrice d'autodéfense
-    def play(self, card):
-        if not card.state & State.DIVINE_SHIELD:
-            card.state |= State.DIVINE_SHIELD
-            return True
-        return False
+    def combat_on(self, sequence):
+        if sequence.source.controller is self.controller and not sequence.source.DIVINE_SHIELD:
+            sequence.source.DIVINE_SHIELD = True
+            self.die()
 
-class TB_Bacon_Secrets_13:
-    # esprit compétitif
-    def play(self):
-        if self.owner.board:
-            for minion in self.owner.board:
-                minion.create_and_apply_enchantment("1000_e")
-            return True
-        return False
 
-class TB_Bacon_Secrets_04:
+class TB_Bacon_Secrets_13(Spell):
+    # Esprit combatif
+    def turn_on(self, sequence):
+        if self.controller.board.size > 0:
+            for minion in self.controller.board.cards:
+                self.buff(self.enchantment_dbfId, minion)
+                self.die()
+
+
+class TB_Bacon_Secrets_04(Spell):
     # Portrait caché
-    def play(self, card): # repop juste à droite de la carte
-        pass
+    def combat_on(self, sequence): # repop juste à droite de la carte
+        if not self.controller.board.is_full:
+            for target in sequence.targets:
+                if target.controller is self.controller:
+                    clone_card = target.clone()
+                    target.my_zone.append(clone_card, position=target.position+1)
+                    self.die()
+                    break
 
-class TB_Bacon_Secrets_12:
+
+class TB_Bacon_Secrets_12(Spell):
     # Bloc de glace
-    def play(self):
-        pass
+    def hit_on(self, sequence):
+        if sequence.target is self.controller and\
+                self.in_fight_sequence and\
+                sequence.damage_value >= self.controller.health:
+            self.buff(self.enchantment_dbfId, self.controller)
+            self.die()
 
-class TB_Bacon_Secrets_01:
+
+class TB_Bacon_Secrets_01(Spell):
     # piège frappe-venin
-    def play(self, card):
-        if len(self.owner) < 7:
-            script_functions.invocation(self, "152") # repop tout à droite
-            return True
-        return False
+    nb_repop = 1
+    def combat_on(self, sequence):
+        if not self.controller.board.is_full:
+            for target in sequence.targets:
+                if target.controller is self.controller:
+                    self.invoc(sequence, self.repop_dbfId)
+                    self.die()
+                    break
 
-class TB_Bacon_Secrets_02:
+
+class TB_Bacon_Secrets_02(Spell):
     # piège à serpents
-    def play(self, card):
-        if len(self.owner) < 5:
-            script_functions.invocation(self, "153", nb_max=3)
-            return True
-        return False
+    # nb_strike will repeat self.die()
+    def combat_on(self, sequence):
+        if not self.controller.board.is_full:
+            for target in sequence.targets:
+                if target.controller is self.controller:
+                    for _ in range(3):
+                        self.invoc(sequence, self.repop_dbfId)
+                    self.die()
+                    break
 
-# non cumulable avec Khadgar ? Cumul avec réincarnation ?
-class TB_Bacon_Secrets_10:
+
+# cumulable avec Khadgar ?
+# Cumul avec Reborn (théoriquement oui)
+class TB_Bacon_Secrets_10(Spell):
     # Rédemption
-    def play(self, card):
-        pass
+    # Resurrecting effects such as Redemption don't move the dead minion. They summon a new copy of it.
+    # Positionnement du repop ? A la place du mort ou à la fin du board ?
+    def die_off(self, sequence):
+        if self.controller is sequence.source.controller and not self.controller.board.is_full:
+            new_minion = self.create_card(sequence.source.dbfId)
+            new_minion.health = 1
+            self.controller.board.append(new_minion)
+            self.die()
 
-class BG20_GEM:
+
+class TRL_509t(Spell):
+    # Banane
+    def cast_start(self, sequence):
+        player = self.controller
+        minion = player.choose_one_of_them(player.board.cards)
+        if minion:
+            sequence.targets.append(minion)
+        else:
+            sequence.is_valid = False
+        
+    def cast(self, sequence):
+        for minion in sequence.targets:
+            self.buff(self.enchantment_dbfId, minion)
+
+
+class BGS_Treasures_000(TRL_509t):
+    # Grande banane
+    pass
+
+
+class BG20_GEM(TRL_509t):
     # Gemme de sang
-    def play(self) -> bool:
+    def cast_start(self, sequence):
         player = self.controller
         if player.is_bot:
-            minion = BG20_GEM.bot_play(self)
+            minion = self.bot_play()
         else:
             minion = player.choose_one_of_them(player.board.cards)
 
         if minion:
-            bonus = 1
-            #for info in player.aura_active.values():
-            #    bonus += info['boost_blood_gem']
-            self.buff(CardName.BLOOD_GEM, minion, attack=bonus, max_health=bonus)
-            return True
-        return False
+            sequence.targets.append(minion)
+        else:
+            sequence.is_valid = False
 
     def bot_play(self):
         # au tour 3, les résultats sont meilleurs avec la méthode random.
@@ -101,44 +148,25 @@ class BG20_GEM:
         # ciblage 'adapté' au tour ou attaque la plus élevée : 1.67
         # ciblage 'adapté' au tour ou attaque la plus faible : 1.85
 
-        # protéger les State.aura du Zapp ?
-        targets = self.controller.board.cards
-        if not targets:
+        # protéger les Mecanics.aura du Zapp ?
+        board = self.controller.board
+        if board.size == 0:
             return None
-        elif len(targets) < 2:
-            return targets[0]
+        elif board.size == 1:
+            return board.cards[0]
+
         nb_turn = self.game.nb_turn
-        sorted_board = sorted(targets, reverse=True,
+        sorted_board = sorted(board.cards, reverse=True,
                 key=lambda x: (
-                not x.state & State.POISONOUS,
-                not x.state & State.ATTACK_WEAK,
-                x.state & State.CLEAVE,
-                x.state & State.DIVINE_SHIELD,
-                x.event & Event.OVERKILL,
-                x.event & Event.ADD_ENCHANTMENT_ON,
-                x.state & State.FRENZY,
+                not x.POISONOUS,
+                x.CLEAVE,
+                x.DIVINE_SHIELD,
+                x.OVERKILL,
+                #x.event & Event.ADD_ENCHANTMENT_ON,
+                x.AURA,
+                x.FRENZY,
                 nb_turn <= 5 and nb_turn - x.attack == 1,
                 nb_turn <= 5 and nb_turn - x.health == 0,
                 -x.attack,
                 ))
         return sorted_board[0]
-
-class TRL_509t:
-    # Banane
-    def play(self):
-        player = self.controller
-        minion = player.choose_one_of_them(player.board.cards)
-        if minion:
-            self.buff("53217", minion)
-            return True
-        return False
-
-class BGS_Treasures_000:
-    # Grosse banane
-    def play(self):
-        player = self.controller
-        minion = player.choose_one_of_them(player.board.cards)
-        if minion:
-            self.buff("65231", minion)
-            return True
-        return False

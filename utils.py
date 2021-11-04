@@ -1,23 +1,15 @@
-from enums import Type, LEVEL_MAX, VERSION
+from enums import Type, LEVEL_MAX, VERSION, Race
 import json
 from types import GeneratorType
+import random
 
 def game(self):
     ret = self
-    print(ret, ret.type)
     while ret.type > Type.GAME:
         ret = ret.owner
     if ret.type == Type.GAME:
         return ret
     return None
-
-def hasevent(self, event) -> bool:
-    ret = self
-    while ret.type > Type.GAME:
-        if not ret.event & event:
-            return False
-        ret = ret.owner
-    return True
 
 def controller(self):
     ret = self
@@ -27,7 +19,8 @@ def controller(self):
 
 def my_zone(self):
     ret = self
-    while ret.type > Type.ZONE:
+    #while ret.type > Type.ZONE:
+    while ret.type not in (Type.ZONE, Type.GAME):
         ret = ret.owner
     if ret.type == Type.ZONE:
         return ret
@@ -46,44 +39,69 @@ class Card_list(list):
             return self.__class__(*super().__getitem__(value))
         return super().__getitem__(value)
 
-    def filter(self, **kwargs):
-        return self.__class__(card
-            for k, v in kwargs.items()
-                for card in self
-                    if getattr(card, k) == v)
+    def filter(self, **kwargs) -> 'Card_list':
+        cards = self.__class__(*self)
+        for k, v in kwargs.items():
+            for card in cards[::-1]:
+                if getattr(card, k) != v:
+                    cards.remove(card)
 
-    def filter_hex(self, **kwargs):
-        return self.__class__(card
-            for k, v in kwargs.items()
-                for card in self
-                    if getattr(card, k) & v)
+        return cards
 
-    def exclude(self, *args, **kwargs):
-        copy = self.__class__(card
+    def filter_hex(self, **kwargs) -> 'Card_list':
+        cards = self.__class__(*self)
+        for k, v in kwargs.items():
+            for card in cards[::-1]:
+                if not getattr(card, k) & v:
+                    cards.remove(card)
+
+        return cards
+
+    def exclude(self, *args, **kwargs) -> 'Card_list':
+        # kwargs : OR relation
+        cards = self.__class__(card
             for card in self
                 if card not in args)
-        if kwargs:
-            return self.__class__(card
-                for k, v in kwargs.items()
-                    for card in copy
-                        if getattr(card, k) != v)
-        return copy
 
-    def exclude_hex(self, *args, **kwargs):
-        copy = self.__class__(card
+        for k, v in kwargs.items():
+            for card in cards[::-1]:
+                if getattr(card, k) == v:
+                    cards.remove(card)
+
+        return cards
+
+    def exclude_hex(self, *args, **kwargs) -> 'Card_list':
+        cards = self.__class__(card
             for card in self
                 if card not in args)
-        if kwargs:
-            return self.__class__(card
-                for k, v in kwargs.items()
-                    for card in copy
-                        if not getattr(card, k) & v)
-        return copy
 
-    def filter_maxmin_level(self, level_max=LEVEL_MAX, level_min=1):
+        for k, v in kwargs.items():
+            for card in cards[::-1]:
+                if getattr(card, k) & v:
+                    cards.remove(card)
+
+        return cards
+
+    def filter_maxmin_level(self, level_max=LEVEL_MAX, level_min=1) -> 'Card_list':
         return self.__class__(card
             for card in self
                 if level_min <= card.level <= level_max)
+
+    def one_minion_by_type(self) -> 'Card_list':
+        """
+            Return a list which contains until one minion by type
+        """
+        #TODO: gestion des Race.ALL incorrecte sur le fond
+        # exclu de fait les minions multi-type
+        tri = {minion_race: self.filter(race=minion_race)
+            for minion_race in Race.battleground_race()}
+
+        result = Card_list(random.choice(minions)
+                for minions in tri.values()
+                    if minions)
+
+        return result + self.filter(race=Race.ALL)
+
 
 
 class Board_Card_list(Card_list):
@@ -94,7 +112,7 @@ class Board_Card_list(Card_list):
             return None
 
 class db_arene(dict):
-    filename = 'db_arene_minion.json'
+    filename = 'db/arene_minion.json'
 
     def __init__(self, version=VERSION, type_ban="0", **kwargs):
         with open(self.__class__.filename, 'r') as file:

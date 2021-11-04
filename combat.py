@@ -1,40 +1,32 @@
 import random
-from enums import BATTLE_SIZE, Event, State, Type
+from enums import FIELD_SIZE
 from utils import *
 from action import *
 from typing import Tuple
+from board import Board
+from entity import Minion
 
 class Combat:
-    def __init__(self, game, board_j1, board_j2):
+    def __init__(self, field, board_p1: Board, board_p2: Board) -> None:
         self.game = game
+        self.loser = None
+        self.winner = None
+        self.damage = 0
+        self.owner = field
 
-        self.combattants = (board_j1, board_j2)
-        self.combattants_player = (board_j1.owner, board_j2.owner)
-        board_j1.opponent = board_j2
-        board_j2.opponent = board_j1
-        board_j1.owner.fight = self
-        board_j2.owner.fight = self
+        self.combattants = (board_p1, board_p2)
+        board_p1.owner.combat = self
+        board_p2.owner.combat = self
+        board_p1.owner.fights.append(self)
+        board_p2.owner.fights.append(self)
 
-    def fight_initialisation(self) -> Tuple[object, int]:
+    def fight_initialisation(self) -> None:
+        # TODO: sauvegarde des résultats de tous les combats
         """
-            *return: winner id and total damage to loser
-            *rtype: tuple
+            Start the fight and save result
         """
-        winner, loser = self.begin_fight()
-
-        for board in self.combattants:
-            board.owner.win_last_match = False
-            board.owner.fight = None
-
-        damage = self.calc_damage(winner)
-        if winner:
-            winner = winner.owner
-            winner.winning_streak += 1
-            winner.win_last_match = True
-            loser.owner.winning_streak = 0
-            loser.owner.health -= damage
-
-        return winner, damage
+        self.winner, self.loser = self.begin_fight()
+        self.damage = self.end_fight_damage()
 
     def fight_is_over(self) -> bool:
         """
@@ -42,7 +34,7 @@ class Combat:
             return False otherwise
         """
         for board in self.combattants:
-            if not board.cards:
+            if board.size == 0:
                 return True
 
         for board in self.combattants:
@@ -52,57 +44,61 @@ class Combat:
 
         return True
 
-    def begin_fight(self) -> tuple:
+    def begin_fight(self) -> Tuple[Board, Board] or Tuple[None, None]:
         for board in self.combattants:
             board.attack_case = 0 # servant in this case attack first
 
-        self.attacker = self.calc_initiative(*self.combattants)
-        self.game.active_global_event(Event.FIRST_STRIKE, *self.combattants_player)
+        self.attacker = self.who_attacks_first(*self.combattants)
 
         while not self.fight_is_over():
             self.next_round()
-            self.game.active_action()
+            self.owner.active_action()
             self.attacker = self.attacker.opponent
 
-        return self.who_is_winner()
+        return self.who_is_the_winner()
 
-    def who_is_winner(self) -> Tuple[object, object] or Tuple[None, None]:
-        j1, j2 = self.combattants
-        if j1.cards:
-            if j2.cards:
+    def who_is_the_winner(self) -> Tuple[Board, Board] or Tuple[None, None]:
+        p1, p2 = self.combattants
+        if p1.size > 0:
+            if p2.size > 0:
                 return None, None
             return self.combattants
-        elif not j2.cards:
+        elif p2.size <= 0:
             return None, None
-        return j2, j1
+        return p2, p1
 
-    def calc_damage(self, winner):
-        if winner is None:
+    def end_fight_damage(self) -> int:
+        """
+            Returns the amount of damage to the player 
+        """
+        if self.winner is None:
             return 0
 
-        return sum([entity.level for entity in [winner.owner]+winner.cards])
+        return self.winner.cumulative_level + self.winner.level
 
-    def next_round(self):
+    def next_round(self) -> None:
         # search first attacker
-        for i in range(BATTLE_SIZE):
-            attacker_minion_position = (self.attacker.attack_case + i) % BATTLE_SIZE
+        for i in range(FIELD_SIZE):
+            attacker_minion_position = (self.attacker.attack_case + i) % FIELD_SIZE
             minion = self.attacker.cards[attacker_minion_position]
             if minion and minion.can_attack:
                 self.minion_attack(minion)
                 break
 
-    def minion_attack(self, attacker_minion):
+    def minion_attack(self, attacker_minion: Minion) -> None:
         for _ in range(attacker_minion.how_many_time_can_I_attack()):
-            self.game.append_action(attacker_minion.prepare_attack)
-            attacker_minion.active_action()
+            attacker_minion.combat()
 
         if attacker_minion.is_alive:
             self.attacker.attack_case += 1
-            if self.attacker.cards:
-                self.attacker.attack_case %= len(self.attacker.cards)
+            if self.attacker.size > 0:
+                self.attacker.attack_case %= self.attacker.size
 
-    def calc_initiative(self, board_j1, board_j2):
-        if len(board_j1.cards) > len(board_j2.cards) or \
-                random.randint(0, 1) and len(board_j2.cards) == len(board_j1.cards):
-            return board_j1
-        return board_j2
+    def who_attacks_first(self, board_p1: Board, board_p2: Board, *args) -> Board:
+        """
+            Returns the first board to attack
+        """
+        if board_p1.size > board_p2.size or \
+                random.randint(0, 1) and board_p2.size == board_p1.size:
+            return board_p1
+        return board_p2

@@ -1,0 +1,141 @@
+{
+ "20.8": {
+  "0": {
+   "976": {
+    "name": "Chasse-marée murloc",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": -0.38261945751900545,
+     "fight_base_T1_tour2_all_strat_1": -0.9653542098395889
+    }
+   },
+   "41245": {
+    "name": "Chasseur rochecave",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": 0.4449808312771183,
+     "fight_base_T1_tour2_all_strat_1": 0.9673840024868474
+    }
+   },
+   "475": {
+    "name": "Mande-flots murloc",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": -3.0756678519274283,
+     "fight_base_T1_tour2_all_strat_1": -7.858483683839547
+    }
+   },
+   "43121": {
+    "name": "Homoncule sans-gêne",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": -2.6193968146016986,
+     "fight_base_T1_tour2_all_strat_1": -1.6838542185168341
+    }
+   },
+   "40426": {
+    "name": "Chat de gouttière",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": -2.1911155617992972,
+     "fight_base_T1_tour2_all_strat_1": -5.621511259396383
+    }
+   },
+   "1281": {
+    "name": "Hyène charognarde",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": -2.1719287873431004,
+     "fight_base_T1_tour2_all_strat_1": -5.583099254679158
+    }
+   },
+   "59670": {
+    "name": "Tisse-colère",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": -1.7268961394830362,
+     "fight_base_T1_tour2_all_strat_1": -4.470517635028998
+    }
+   },
+   "56112": {
+    "name": "Serviteur diabolique",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": -2.9196023454845976,
+     "fight_base_T1_tour2_all_strat_1": -7.442728218609631
+    }
+   },
+   "53445": {
+    "name": "Micromomie",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": -1.688739151356775,
+     "fight_base_T1_tour2_all_strat_1": -4.375125164713343
+    }
+   },
+   "60055": {
+    "name": "Micro-machine",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": -3.0756678519274283,
+     "fight_base_T1_tour2_all_strat_1": -6.486838319263486
+    }
+   },
+   "60628": {
+    "name": "Lieutenant draconide",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": 0.4449808312771183,
+     "fight_base_T1_tour2_all_strat_1": 0.9673840024868474
+    }
+   },
+   "59968": {
+    "name": "Dragonnet rouge",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": -1.540088551461468,
+     "fight_base_T1_tour2_all_strat_1": -3.959189317360812
+    }
+   },
+   "61061": {
+    "name": "Forban",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": -0.4799498215646296,
+     "fight_base_T1_tour2_all_strat_1": -1.3449426296175193
+    }
+   },
+   "61055": {
+    "name": "Mousse du pont",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": -2.1719287873431004,
+     "fight_base_T1_tour2_all_strat_1": -5.583099254679157
+    }
+   },
+   "63614": {
+    "name": "Acolyte de C’Thun",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": 0.4831378194033805,
+     "fight_base_T1_tour2_all_strat_1": 1.0627764728025026
+    }
+   },
+   "64038": {
+    "name": "Élémenplus",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": -2.1719287873431004,
+     "fight_base_T1_tour2_all_strat_1": -5.583099254679157
+    }
+   },
+   "64042": {
+    "name": "Anomalie actualisante",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": -1.0474392289727286,
+     "fight_base_T1_tour2_all_strat_1": -2.771875358753229
+    }
+   },
+   "70147": {
+    "name": "Bronze-couenne",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": -3.0756678519274283,
+     "fight_base_T1_tour2_all_strat_1": -7.858483683839547
+    }
+   },
+   "70143": {
+    "name": "Géomancien de Tranchebauge",
+    "rating": {
+     "fight_base_T1_tour1_all_strat_1": -1.941651477858174,
+     "fight_base_T1_tour1_all_strat_2": -0.9287051307493721,
+     "fight_base_T1_tour2_all_strat_1": -4.99785104954358,
+     "fight_base_T1_tour2_all_strat_2": -2.4750401131948347
+    }
+   }
+  }
+ }
+}

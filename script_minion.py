@@ -1,18 +1,76 @@
 # coding : utf-8
 
 import random
-from enums import Race, State, Event, CardName, Type, BATTLE_SIZE
-import script_functions
+from enums import FIELD_SIZE, CardName, Type, Zone, Race
 from utils import *
 from action import *
+from entity import Entity, Minion
+from sequence import Sequence
 
-class BGS_043:
+
+class battlecry_select_one_minion_and_buff_it(Minion):
+    # buff battlecry, only minions of the same synergy can be targeted
+    def play_start(self, sequence: Sequence):
+        super().play_start(sequence)
+        if sequence.is_valid:
+            minion = self.choose_one_of_them(
+                self.controller.board.cards.filter(race=self.synergy))
+            sequence.add_target(minion)
+
+    def battlecry(self, sequence: Sequence):
+        for minion in sequence.targets:
+            self.buff(self.enchantment_dbfId, minion)
+
+
+class deathrattle_repop(Minion):
+    nb_repop = 1
+    def deathrattle(self, sequence):
+        repop_id = self.invoc(sequence, self.repop_dbfId)
+        if repop_id:
+            sequence._repops.append(repop_id)
+
+
+class hit_by_repop(Minion):
+    nb_repop = 1
+    def hit(self, sequence):
+        if self is sequence.target and sequence.damage_value > 0:
+            deathrattle_repop.deathrattle(self, sequence)
+
+
+class battlecry_select_all_and_buff_them(Minion):
+    nb_strike = 1
+    def battlecry(self, sequence):
+        minions = self.controller.board.cards.filter(race=self.synergy).exclude(self)
+        self.buff(self.enchantment_dbfId, *minions)
+
+
+class aura_buff_race(Minion):
+    def summon_on(self, sequence):
+        if sequence.source.controller is self.controller and\
+                sequence.source.race == self.race:
+            self.buff(self.enchantment_dbfId, sequence.source)
+
+    def summon_start(self, sequence):
+        super().summon_start(sequence)
+        if sequence.is_valid:
+            for minion in self.controller.board.cards:
+                if minion.race == self.race:
+                    self.buff(self.enchantment_dbfId, minion)
+
+
+class battlecry_buff_myself(Minion):
+    nb_strike = 1
+    def battlecry(self, sequence):
+        self.buff(self.enchantment_dbfId, self)
+
+
+class BGS_043(Minion):
     # Murozond
     def battlecry(self):
         pass
 """
     board_adv = self.owner.owner.last_opponent.real_board
-    if board_adv and self.owner.owner.hand.can_add_card():
+    if board_adv and not self.owner.owner.hand.is_full:
         card_key_number = random.choice(board_adv).dbfId
         if card_key_number[-2:] == '_p':
             card_key_number = card_key_number[:-2]
@@ -28,7 +86,7 @@ def Murozond_p(self):
         for crd in self.owner.owner.last_opponent.real_board
             if crd.dbfId != '513_p']
 
-    if board_adv and self.owner.owner.hand.can_add_card():
+    if board_adv and not self.owner.owner.hand.is_full:
         card_key_number = random.choice(board_adv).dbfId
         if card_key_number[-2:] != '_p':
             if card_key_number + '_p' in card.card_db():
@@ -49,1184 +107,825 @@ def Murozond_p(self):
     return None
 """
 
-class MTB_BaconUps_110:
+
+
+class MTB_BaconUps_110(Minion):
     # Murozond premium
     def battlecry(self):
         pass
 
-class BGS_113:
+
+class BGS_113(Minion):
     # Habitue_sans_visage
     def battlecry(self):
         # comment se passe la gestion lors de la revente, la copie est enlevée de la taverne ou est-ce 
         # l'habitué ?
         pass
 
-class TB_BaconUps_305:
+
+class TB_BaconUps_305(Minion):
     # Habitue_sans_visage premium
     def battecry(self):
         pass
 
-class BGS_104:
+
+class BGS_104(Minion):
     # Nomi
-    def play(self, card):
+    bonus_value = 1
+    def play_off(self, sequence):
         # l'event s'active seulement après un cri de guerre, ce n'est donc pas un PLAY
         # mais un event AFTER_PLAY (nomi buff les elems générés par l'élémentaire de stase,
         # après que ce dernier soit joué)
-        # enchantment_id : 64167
-        if self != card and card.race & Race.ELEMENTAL:
-            self.owner.owner.bonus_nomi += self.double_if_premium(1)
+        #TODO
+        source = sequence.source
+        if self.controller is source.controller and source.race.ELEMENTAL:
+            self.buff(self.enchantment_dbfId,
+                self.controller,
+                bonus_value=self.__class__.bonus_value)
 
-class TB_BaconUps_201:
+
+class TB_BaconUps_201(BGS_104):
     # Nomi premium
-    def play(self, card):
-        pass
+    bonus_value = 2
 
-class BGS_036:
+
+class BGS_036(Minion):
     # Tranchetripe
-    def end_turn(self, enchantment_id='60562'):
-        nb = len(self.owner.cards.filter_hex(race=Race.DRAGON))
-        for _ in range(nb):
-            self.buff(enchantment_id, self)
+    def turn_off(self, sequence):
+        self.buff(self.enchantment_dbfId, self,
+            max_health=self.bonus_value,
+            attack=self.bonus_value)
 
-class TB_BaconUps_106:
+    @property
+    def bonus_value(self) -> int:
+        return len(self.my_zone.cards.filter(race='DRAGON'))
+
+
+class TB_BaconUps_106(Minion):
     # Tranchetripe premium
-    end_turn= lambda self: BGS_036.end_turn(self, '60650')
+    @property
+    def bonus_value(self) -> int:
+        return len(self.my_zone.cards.filter(race='DRAGON'))*2
 
-class BGS_072:
+
+class BGS_072(Minion):
     # Captaine_Larrrrdeur
-    def buy(self, source):
-        if source.race & Race.PIRATE:
-            self.controller.gold += 1
+    bonus_value = 1
 
-class TB_BaconUps_133:
+    def buy_off(self, source):
+        if source.race.PIRATE:
+            self.controller.gold += self.__class__.bonus_value
+
+
+class TB_BaconUps_133(BGS_072):
     # Captaine_Larrrrdeur premium
-    def buy(self, source):
-        if source.race & Race.PIRATE:
-            self.controller.gold += 2
+    bonus_value = 2
 
-class BGS_059:
+
+class BGS_059(battlecry_select_one_minion_and_buff_it):
     # Dévoreur d'âmes
-    def battlecry(self):
-        minion = self.choose_one_of_them(\
-            self.my_zone.cards.filter(race=Race.DEMON).exclude(self))
-        if minion:
-            self.controller.gold += 3
-            self.buff("61080", self, attack=minion.attack, max_health=minion.health)
-            self.controller.bob.hand.append(minion)
+    def battlecry(self, sequence):
+        for minion in sequence.targets:
+            if minion.my_zone is self.my_zone:
+                self.controller.bob.hand.append(minion)
+                self.controller.gold += 3
+                self.buff(self.enchantment_dbfId, self, attack=minion.attack, max_health=minion.health)
 
-class TB_BaconUps_119:
+
+class TB_BaconUps_119(BGS_059):
     # Dévoreur d'âmes premium
-    def battlecry(self):
-        minion = self.choose_one_of_them(\
-            self.my_zone.cards.filter(race=Race.DEMON).exclude(self))
-        if minion:
-            self.controller.gold += 6
-            self.buff("61080", self, attack=minion.attack*2, max_health=minion.health*2)
-            self.controller.bob.hand.append(minion)
+    def battlecry(self, sequence):
+        for minion in sequence.targets:
+            if minion.my_zone is self.my_zone:
+                self.controller.bob.hand.append(minion)
+                self.controller.gold += 6
+                self.buff(self.enchantment_dbfId, self, attack=minion.attack*2, max_health=minion.health*2)
 
-def Apprentie_reinit(self):
-    #TODO: check graveyard ?
-    self.mech_die = []
 
-def Apprentie_kill(self, victim):
-    if victim.race & Race.MECH:
-        try:
-            self.mech_die.append(victim.dbfId)
-        except AttributeError:
-            pass
-
-class BGS_012:
+class BGS_012(Minion):
     # Apprentie de Kangor
-    def deathrattle(self, position):
-        try:
-            for repop in self.mech_die[:2]:
-                script_functions.invocation(self, repop, 1, self.position)
-        except AttributeError:
-            pass
+    nb_repop = 2
+    def deathrattle(self, sequence):
+        for repop in self.controller.graveyard.entities.filter(race='MECHANICAL')[:self.__class__.nb_repop]:
+            self.invoc(sequence, repop.dbfId)
 
-class TB_BaconUps_087:
+
+class TB_BaconUps_087(BGS_012):
     # Apprentie de Kangor premium
-    def deathrattle(self, position):
-        try:
-            for repop in self.mech_die[:4]:
-                script_functions.invocation(self, repop, 1, self.position)
-        except AttributeError:
-            pass
+    nb_repop = 4
 
-class GVG_021:
+
+class GVG_021(aura_buff_race):
     # Mal'Ganis
-    def play_aura(self):
-        if self not in self.controller.aura_active:
-            self.controller.aura_active[self] = GVG_021.aura
-            self.apply_met_on_all_children(GVG_021.aura, self.controller)
+    def summon_start(self, sequence):
+        super().summon_start(sequence)
+        if sequence.is_valid:
+            self.buff(-2203, self.controller)
 
-    def aura(self, target):
-        if self is not target:
-            if target.race & Race.DEMON:
-                target.buff("2203", target, aura=True)
-            elif target is self.controller:
-                target.buff("-2203", target, aura=True)
+TB_BaconUps_060= GVG_021 # Mal'Ganis premium
+EX1_185= aura_buff_race # Brise-siège
+TB_BaconUps_053= EX1_185 # Brise-siège premium
+EX1_507= aura_buff_race # Chef de guerre murloc
+TB_BaconUps_008= EX1_507 # Chef de guerre murloc premium
+NEW1_027= aura_buff_race # Capitaine des mers du Sud
+TB_BaconUps_136= NEW1_027 # Capitaine des mers du Sud premium
 
-class TB_BaconUps_060:
-    # Mal'Ganis premium
-    def play_aura(self):
-        if self not in self.controller.aura_active:
-            self.controller.aura_active[self] = TB_BaconUps_060.aura
-            self.apply_met_on_all_children(TB_BaconUps_060.aura, self.controller)
 
-    def aura(self, target):
-        if self is not target:
-            if target.race & Race.DEMON:
-                target.buff("58429", target, aura=True)
-            elif target is self.controller:
-                target.buff("-2203", target, aura=True)
-
-class EX1_185:
-    # Brise-siège
-    def play_aura(self):
-        if self not in self.controller.aura_active:
-            self.controller.aura_active[self] = EX1_185.aura
-            self.apply_met_on_all_children(EX1_185.aura, self.controller)
-
-    def aura(self, target):
-        if target.race & Race.DEMON and target is not self:
-            self.buff('54842', target, aura=True)
-
-class TB_BaconUps_053:
-    # Brise-siège premium
-    def play_aura(self):
-        if self not in self.controller.aura_active:
-            self.controller.aura_active[self] = TB_BaconUps_053.aura
-            self.apply_met_on_all_children(TB_BaconUps_053.aura, self.controller)
-
-    def aura(self, target):
-        if target.race & Race.DEMON and target is not self:
-            self.buff('58419', target, aura=True)
-
-class EX1_507:
-    # Chef de guerre murloc
-    def play_aura(self):
-        if self not in self.controller.aura_active:
-            self.controller.aura_active[self] = EX1_507.aura
-            self.apply_met_on_all_children(EX1_507.aura, self.controller)
-
-    def aura(self, target):
-        if target.race & Race.MURLOC and target is not self:
-            self.buff('535', target, aura=True)
-
-class TB_BaconUps_008:
-    # Chef de guerre murloc premium
-    def play_aura(self):
-        if self not in self.controller.aura_active:
-            self.controller.aura_active[self] = TB_BaconUps_008.aura
-            self.apply_met_on_all_children(TB_BaconUps_008.aura, self.controller)
-
-    def aura(self, target):
-        if target.race & Race.MURLOC and target is not self:
-            self.buff('57406', target, aura=True)
-
-class NEW1_027:
-    # Capitaine des mers du Sud
-    def play_aura(self):
-        if self not in self.controller.aura_active:
-            self.controller.aura_active[self] = NEW1_027.aura
-            self.apply_met_on_all_children(NEW1_027.aura, self.controller)
-
-    def aura(self, target):
-        if target.race & Race.PIRATE and target is not self:
-            self.buff('70472', target, aura=True)
-
-class TB_BaconUps_136:
-    # Capitaine des mers du Sud premium
-    def play_aura(self):
-        if self not in self.controller.aura_active:
-            self.controller.aura_active[self] = TB_BaconUps_136.aura
-            self.apply_met_on_all_children(TB_BaconUps_136.aura, self.controller)
-
-    def aura(self, target):
-        if target.race & Race.PIRATE and target is not self:
-            self.buff('62238', target, aura=True)
-
-class BGS_202:
-    # Mythrax
-    def end_turn(self, enchantment_id='65669'):
-        nb = len(self.my_zone.one_minion_by_type())
-        for _ in range(nb):
-            self.buff("65669", self)
-
-class TB_BaconUps_258:
-    # Mythrax premium
-    end_turn= lambda self: BGS_202.end_turn(self, '65672')
-
-class BGS_112:
-    # Héraut qijari
-    def die(self, source, killer, enchantment_id='68225'):
-        if source.state & State.TAUNT:
-            for minion in source.adjacent_neighbors():
-                self.buff(enchantment_id, minion)
-
-class TB_BaconUps_303:
-    # Héraut qijari premium
-    die= lambda self, source, killer: BGS_112.die(self, source, killer, '68226')
-
-class BGS_200:
-    # Gardienne d'antan
-    def deathrattle(self, position):
-        self.controller.hand.create_card_in(CardName.COIN)
-
-class TB_BaconUps_256:
-    # Gardienne d'antan premium
-    def deathrattle(self, position):
-        for _ in range(2):
-            BGS_200.deathrattle(self, position)
-
-class BGS_111:
+class BGS_111(Minion):
     # Champion d'Yshaarj
-    def defend_ally(self, defenser, enchantment_id='65659'):
-        if defenser.state & State.TAUNT:
-            self.buff(enchantment_id, self)
+    def combat_on(self, sequence):
+        for defenser in sequence.targets:
+            if defenser.TAUNT and defenser.controller is self.controller:
+                self.buff(self.enchantment_dbfId, self)
+TB_BaconUps_301= BGS_111 # Champion d'Yshaarj premium
 
-class TB_BaconUps_301:
-    # Champion d'Yshaarj premium
-    defend_ally= lambda self, defenser: BGS_111.defend_ally(self, defenser, '65667')
 
-class BGS_110:
+class BGS_110(Minion):
     # Bras de l'empire
-    def defend_ally(self, defenser, enchant_id='65670'):
-        if defenser.state & State.TAUNT:
-            self.buff(enchant_id, defenser)
+    def combat_on(self, sequence):
+        for defenser in sequence.targets:
+            if defenser.TAUNT and defenser.controller is self.controller:
+                self.buff(self.enchantment_dbfId, defenser)
+TB_BaconUps_302= BGS_110 # Bras de l'empire premium
 
-class TB_BaconUps_302:
-    # Bras de l'empire premium
-    defend_ally= lambda self, defenser: BGS_110.defend_ally(self, defenser, '65674')
 
-class BGS_201:
-    # Ritaliste tourmenté
-    def defend_ally(self, defenser, enchant_id='66838'):
-        if self is defenser:
-            self.buff(enchant_id, *self.adjacent_neighbors())
-
-class TB_BaconUps_257:
-    # Ritaliste tourmenté premium
-    def defend_ally(self, defenser, enchant_id='66839'):
-        BGS_201.defend_ally(self, defenser, enchant_id)
-
-class BGS_046:
-    # Nat Pagle
-    def die(self, source, killer):
-        # n'est pas une découverte à 1 car peut se découvrir lui-même
-        if self is source:
-            lst = self.controller.bob.local_hand
-            if lst:
-                self.controller.hand.append(random.choice(lst))
-
-class TB_BaconUps_132:
-    # Nat Pagle premium
-    def die(self, source, killer):
-        for _ in range(2):
-            BGS_046.die(self, source, killer)
-
-class BGS_047:
+class BGS_047(Minion):
     # Amiral de l'effroi Eliza
-    def atk_ally(self, attacker, enchantment_id='62227'):
-        if attacker.race & Race.PIRATE:
+    valid_for_myself = True
+    def combat_on(self, sequence):
+        source = sequence.source
+        if source.race.PIRATE and source.controller is self.controller:
             for minion in self.my_zone.cards:
-                self.buff(enchantment_id, minion)
+                self.buff(self.enchantment_dbfId, minion)
+TB_BaconUps_134= BGS_047 # Amiral de l'effroi Eliza premium
 
-class TB_BaconUps_134:
-    # Amiral de l'effroi Eliza premium
-    atk_ally= lambda self, attacker: BGS_047.atk_ally(self, attacker, '62229')
 
-class BGS_056:
+class BGS_056(Minion):
     # Capitaine Grondéventre
-    def atk_ally(self, attacker, enchantment_id='62256'):
-        if attacker.race & Race.PIRATE and self is not attacker:
-            self.buff(enchantment_id, attacker)
+    def combat_on(self, sequence):
+        source = sequence.source
+        if source.race.PIRATE and source.controller is self.controller:
+            self.buff(self.enchantment_dbfId, source)
+TB_BaconUps_139= BGS_056 # Capitaine Grondéventre premium
 
-class TB_BaconUps_139:
-    # Capitaine Grondéventre premium
-    atk_ally= lambda self, attacker: BGS_056.atk_ally(self, attacker, '62258')
 
-class LOE_077:
+class LOE_077(Minion):
     # Brann
-    def play_aura(self):
-        pass
-        #self.owner.add_aura(self, boost_battlecry=self.double_if_premium(1))
+    #TODO: l'effet d'un Brann doré se cumule-t-il avec celui d'un Brann non doré ?
+    # (parti du principe que non)
+    # Même questionnement pour Baron Vaillefendre
+    def battlecry_on(self, sequence):
+        sequence.double_effect = True
 
-class TB_BaconUps_045:
-    # Brann
-    def play_aura(self):
-        pass
-        #self.owner.add_aura(self, boost_battlecry=self.double_if_premium(1))
 
-class FP1_031:
+class TB_BaconUps_045(LOE_077):
+    # Brann premium
+    def battlecry_on(self, sequence):
+        sequence.triple_effect = True
+
+
+class FP1_031(Minion):
     # Baron_Vaillefendre
-    def play_aura(self):
-        pass
-        #self.owner.add_aura(self, boost_deathrattle=self.double_if_premium(1))
+    def deathrattle_on(self, sequence):
+        sequence.double_effect = True
 
-class TB_BaconUps_055:
+
+class TB_BaconUps_055(Minion):
     # Baron_Vaillefendre premium
-    def play_aura(self):
-        pass
-        #self.owner.add_aura(self, boost_deathrattle=self.double_if_premium(1))
+    def deathrattle_on(self, sequence):
+        sequence.triple_effect = True
 
-class DAL_575:
+
+class DAL_575(Minion):
     # Khadgar
-    def play_aura(self):
-        pass
+    # les cartes invoquées sont buffées par les summon_on avant d'être copiées
+    nb_strike = 1
 
-class TB_BaconUps_034:
+
+class TB_BaconUps_034(DAL_575):
     # Khadgar premium
-    def play_aura(self):
-        pass
+    nb_strike = 2
 
 
-class BGS_066:
+class BGS_066(Minion):
     # Raflelor
-    def end_turn(self, enchantment_id='62193'):
-        #TODO : partiel ?
+    def turn_off(self, sequence):
         for minion in self.my_zone.cards:
             if hasattr(minion, 'battlegroundsNormalDbfId'):
-                self.buff(enchantment_id, self)
+                self.buff(self.enchantment_dbfId, self)
+TB_BaconUps_130= BGS_066 # Raflelor premium
 
-class TB_BaconUps_130:
-    # Raflelor premium
-    end_turn= lambda self: BGS_066.end_turn(self, '62195')
 
-class ULD_217:
+class ULD_217(Minion):
     # Micromomie
-    def end_turn(self, enchantment_id='54810'):
+    def turn_off(self, sequence):
         minions = self.owner.cards.exclude(self)
         if minions:
-            self.buff(enchantment_id, random.choice(minions))
+            self.buff(self.enchantment_dbfId, random.choice(minions))
+TB_BaconUps_250= ULD_217 # Micromomie premium
 
-class TB_BaconUps_250:
-    # Micromomie premium
-    end_turn = lambda self: ULD_217.end_turn(self, '64344')
 
-class GVG_027:
-    # Sensei de fer
-    def end_turn(self, enchantment_id='2220'):
-        lst = self.my_zone.cards.filter_hex(race=Race.MECH).exclude(self)
-        if lst:
-            self.buff(enchantment_id, random.choice(lst))
-
-class TB_BaconUps_044:
-    # Sensei de fer premium
-    end_turn= lambda self: GVG_027.end_turn(self, '58399')
-
-class BGS_105:
+class BGS_105(Minion):
     # Chambellan Executus
-    def end_turn(self, enchantment_id='65180'):
+    def turn_off(self, sequence):
         target = self.my_zone[0]
-        self.buff(enchantment_id, target)
-        for _ in self.controller.played_minions[self.nb_turn].filter_hex(race=Race.ELEMENTAL):
-            self.buff(enchantment_id, target)
+        self.buff(self.enchantment_dbfId, target)
+        for _ in self.controller.played_cards[self.nb_turn].filter(type='MINION', race='ELEMENTAL'):
+            self.buff(self.enchantment_dbfId, target)
 
-class TB_BaconUps_207:
+
+class TB_BaconUps_207(BGS_105):
     # Chambellan Executus premium
-    end_turn= lambda self: BGS_105.end_turn(self, '-65180')
+    pass
 
-class BG20_210:
-    # Maraudeur des ruines
-    def end_turn(self, enchantment_id='73088'):
-        if len(self.owner.cards) <= 6:
-            self.buff(enchantment_id, self)
 
-class BG20_210_G:
-    # Maraudeur des ruines premium
-    end_turn= lambda self: BG20_210.end_turn(self, '73090')
-
-class BGS_027:
-    # Micro-machine
-    begin_turn = lambda x: x.buff('2_e', x)
-
-class TB_BaconUps_094:
-    # Micro-machine premium
-    begin_turn = lambda x: x.buff('60057', x)
-
-class BGS_033:
-    # Dragon infâmélique
-    def begin_turn(self, enchantment_id='60553'):
-        if self.my_zone.win_last_match:
-            self.buff(enchantment_id, self)
-
-class TB_BaconUps_104:
-    # Dragon infâmélique premium
-    begin_turn= lambda self: BGS_033.begin_turn(self, '60646')
-
-class ICC_029:
-    # Plaie d'écailles cobalt
-    def end_turn(self, enchantment_id='42441'):
+class ICC_029(Minion):
+    # Plaiedécailles cobalt
+    def turn_off(self, sequence):
         lst = self.my_zone.cards.exclude(self)
         if lst:
-            self.buff(enchantment_id, random.choice(lst))
+            self.buff(self.enchantment_dbfId, random.choice(lst))
+TB_BaconUps_120= ICC_029 # Plaiedécailles cobalt premium
 
-class TB_BaconUps_120:
-    # Plaie d'écailles cobalt premium
-    end_turn= lambda self: ICC_029.end_turn(self, '61443')
 
-class BGS_009:
+class BGS_009(Minion):
     # Massacreuse croc radieux
-    def end_turn(self, enchantment_id='59709'):
-        for minion in self.owner.one_minion_by_type():
-            self.buff(enchantment_id, minion)
+    def turn_off(self, sequence):
+        for minion in self.my_zone.cards.one_minion_by_type():
+            self.buff(self.enchantment_dbfId, minion)
+TB_BaconUps_082= BGS_009  # Massacreuse croc radieux premium
 
-class TB_BaconUps_082:
-    # Massacreuse croc radieux premium
-    end_turn= lambda self: BGS_009.end_turn(self, '59712')
 
-class BGS_115:
+class BGS_115(Minion):
     # Élémenplus
-    def sell(self, source):
-        if self is source and self.controller.type == Type.HERO:
-            self.controller.hand.create_card_in("64040")
+    def sell_end(self, sequence):
+        self.controller.hand.create_card_in(64040)
 
-class TB_BaconUps_156:
+
+class TB_BaconUps_156(Minion):
     # Élémenplus premium
-    def sell(self, source):
-        for _ in range(2):
-            BGS_115.sell(self, source)
+    def sell_end(self, sequence):
+        self.controller.hand.create_card_in(64040, 64040)
 
-class BG20_301:
+
+class BG20_301(Minion):
     # Bronze couenne
-    def sell(self, source):
-        if self is source and self.controller.type == Type.HERO:
-            self.controller.hand.create_card_in("70136", "70136")
+    nb_strike = 1
+    def sell_end(self, sequence):
+        self.controller.hand.create_card_in(
+            CardName.BLOOD_GEM,
+            CardName.BLOOD_GEM)
 
-class BG20_301_G:
+
+class BG20_301_G(BG20_301):
     # Bronze couenne premium
-    def sell(self, source):
-        for _ in range(2):
-            BG20_301.sell(self, source)
+    nb_strike = 2
 
-class BG20_100:
-    # Geomancien de Tranchebauge
-    def battlecry(self):
-        self.controller.hand.create_card_in("70136")
 
-class BG20_100_G:
-    # Geomancien de Tranchebauge premium
-    def battlecry(self):
-        for _ in range(2):
-            BG20_100.battlecry(self)
+class BG20_100(Minion):
+    # Géomancien de Tranchebauge
+    nb_strike = 1
+    def battlecry(self, sequence):
+        self.controller.hand.create_card_in(CardName.BLOOD_GEM)
 
-class BGS_037:
+
+class BG20_100_G(BG20_100):
+    # Géomancien de Tranchebauge premium
+    nb_strike = 2
+
+
+class BGS_037(Minion):
     # Régisseur du temps
-    def sell(self, source, enchantment_id='60639'):
-        if self is source and self.controller.type == Type.HERO:
-            self.buff(enchantment_id, *self.controller.opponent.board.cards)
+    def sell_start(self, sequence):
+        super().sell_start(sequence)
+        if sequence.is_valid:
+            sequence(self.buff, self.enchantment_dbfId, *self.my_zone.opponent.cards)
+TB_BaconUps_107= BGS_037 # Régisseur du temps premium
 
-class TB_BaconUps_107:
-    # Régisseur du temps premium
-    sell = lambda self, source: BGS_037.sell(self, source, '60664')
 
-class BGS_049:
+class BGS_049(Minion):
     # Parieuse convaincante
-    def sell(self, source):
-        if self is source and self.controller.type == Type.HERO:
-            self.controller.gold += 2
+    bonus_value = 3
+    def sell_start(self, sequence):
+        sequence.cost = self.__class__.bonus_value
+        super().sell_start(sequence)
 
-class TB_BaconUps_127:
+
+class TB_BaconUps_127(BGS_049):
     # Parieuse convaincante premium
-    def sell(self, source):
-        if self is source and self.controller.type == Type.HERO:
-            self.controller.gold += 5
+    bonus_value = 6
 
-class ICC_858:
+
+class ICC_858(Minion):
     # Bolvar sang-de-feu
-    loss_shield= lambda self: self.buff('46580', self)
+    valid_for_myself = True
+    def loss_shield_off(self, sequence):
+        if self.controller is sequence.source.controller:
+            self.buff(self.enchantment_dbfId, self)
+TB_BaconUps_047= ICC_858 # Bolvar sang-de-feu premium
+BGS_067= ICC_858 # Massacreur drakonide
+TB_BaconUps_117= BGS_067 # Massacreur drakonide premium
 
-class TB_BaconUps_047:
-    # Bolvar sang-de-feu premium
-    loss_shield= lambda self: self.buff('58406', self)
 
-class BGS_067:
-    # Massacreur drakonide
-    loss_shield= lambda self: self.buff('61074', self)
-
-class TB_BaconUps_117:
-    # Massacreur drakonide premium
-    loss_shield= lambda self: self.buff('61076', self)
-
-class BGS_004:
+class BGS_004(Minion):
     # Tisse-colère
-    def after_play(self, source, enchantment_id='59671'):
-        if self is not source and source.race & Race.DEMON:
-            self.buff(enchantment_id, self)
+    def play_off(self, sequence: Sequence):
+        if self.controller is sequence.source.controller and sequence.source.race.DEMON:
             self.controller.health -= 1
+            self.buff(self.enchantment_dbfId, self)
+TB_BaconUps_079= BGS_004 # Tisse-colère premium
 
-class TB_BaconUps_079:
-    # Tisse-colère premium
-    after_play= lambda self, source: BGS_004.after_play(self, source, '59678')
 
-class EX1_509:
+class EX1_509(Minion):
     # Mande-flots murloc
-    def invoc(self, source, enchantment_id='1719'):
-        if self is not source and source.race & Race.MURLOC:
-            if self.controller.fight:
-                kwargs = {'duration': 1}
-            else:
-                kwargs = {}
-            self.buff(enchantment_id, self, **kwargs)
+    def summon_on(self, sequence):
+        if sequence.source.race.MURLOC:
+            self.buff(self.enchantment_dbfId, self)
+TB_BaconUps_011= EX1_509 # Mande-flots murloc premium
 
-class TB_BaconUps_011:
-    # Mande-flots murloc premium
-    invoc= lambda self, source: EX1_509.invoc(self, source, '58139')
 
-class BGS_100:
-    # Mini-Rag
-    def after_play(self, source, enchantment_id='64075'):
-        if source.race & Race.ELEMENTAL and source is not self:
-            self.buff(enchantment_id,
+class BGS_100(Minion):
+    # Mini Rag
+    nb_strike = 1
+    def play_off(self, sequence):
+        if sequence.source.race.ELEMENTAL:
+            self.buff(self.enchantment_dbfId,
                 random.choice(self.my_zone.cards),
-                attack=source.level,
-                max_health=source.level)
+                attack=sequence.source.level,
+                max_health=sequence.source.level)
 
-class TB_BaconUps_200:
-    # Mini-Rag premium
-    def after_play(self, source, enchantment_id='64075'):
-        for _ in range(2):
-            BGS_100.after_play(self, source, enchantment_id)
 
-class BGS_081:
+class TB_BaconUps_200(BGS_100):
+    # Mini Rag premium
+    nb_strike = 2
+
+
+class BGS_081(Minion):
     # Pillard pirate
-    def play(self, source, enchantment_id='62738'):
-        if source.race & Race.PIRATE and self is not source:
-            self.buff(enchantment_id, self)
+    def play_on(self, sequence):
+        if sequence.source.race.PIRATE and self.controller is sequence.source.controller:
+            self.buff(self.enchantment_dbfId, self)
+TB_BaconUps_143= BGS_081 # Pillard pirate premium
 
-class TB_BaconUps_143:
-    # Pillard pirate premium
-    play= lambda self, source: BGS_081.play(self, source, '62740')
 
-class BGS_041:
+class BGS_041(Minion):
     # Kalecgos
-    def after_play(self, source, enchantment_id='60644'):
-        if self is not source and source.event & Event.BATTLECRY:
-            for minion in self.my_zone.cards:
-                if minion.race & Race.DRAGON:
-                    self.buff(enchantment_id, minion)
+    def play_off(self, sequence):
+        if sequence.source.BATTLECRY and self.controller is sequence.source.controller:
+            for minion in self.my_zone.cards.filter(race='DRAGON'):
+                self.buff(self.enchantment_dbfId, minion)
+TB_BaconUps_109=BGS_041  # Kalecgos premium
 
-class TB_BaconUps_109:
-    # Kalecgos premium
-    after_play= lambda self, source: BGS_041.after_play(self, source, '60668')
 
-class BGS_124:
-    # Lieutenant Garr
-    def after_play(self, source, enchantment_id='64082'):
-        if self is not source and source.race & Race.ELEMENTAL:
-            for minion in self.my_zone.cards:
-                if minion.race & Race.ELEMENTAL:
-                    self.buff(enchantment_id, self)
-
-class TB_BaconUps_163:
-    # Lieutenant Garr premium
-    after_play= lambda self, source: BGS_124.after_play(self, source, '64083')
-
-class Favori_de_la_foule:
-    # Favori de la foule
-    def play(self, source, enchantment_id='2750'):
-        if self is not source and source.event & Event.BATTLECRY:
-            self.buff(enchantment_id, self)
-
-class Favori_de_la_foule_p:
-    # Favori de la foule premium
-    play= lambda self, source: Favori_de_la_foule.play(self, source, '58384')
-
-class BGS_075:
+class BGS_075(Minion):
     # Saurolisque enragé
-    def after_play(self, source, enchantment_id='62164'):
-        if source.event & Event.DEATHRATTLE and source is not self:
-            self.buff(enchantment_id, self)
+    def play_off(self, sequence):
+        if sequence.source.DEATHRATTLE and\
+                sequence.source.controller is self.controller:
+            self.buff(self.enchantment_dbfId, self)
+TB_BaconUps_125= BGS_075 # Saurolisque enragé premium
 
-class TB_BaconUps_125:
-    # Saurolisque enragé premium
-    after_play= lambda self, source: BGS_075.after_play(self, source, '62166')
 
-class BGS_127:
+class BGS_127(Minion):
     # Roche en fusion
-    def after_play(self, source, enchantment_id='64298'):
-        if source.race & Race.ELEMENTAL and source is not self:
-            self.buff(enchantment_id, self)
+    def play_off(self, sequence):
+        if sequence.source.race.ELEMENTAL and\
+                sequence.source.controller is self.controller:
+            self.buff(self.enchantment_dbfId, self)
+TB_Baconups_202= BGS_127 # Roche en fusion premium
 
-class TB_Baconups_202:
-    # Roche en fusion premium
-    after_play= lambda self, source: BGS_127.after_play(self, source, '64301')
 
-class BGS_120:
+class BGS_120(Minion):
     # Elémentaire de fête
-    def after_play(self, source, enchantment_id='64057'):
-        if source.race & Race.ELEMENTAL and source is not self:
-            minions = self.my_zone.cards.filter(race=Race.ELEMENTAL).exclude(self)
+    nb_strike = 1
+    def play_off(self, sequence):
+        if sequence.source.race.ELEMENTAL and\
+                sequence.source.controller is self.controller:
+            minions = self.my_zone.cards.filter(race='ELEMENTAL').exclude(self)
             if minions:
-                self.buff(enchantment_id, random.choice(minions))
+                self.buff(self.enchantment_dbfId, random.choice(minions))
 
-class TB_BaconUps_160:
+
+class TB_BaconUps_160(Minion):
     # Elémentaire de fête premium
-    def after_play(self, source):
-        for _ in range(2):
-            BGS_120.after_play(self, source)
+    nb_strike = 2
 
-class BGS_204:
+
+class BGS_204(Minion):
     # Démon démesuré
-    def after_play(self, source, enchantment_id='66230'):
-        if self is not source and source.race & Race.DEMON:
-            self.buff(enchantment_id, self)
+    def play_off(self, sequence):
+        source = sequence.source
+        if self.controller is source.controller and source.race.DEMON:
+            self.buff(self.enchantment_dbfId, self)
+TB_BaconUps_304= BGS_204 # Démon démesuré premium
 
-class TB_BaconUps_304:
-    # Démon démesuré premium
-    after_play= lambda self, source: BGS_204.after_play(self, source, '66238')
 
-class BGS_021:
-    # Maman ourse
-    invoc= lambda self, source: BGS_017.invoc(self, source, '60037')
-
-class TB_BaconUps_090:
-    # Maman ourse premium
-    invoc= lambda self, source: BGS_017.invoc(self, source, '60039')
-
-class BGS_017:
+class BGS_017(Minion):
     # Chef de meute
-    def invoc(self, source, enchantment_id='59970'):
-        if source.race & Race.BEAST and self is not source:
-            self.buff(enchantment_id, source)
+    def summon_off(self, sequence):
+        source = sequence.source
+        if source.controller is self.controller and source.race.BEAST:
+            self.buff(self.enchantment_dbfId, source)
+TB_BaconUps_086= BGS_017 # Chef de meute premium
+BGS_021= BGS_017 # Maman ourse
+TB_BaconUps_090= BGS_017 # Maman ourse premium
 
-class TB_BaconUps_086:
-    # Chef de meute premium
-    invoc= lambda self, source: BGS_017.invoc(self, source, '59972')
 
-class BGS_045:
+class BGS_045(Minion):
     # Gardien des glyphes
-    def atk_ally(self, attacker):
-        if self is attacker:
-            self.buff("61030", self, attack=self.attack)
+    def combat_start(self, sequence):
+        super().combat_start(sequence)
+        self.buff(self.enchantment_dbfId, self, attack=self.bonus_value)
 
-class TB_BaconUps_115:
+    @property
+    def bonus_value(self) -> int:
+        return self.attack
+
+
+class TB_BaconUps_115(BGS_045):
     # Gardien des glyphes premium
-    def atk_ally(self, attacker):
-        if self is attacker:
-            self.buff("61031", self, attack=self.attack*2)
+    @property
+    def bonus_value(self) -> int:
+        return self.attack*2
 
-class BGS_019:
+
+class BGS_019(Minion):
     # Dragonnet rouge
-    def first_strike(self):
-        nb_dragon_in_board = len(self.my_zone.cards.filter_hex(race=Race.DRAGON))
-
-        self.append_action(
-            damage_fight,
-            self,
-            self.my_zone.opponent,
+    nb_strike = 1
+    def fight_on(self, sequence):
+        nb_dragon_in_board = len(self.my_zone.cards.filter(race='DRAGON'))
+        sequence(
+            self.damage,
+            random.choice(self.my_zone.opponent.cards),
             nb_dragon_in_board,
             overkill=False)
 
-class TB_BaconUps_102:
+
+class TB_BaconUps_102(BGS_019):
     # Dragonnet rouge premium
-    def first_strike(self):
-        for _ in range(2):
-            BGS_019.first_strike(self)
+    nb_strike = 2
 
-class BGS_078:
+
+class BGS_078(Minion):
     # Ara monstrueux
-    def after_atk_myself(self):
-        minion_with_deathrattle = self.my_zone.cards.filter_hex(event=Event.DEATHRATTLE).filter(is_alive=True)
+    nb_strike = 1
+    def combat_end(self, sequence):
+        minions_with_deathrattle = []
+        for minion in self.my_zone.cards.filter(is_alive=True).exclude(self):
+            if minion.DEATHRATTLE:
+                minions_with_deathrattle.append(minion)
+            else:
+                for entity in minion:
+                    if entity.DEATHRATTLE:
+                        minions_with_deathrattle.append(minion)
+                        break
 
-        if minion_with_deathrattle:
-            target = random.choice(minion_with_deathrattle)
-            target.active_local_event(Event.DEATHRATTLE, position=target.position+1)
+        if minions_with_deathrattle:
+            target = random.choice(minions_with_deathrattle)
+            Sequence('DEATHRATTLE', target).start_and_close()
 
-class TB_BaconUps_135:
+
+class TB_BaconUps_135(BGS_078):
     # Ara monstrueux premium
-    def after_atk_myself(self):
-        for _ in range(2):
-            BGS_078.after_atk_myself(self)
+    nb_strike = 2
 
-class BGS_071:
+
+class BGS_071(Minion):
     # Déflect-o-bot
-    def invoc(self, repop, enchantment_id='61931'):
-        if self.controller.fight and repop.race & Race.MECH:
-            self.buff(enchantment_id, self)
+    def summon_off(self, sequence):
+        if self.in_fight_sequence and\
+                sequence.source.race.MECHANICAL:
+            self.buff(self.enchantment_dbfId, self)
 
-class TB_BaconUps_123:
+
+class TB_BaconUps_123(BGS_071):
     # Déflect-o-bot premium
-    invoc= lambda self, repop: BGS_071.invoc(self, repop, '61933')
+    pass
 
-class BGS_002:
+
+class BGS_002(Minion):
     # Jongleur d'âmes
-    def die(self, source, killer):
-        if source.race & Race.DEMON:
-            self.append_action(
-                damage_fight,
-                self,
-                self.my_zone.opponent,
+    nb_strike = 1
+    def die_off(self, sequence):
+        if sequence.source.race.DEMON and sequence.source.controller is self.controller:
+            sequence(
+                self.damage,
+                random.choice(self.my_zone.opponent.cards),
                 3,
                 overkill=False)
 
-class TB_BaconUps_075:
+
+class TB_BaconUps_075(BGS_002):
     # Jongleur d'âmes premium
-    def die(self, source, killer):
-        for _ in range(2):
-            BGS_002.die(self, source, killer)
+    nb_strike = 2
 
-class EX1_531:
-    # Hyene_charognarde
-    def die(self, source, killer, enchantment_id='1633'):
-        if source.owner is self.owner and source.race & Race.BEAST:
-            self.buff(enchantment_id, self)
 
-class TB_BaconUps_043:
-    # Hyene_charognarde premium
-    die = lambda self, source, killer:\
-        EX1_531.die(self, source, killer, '58396')
+class EX1_531(Minion):
+    # Hyène_charognarde
+    # la hyène est buff après l'activation du râle
+    def die_off(self, sequence):
+        if sequence.source.controller is self.controller and sequence.source.race.BEAST:
+            self.buff(self.enchantment_dbfId, self)
+TB_BaconUps_043= EX1_531 # Hyène_charognarde premium
 
-class GVG_106:
+
+class GVG_106(Minion):
     # Brik-a-bot
-    def die(self, source, killer, enchantment_id='2241'):
-        if source.race & Race.MECH:
-            self.buff(enchantment_id, self)
+    def die_off(self, sequence):
+        if sequence.source.controller is self.controller and\
+                sequence.source.race.MECHANICAL:
+            self.buff(self.enchantment_dbfId, self)
+TB_BaconUps_046= GVG_106 # Brik-a-bot premium
 
-class TB_BaconUps_046:
-    # Brik-a-bot premium
-    die= lambda self, source, killer: GVG_106.die(self, source, killer, '58404')
 
-class TB_BaconShop_HP_105t:
+class TB_BaconShop_HP_105t(Minion):
     # Poisson
-    def die(self, source, killer):
-        if source.event & Event.DEATHRATTLE and\
+    def die_off(self, sequence):
+        source = sequence.source
+        if source.DEATHRATTLE and\
             source.my_zone is self.my_zone:
 
-            self.buff('-2_e', self, method=source.method, event=Event.DEATHRATTLE)
+            self.buff(-105, self, method=source.id, mechanics=["DEATHRATTLE"])
 
-class TB_BaconUps_307:
+class TB_BaconUps_307(Minion):
     # Poisson premium
-    die= TB_BaconShop_HP_105t.die
+    die_off= TB_BaconShop_HP_105t.die_off
 
-class BGS_035:
+
+class BGS_035(Minion):
     # Trotte-bougie
-    def die(self, source, killer, enchantment_id='60560'):
-        if source.race & Race.DRAGON:
-            self.buff(enchantment_id, self)
+    def die_off(self, sequence):
+        if sequence.source.race.DRAGON and sequence.source.controller is self.controller.opponent:
+            self.buff(self.enchantment_dbfId, self)
+TB_BaconUps_105= BGS_035 # Trotte-bougie premium
 
-class TB_BaconUps_105:
-    # Trotte-bougie premium
-    die= lambda self, source, killer: BGS_035.die(self, source, killer, '60648')
 
 ### BATTLECRY ###
 
-class BGS_116:
+class BGS_116(Minion):
     # Anomalie actualisante
-    def battlecry(self):
-        if self.controller.bob.nb_free_roll < 1:
-            self.controller.bob.nb_free_roll = 1
+    bonus_value = 1
+    def battlecry(self, sequence):
+        self.controller.roll_nb_free = self.__class__.bonus_value
 
-class TB_BaconUps_167:
+
+class TB_BaconUps_167(BGS_116):
     # Anomalie actualisante premium
-    def battlecry(self):
-        if self.controller.bob.nb_free_roll < 2:
-            self.controller.bob.nb_free_roll = 2
+    bonus_value = 2
 
-class BGS_069:
+
+class BGS_069(Minion):
     # Amalgadon
-    def battlecry(self):
-        nb = len(self.my_zone.one_minion_by_type())-1 # exclude self
-        for _ in range(nb):
-            self.add_adapt()
+    def battlecry(self, sequence):
+        self.add_adapt()
 
-class TB_BaconUps_121:
+    @property
+    def nb_strike(self) -> int:
+        return len(self.my_zone.cards.exclude(self).one_minion_by_type())
+
+
+class TB_BaconUps_121(BGS_069):
     # Amalgadon premium
-    def battlecry(self):
-        for _ in range(2):
-            BGS_069.battlecry(self)
+    @property
+    def nb_strike(self) -> int:
+        return super().nb_strike*2
 
-class BGS_020:
+
+class BGS_020(Minion):
     # Guetteur primaileron
-    def battlecry(self):
-        if self.my_zone.cards.filter_hex(race=Race.MURLOC).exclude(self):
+    nb_strike = 1
+    def battlecry(self, sequence):
+        if self.my_zone.cards.filter(race='MURLOC').exclude(self):
             minion_id = self.discover(
-                self.controller.bob.local_hand.filter_hex(race=Race.MURLOC),
+                self.controller.bob.local_hand.filter(race='MURLOC'),
                 nb=3)
             self.controller.hand.append(minion_id)
 
-class TB_BaconUps_089:
-    # Guetteur primaileron premium
-    def battlecry(self):
-        for _ in range(2):
-            BGS_020.battlecry(self)
 
-class BGS_123:
+class TB_BaconUps_089(BGS_020):
+    # Guetteur primaileron premium
+    nb_strike = 2
+
+
+class BGS_123(Minion):
     # Tempête de la taverne
+    nb_strike = 1
     def battlecry(self):
         minion_id = self.discover(
-            self.controller.bob.local_hand.filter_hex(race=Race.ELEMENTAL),
+            self.controller.bob.local_hand.filter(race='ELEMENTAL'),
             nb=1)
         self.controller.hand.append(minion_id)
 
-class TB_BaconUps_162:
+
+class TB_BaconUps_162(BGS_123):
     # Tempête de la taverne premium
-    def battlecry(self):
-        for _ in range(2):
-            BGS_123.battlecry(self)
+    nb_strike = 2
 
-class BGS_010:
-    # Maitre de guerre annihileen
-    def battlecry(self, enchantment_id='59715'):
-        bonus = self.controller.max_health - self.controller.health
-        self.buff(enchantment_id, self, health=bonus)
 
-class TB_BaconUps_083:
-    # Maitre de guerre annihileen premium
-    def battlecry(self):
-        for _ in range(2):
-            BGS_010.battlecry(self)
+class BGS_010(Minion):
+    # Maitre de guerre annihiléen
+    def battlecry(self, sequence):
+        self.buff(self.enchantment_dbfId, self, max_health=self.bonus_value)
 
-class BGS_048:
+    @property
+    def bonus_value(self) -> int:
+        return self.controller.max_health - self.controller.health
+
+
+class TB_BaconUps_083(BGS_010):
+    # Maitre de guerre annihiléen premium
+    @property
+    def bonus_value(self) -> int:
+        return (self.controller.max_health - self.controller.health)*2
+
+
+class BGS_048(battlecry_select_one_minion_and_buff_it):
     # Gaillarde des mers du Sud
-    def battlecry(self, enchantment_id='62261'):
-        minion = self.choose_one_of_them(self.my_zone.cards.filter_hex(race=Race.PIRATE).exclude(self))
-        if minion:
-            bonus = len(self.controller.bought_minions[self.nb_turn].filter_hex(race=Race.PIRATE))
-            for _ in range(bonus):
-                self.buff(enchantment_id, minion)
+    def battlecry(self, sequence):
+        for minion in sequence.targets:
+            self.buff(self.enchantment_dbfId, minion)
 
-class TB_BaconUps_140:
-    # Gaillarde des mers du Sud premium
-    battlecry= lambda self: BGS_048.battlecry(self, '62260')
+    @property
+    def nb_strike(self) -> int:
+        return len(self.controller.bought_minions[self.nb_turn].filter(race='PIRATE'))
+TB_BaconUps_140= BGS_048 # Gaillarde des mers du Sud premium
 
-class ICC_807:
-    # Pillard dure écaille
-    def battlecry(self, enchantment_id="43023"):
-        for minion in self.my_zone.cards.filter_hex(state=State.TAUNT):
-            self.buff(enchantment_id, minion)
 
-class TB_BaconUps_072:
-    # Pillard dure écaille premium
-    battlecry= lambda self: ICC_807.battlecry(self, '59509')
+class ICC_807(Minion):
+    # Pillard dure-écaille
+    def battlecry(self, sequence):
+        for minion in self.my_zone.cards.filter(TAUNT=True):
+            self.buff(self.enchantment_dbfId, minion)
+TB_BaconUps_072= ICC_807 # Pillard dure-écaille premium
 
-class BGS_030:
+
+class BGS_030(battlecry_select_all_and_buff_them):
     # Roi Bagargouille
-    def battlecry(self, enchantment_id='60393'):
-        for minion in self.my_zone.cards.filter_hex(race=Race.MURLOC).exclude(self):
-            self.buff(enchantment_id, minion)
+    deathrattle= battlecry_select_all_and_buff_them.battlecry
+TB_BaconUps_100= BGS_030 # Roi Bagargouille premium
 
-    def deathrattle(self, position, enchantment_id='60393'):
-        for minion in self.my_zone.cards.filter_hex(race=Race.MURLOC).exclude(self):
-            self.buff(enchantment_id, minion, duration=1)
 
-class TB_BaconUps_100:
-    # Roi Bagargouille premium
-    battlecry= lambda self: BGS_030.battlecry(self, '60397')
-    deathrattle= lambda self, position: BGS_030.battlecry(self, position, '60397')
-
-class EX1_506:
+class EX1_506(Minion):
     # chasse-marée
-    battlecry= lambda self: self.invoc('68469', self.position+1)
+    def battlecry(self, sequence):
+        self.invoc(sequence, self.repop_dbfId)
+TB_BaconUps_003= EX1_506 # chasse-marée premium
+CFM_315= EX1_506 # chat de gouttière
+TB_BaconUps_093= EX1_506 # chat de gouttière premium
 
-class TB_BaconUps_003:
-    # chasse-marée premium
-    battlecry= lambda self: self.invoc('57339', self.position+1)
 
-class CFM_315:
-    # chat de gouttière
-    battlecry= lambda self: self.invoc('40425', self.position+1)
-
-class TB_BaconUps_093:
-    # chat de gouttière premium
-    battlecry= lambda self: self.invoc('60054', self.position+1)
-
-class BGS_061:
+class BGS_061(deathrattle_repop):
     # Forban
-    def deathrattle(self, position):
-        self.invoc('62213', position)
+    pass
+TB_BaconUps_141= BGS_061 # Forban premium
+KAR_005= BGS_061 # Gentille grand-mère
+TB_BaconUps_004= BGS_061 # Gentille grand-mère premium
+EX1_556= BGS_061 # Golem des moissons
+TB_BaconUps_006= BGS_061 # Golem des moissons premium
+BGS_014= BGS_061 # Emprisonneur
+TB_BaconUps_113= BGS_061 # Emprisonneur premium
+BOT_537= BGS_061 # Mecanoeuf
+TB_BaconUps_038e= BGS_061 # Mecanoeuf premium
 
-class TB_BaconUps_141:
-    # Forban premium
-    def deathrattle(self, position):
-        self.invoc('62215', position)
 
-class KAR_005:
-    # Gentille grand-mère
-    def deathrattle(self, position):
-        self.invoc('39161', position)
-
-class TB_BaconUps_004:
-    # Gentille grand-mère premium
-    def deathrattle(self, position):
-        self.invoc('57341', position)
-
-class EX1_556:
-    # Golem des moissons
-    def deathrattle(self, position):
-        self.invoc('471', position)
-
-class TB_BaconUps_006:
-    # Golem des moissons premium
-    def deathrattle(self, position):
-        self.invoc('57408', position)
-
-class BGS_014:
-    # Emprisonneur
-    def deathrattle(self, position):
-        self.invoc('2779', position)
-
-class TB_BaconUps_113:
-    # Emprisonneur premium
-    def deathrattle(self, position):
-        self.invoc('58373', position)
-
-class BOT_537:
-    # Mecanoeuf
-    def deathrattle(self, position):
-        self.invoc("49168", position)
-
-class TB_BaconUps_038e:
-    # Mecanoeuf premium
-    def deathrattle(self, position):
-        self.invoc("58389", position)
-
-class BGS_055:
+class BGS_055(Minion):
     # Mousse du pont
-    def battlecry(self):
-        self.controller.bob.level_up_cost -= 1
+    bonus_value = 1
+    def battlecry(self, sequence):
+        self.controller.levelup_cost_mod -= self.__class__.bonus_value
 
-class TB_BaconUps_126:
+
+class TB_BaconUps_126(BGS_055):
     # Mousse du pont premium
-    def battlecry(self):
-        for _ in range(2):
-            BGS_055.battlecry(self)
+    bonus_value = 2
 
-class EX1_093:
+
+class EX1_093(Minion):
     # Défenseur d'Argus
-    def battlecry(self, enchantment_id='1103'):
-        self.buff(enchantment_id, *self.adjacent_neighbors())
+    def battlecry(self, sequence):
+        self.buff(self.enchantment_dbfId, *self.adjacent_neighbors())
+TB_BaconUps_009= EX1_093 # Défenseur d'Argus premium
 
-class TB_BaconUps_009:
-    # Défenseur d'Argus premium
-    battlecry= lambda self: EX1_093.battlecry(self, '57407')
 
-class DAL_077:
-    # Aileron toxique
-    def battlecry(self):
-        minion = self.choice_one_of_them(
-            self.my_zone.cards.filter_hex(race=Race.MURLOC).exclude(self)
-            )
-        self.buff("52297", minion)
-TB_BaconUps_152= DAL_077
-
-class LOOT_013:
+class LOOT_013(Minion):
     # Homoncule_sans_gene
-    def battlecry(self):
-        self.controller.health -= 2
+    def battlecry(self, sequence):
+        self.controller.dec_health(2)
+TB_BaconUps_148= LOOT_013 # Homoncule_sans_gene premium
 
-class TB_BaconUps_148:
-    # Homoncule_sans_gene premium
-    battlecry= lambda self: LOOT_013.battlecry(self)
 
-class CFM_816:
-    # Sensei virmen
-    def battlecry(self, enchantment_id='40640'):
-        minion = self.controller.choose_one_of_them(
-            self.my_zone.cards.filter_hex(race=Race.BEAST).exclude(self))
-
-        self.buff(enchantment_id, minion)
-
-class TB_BaconUps_074:
-    # Sensei virmen premium
-    battlecry= lambda self: CFM_816.battlecry(self, '59513')
-
-class UNG_073:
+class UNG_073(battlecry_select_one_minion_and_buff_it):
     # Chasseur rochecave
-    def battlecry(self, enchant_id='41244'):
-        minion = self.choose_one_of_them(
-            self.my_zone.cards.filter_hex(race=Race.MURLOC).exclude(self))
+    pass
+TB_BaconUps_061= UNG_073 # Chasseur rochecave premium
+GVG_055= UNG_073 # Cliqueteur percevrille
+TB_BaconUps_069= UNG_073 # Cliqueteur percevrille premium
+CFM_816= UNG_073 # Sensei virmen
+TB_BaconUps_074= UNG_073 # Sensei virmen premium
+DAL_077= UNG_073 # Aileron toxique
+TB_BaconUps_152= UNG_073 # Aileron toxique premium
+BGS_038= UNG_073 # Emissaire du crépuscule
+TB_BaconUps_108= UNG_073 # Emissaire du crépuscule premium
+DS1_070= UNG_073 # Maître-chien
+TB_BaconUps_068= UNG_073 # Maître-chien premium
+BGS_001= UNG_073 # Surveillant Nathrezim
+TB_BaconUps_062=UNG_073 # Surveillant Nathrezim premium
 
-        self.buff(enchant_id, minion)
 
-class TB_BaconUps_061:
-    # Chasseur rochecave premium
-    battlecry= lambda x: UNG_073.battlecry(x, '59486')
-
-class GVG_055:
-    # Cliquetteur
-    def battlecry(self, enchant_id='2223'):
-        minion = self.choose_one_of_them(
-            self.my_zone.cards.filter_hex(race=Race.MECH).exclude(self))
-
-        self.buff(enchant_id, minion)
-
-class TB_BaconUps_069:
-    # Cliquetteur premium
-    battlecry= lambda self: GVG_055.battlecry(self, '59502')
-
-class GVG_048:
+class GVG_048(battlecry_select_all_and_buff_them):
     # Bondisseur dent de métal
-    def battlecry(self, enchant_id='2205'):
-        minions = self.my_zone.cards.filter_hex(race=Race.MECH).exclude(self)
+    pass
+TB_BaconUps_066= GVG_048 # Bondisseur dent de métal premium
+BT_010= GVG_048 # Navigateur gangraileron
+TB_BaconUps_124= GVG_048 # Navigateur gangraileron premium
+CFM_610= GVG_048 # Tisse-cristal
+TB_BaconUps_070= GVG_048 # Tisse-cristal premium
+BGS_128= GVG_048 # Assistant arcanique
+TB_Baconups_203= GVG_048 # Assistant arcanique premium
+BGS_053= GVG_048 # Canonnier de la voile sanglante
+TB_BaconUps_138= GVG_048 # Canonnier de la voile sanglante premium
+EX1_103= GVG_048 # Voyant froide lumière
+TB_BaconUps_064= GVG_048 # Voyant froide lumière premium
 
-        self.buff(enchant_id, *minions)
 
-class TB_BaconUps_066:
-    # Bondisseur dent de métal premium
-    battlecry= lambda x: GVG_048.battlecry(x, '59496')
 
-class BT_010:
-    # Navigateur gangraileron
-    def battlecry(self, enchant_id='59713'):
-        minions = self.my_zone.cards.filter_hex(race=Race.MURLOC).exclude(self)
-        self.buff(enchant_id, *minions)
-
-class TB_BaconUps_124:
-    # Navigateur gangraileron premium
-    battlecry= lambda self: BT_010.battlecry(self, '61935')
-
-class CFM_610:
-    # Tisse-cristal
-    def battlecry(self, enchant_id='40390'):
-        minions = self.my_zone.cards.filter_hex(race=Race.DEMON).exclude(self)
-
-        self.buff(enchant_id, *minions)
-
-class TB_BaconUps_070:
-    # Tisse-cristal premium
-    battlecry= lambda self: CFM_610.battlecry(self, '59505')
-
-class BGS_128:
-    # Assistant arcanique
-    def battlecry(self, enchant_id='64302'):
-        minions = self.my_zone.cards.filter_hex(race=Race.ELEMENTAL).exclude(self)
-
-        self.buff(enchant_id, *minions)
-
-class TB_Baconups_203:
-    # Assistant arcanique premium
-    battlecry= lambda self: BGS_128.battlecry(self, '64304')
-
-class BGS_053:
-    # Canonnier de la voile sanglante
-    def battlecry(self, enchant_id='62253'):
-        minions = self.my_zone.cards.filter_hex(race=Race.PIRATE).exclude(self)
-
-        self.buff(enchant_id, *minions)
-
-class TB_BaconUps_138:
-    # Canonnier de la voile sanglante premium
-    battlecry= lambda self: BGS_053.battlecry(self, '62255')
-
-class BGS_038:
-    # Emissaire du crépuscule
-    def battlecry(self, enchant_id='60627'):
-        minions = self.my_zone.cards.filter_hex(race=Race.DRAGON).exclude(self)
-
-        self.buff(enchant_id, self.choose_one_of_them(minions))
-
-class TB_BaconUps_108:
-    # Emissaire du crépuscule premium
-    battlecry= lambda self: BGS_038.battlecry(self, '60666')
-
-class EX1_103:
-    # Voyant froide lumière
-    def battlecry(self, enchant_id='1718'):
-        minions = self.my_zone.cards.filter_hex(race=Race.MURLOC).exclude(self)
-
-        self.buff(enchant_id, *minions)
-
-class TB_BaconUps_064:
-    # Voyant froide lumière premium
-    battlecry= lambda self: EX1_103.battlecry(self, '59492')
-
-class DS1_070:
-    # Maître-chien
-    def battlecry(self, enchant_id='722'):
-        minion = self.choose_one_of_them(
-            self.my_zone.cards.filter_hex(race=Race.BEAST).exclude(self))
-
-        self.buff(enchant_id, minion)
-
-class TB_BaconUps_068:
-    # Maître-chien premium
-    battlecry= lambda self: DS1_070.battlecry(self, '59500')
-
-class BGS_001:
-    # Surveillant Nathrezim
-    def battlecry(self, enchantment_id='59187'):
-        minion = self.choose_one_of_them(
-            self.my_zone.cards.filter_hex(race=Race.DEMON).exclude(self))
-
-        self.buff(enchantment_id, minion)
-
-class TB_BaconUps_062:
-    # Surveillant Nathrezim premium
-    battlecry= lambda self: BGS_001.battlecry(self, '59488')
-
-class BGS_082:
+class BGS_082(Minion):
     # Tasse de la ménagerie
-    battlecry= lambda self: Bonus_ménagerie(self, "63488")
+    def battlecry(self, sequence):
+        minion_list = self.my_zone.cards.one_minion_by_type()
+        if minion_list:
+            random.shuffle(minion_list)
+            self.buff(self.enchantment_dbfId, *minion_list[:3])
+TB_BaconUps_144= BGS_082 # Tasse de la ménagerie premium
+BGS_083= BGS_082 # Théière de la ménagerie
+TB_BaconUps_145= BGS_082 # Théière de la ménagerie premium
 
-class TB_BaconUps_144:
-    # Tasse de la ménagerie premium
-    battlecry= lambda self: Bonus_ménagerie(self, "63490")
 
-class BGS_083:
-    # Théière de la ménagerie
-    battlecry= lambda self: Bonus_ménagerie(self, "63491")
-
-class TB_BaconUps_145:
-    # Théière de la ménagerie premium
-    battlecry= lambda self: Bonus_ménagerie(self, "63493")
-
-def Bonus_ménagerie(self, key_effect):
-    minion_list = self.owner.one_minion_by_type()
-    if minion_list:
-        random.shuffle(minion_list)
-        self.buff(key_effect, *minion_list[:3])
-
-class BGS_122:
+class BGS_122(Minion):
     # Elementaire de stase
-    def battlecry(self):
+    nb_strike = 1
+    def battlecry(self, sequence):
         minion_id = self.discover(
-            self.controller.bob.local_hand.filter_hex(race=Race.ELEMENTAL),
+            self.controller.bob.local_hand.filter(race='ELEMENTAL'),
             nb=1)
-        if self.controller.bob.board.append(minion_id):
-            minion_id.state |= State.FREEZE
+        self.controller.bob.board.append(minion_id)
+        if minion_id in self.controller.bob.board.cards:
+            minion_id.FREEZE = True
 
-class TB_BaconUps_161:
+
+class TB_BaconUps_161(BGS_122):
     # Elementaire de stase premium
-    def battlecry(self):
-        for _ in range(2):
-            BGS_122.battlecry(self)
+    nb_strike = 2
 
-class Lapin:
-    # Lapin
-    def battlecry(self, enchantment_id="48470"):
-        for _ in range(self.controller.nb_lapin-1):
-            self.buff(enchantment_id, self)
 
-class Lapin_p:
-    # Lapin premium
-    battlecry= lambda self: Lapin.battlecry(self, '59665')
+class BGS_028(Minion):
+    # Lapin-échasseur
+    def play_start(self, sequence):
+        super().play_start(sequence)
+        played_lapin = 0
+        for minion_list in self.controller.played_cards.values():
+            played_lapin += minion_list.count(CardName.LAPIN)
+            played_lapin += minion_list.count(CardName.LAPIN_P)
+        sequence.nb_strike = played_lapin
+
+    def battlecry(self, sequence):
+        self.buff(self.enchantment_dbfId, self)
+TB_BaconUps_077= BGS_028 # Lapin-échasseur premium
 
 
 ##### DEATHRATTLE #####
 
-class BGS_040:
+class BGS_040(Minion):
     # Nadina
-    def deathrattle(self, position):
-        for minion in self.my_zone.cards.filter_hex(race=Race.DRAGON):
-            minion.state |= State.DIVINE_SHIELD
-TB_BaconUps_154= BGS_040
+    def deathrattle(self, sequence):
+        for minion in self.my_zone.cards.filter(race='DRAGON'):
+            minion.DIVINE_SHIELD = True
+TB_BaconUps_154= BGS_040 # Nadina premium
 
-class BGS_018:
+
+class BGS_018(Minion):
     # Goldrinn
-    def deathrattle(self, position, enchantment_id='59957'):
-        for minion in self.my_zone.cards.filter_hex(race=Race.BEAST):
-            self.buff(enchantment_id, minion)
+    def deathrattle(self, sequence):
+        for minion in self.my_zone.cards.filter(race='BEAST'):
+            self.buff(self.enchantment_dbfId, minion)
 
-class TB_BaconUps_085:
+
+class TB_BaconUps_085(BGS_018):
     # Goldrinn premium
-    deathrattle= lambda self, position: BGS_018.deathrattle(self, position, '59958')
+    pass
 
-class BGS_121:
+
+class BGS_121(deathrattle_repop):
     # Gentil djinn
-    def deathrattle(self, position):
+    nb_repop = 1
+    def deathrattle(self, sequence):
+        super().deathrattle(sequence)
+        for repop in sequence._repops:
+            # les cartes sont-elles retirées de la main de bob ?
+            self.controller.hand.create_card_in(repop)
+
+    @property
+    def repop_dbfId(self) -> int:
         """
         donne-t-il un elem au hasard de la taverne ou une carte elem choisie au
         hasard parmi toutes les possibilités ?
@@ -1234,754 +933,1253 @@ class BGS_121:
         TODO: Gentle Djinni firstly summons an elemental, and only then puts a copy of it in hand. Therefore, if Djinni's deathrattle triggers more than once, but there is not enough space on board to summon another minion, the player will not receive a second and subsequent copy of elemental.
         : le gain ne se fait que si le repop à lieu
         """
-        minions = self.controller.bob.local_hand.copy()
-        random.shuffle(minions)
-        for minion in minions:
-            if minion.race & Race.ELEMENTAL and minion.dbfId != self.dbfId:
-                if self.invoc(minion.dbfId, position):
-                    self.controller.hand.append(minion)
-                break
+        return random.choice(self.controller.bob.local_hand.filter(race='ELEMENTAL').exclude(self.dbfId)).dbfId
 
-class TB_BaconUps_165:
+class TB_BaconUps_165(BGS_121):
     # Gentil djinn premium
-    def deathrattle(self, position):
-        for _ in range(2):
-            BGS_121.deathrattle(self, position)
+    nb_repop = 2
 
-class TRLA_149:
+
+class TRLA_149(deathrattle_repop):
     # Boagnarok
-    def deathrattle(self, position):
-        cards = self.game.card_can_collect.filter_hex(event=Event.DEATHRATTLE).exlude(self.dbfId)
-        for _ in range(2):
-            self.invoc(random.choice(cards), position)
+    nb_repop = 2
 
-class TB_BaconUps_057:
+    @property
+    def repop_dbfId(self):
+        cards = self.game.card_can_collect.filter(DEATHRATTLE=True).exlude(self.dbfId)
+        return random.choice(cards)
+
+
+class TB_BaconUps_057(TRLA_149):
     # Boagnarok premium
-    def deathrattle(self, position):
-        for _ in range(2):
-            TRLA_149.deathrattle(self, position)
+    nb_repop = 4
 
-class BGS_079:
+
+class BGS_079(deathrattle_repop):
     # Tranche-les-vagues
-    def deathrattle(self, position):
-        cards = self.game.card_can_collect.filter_hex(race=Race.PIRATE).exlude(self.dbfId)
-        for _ in range(3):
-            self.invoc(random.choice(cards), position)
+    nb_repop = 3
 
-class TB_BaconUps_137:
+    @property
+    def repop_dbfId(self):
+        cards = self.game.card_can_collect.filter(race='PIRATE').exlude(self.dbfId)
+        return random.choice(cards)
+
+
+class TB_BaconUps_137(BGS_079):
     # Tranche-les-vagues premium
-    def deathrattle(self, position):
-        for _ in range(2):
-            BGS_079.deathrattle(self, position)
+    nb_repop = 6
 
-class BGS_006:
+
+class BGS_006(deathrattle_repop):
     # Vieux déchiqueteur de Sneed
-    def deathrattle(self, position):
+    nb_repop = 1
+
+    @property
+    def repop_dbfId(self):
         cards = self.game.card_can_collect.filter(elite=True).exlude(self.dbfId)
-        self.invoc(random.choice(cards), position)
+        return random.choice(cards)
 
-class TB_BaconUps_080:
+
+class TB_BaconUps_080(BGS_006):
     # Vieux déchiqueteur de Sneed premium
-    def deathrattle(self, position):
-        for _ in range(2):
-            BGS_006.deathrattle(self, position)
+    nb_repop = 2
 
-class BGS_080:
-    # Goliath brisemer 
-    def overkill(self, target, enchantment_id='62459'):
-        for minion in self.my_zone.cards:
-            if minion.race & Race.PIRATE and minion is not self:
-                self.buff(enchantment_id, minion)
 
-class TB_BaconUps_142:
-    # Goliath brisemer premium
-    overkill= lambda self, target: BGS_080.overkill(self, target, '62461')
-
-class TRL_232:        
-    # Navrecorne cuiracier
-    def overkill(self, target):
-        self.invoc('50359', self.position+1)
-
-class TB_BaconUps_051:
-    # Navrecorne cuiracier premium
-    def overkill(self, target):
-        self.invoc('60232', self.position+1)
-
-class BGS_126:
+class BGS_126(Minion):
     # Elémentaire du feu de brousse
-    def overkill(self, target):
-        new_target = target.adjacent_neighbors()
-        if new_target:
-            self.append_action(
-                damage_fight,
-                self,
-                random.choice(new_target),
-                -target.health,
-                overkill=False)
+    def combat_end(self, sequence):
+        for target in sequence.targets:
+            damage_left = -target.health
+            new_targets = target.adjacent_neighbors()
+            if new_targets and damage_left > 0:
+                new_target = random.choice(new_targets)
+                self.damage(new_target, damage_left)
 
-class TB_BaconUps_166:
+
+class TB_BaconUps_166(Minion):
     # Elémentaire du feu de brousse premium
-    def overkill(self, target):
-        for new_target in target.adjacent_neighbors():
-            self.append_action(
-                damage_fight,
-                self,
-                new_target,
-                -target.health,
-                overkill=False)
+    def combat_end(self, sequence):
+        for target in sequence.targets:
+            damage_left = -target.health
+            if damage_left > 0:
+                for target in target.adjacent_neighbors():
+                    self.damage(target, damage_left)
 
-class BGS_032:
+
+class BGS_032(Minion):
+    bonus_value = 3
     # Héraut de la flamme
-    def overkill(self, target):
+    def overkill(self, sequence):
         for minion in self.my_zone.opponent:
             if minion.is_alive:
                 self.append_action(
-                    damage_fight,
-                    self,
+                    self.damage,
                     minion,
-                    3)
+                    self.__class__.bonus_value)
                 break
 
-class TB_BaconUps_103:
+
+class TB_BaconUps_103(BGS_032):
     # Héraut de la flamme premium
-    def overkill(self, target):
-        for minion in self.my_zone.opponent:
-            if minion.is_alive:
-                self.append_action(
-                    damage_fight,
-                    self,
-                    minion,
-                    6)
-                break
+    bonus_value = 6
 
-class BGS_044:
+
+class BGS_044(hit_by_repop):
     # Maman des diablotins
-    def hit_by(self):
-        minion = random.choice(self.game.card_can_collect.filter_hex(race=Race.DEMON).exclude(self.dbfId))
-        self.invoc(minion, self.position+1, enchantment_id='61393')
+    # Note: couplé avec Khadgar, le second repop ne possède pas TAUNT
+    nb_repop = 1
+    def hit(self, sequence):
+        if self is sequence.target:
+            super().hit(sequence)
+            for minion in sequence._repops:
+                self.buff(self.enchantment_dbfId, minion)
 
-class TB_BaconUps_116:
+    @property
+    def repop_dbfId(self):
+        return random.choice(self.game.card_can_collect.filter(race='DEMON').exclude(self.dbfId))
+
+
+class TB_BaconUps_116(BGS_044):
     # Maman des diablotins premium
-    def hit_by(self):
-        for _ in range(2):
-            BGS_044.hit_by(self)
+    nb_repop = 2
 
-class BAR_073:
-    # Forgeronne des Tarides
-    def hit_by(self, enchantment_id='63241'):
-        if self.has_frenzy:
-            self.remove_attr(state=State.FRENZY)
-            for minion in self.my_zone.cards.exclude(self):
-                self.buff(enchantment_id, minion)
 
-class TB_BaconUps_320:
-    # Forgeronne des Tarides premium
-    hit_by= lambda self: BAR_073.hit_by(self, '71534')
-
-class BRM_006:
+class BRM_006(hit_by_repop):
     # Chef du gang des diablotins
-    hit_by= lambda self: self.invoc('2779', self.position+1)
+    pass
+TB_BaconUps_030= BRM_006 # Chef du gang des diablotins premium
+BOT_218= BRM_006 # Rover de sécurité
+TB_BaconUps_041= BRM_006 # Rover de sécurité premium
 
-class TB_BaconUps_030:
-    # Chef du gang des diablotins premium
-    hit_by= lambda self: self.invoc('58373', self.position+1)
 
-class BOT_218:
-    # Rover de sécurité
-    hit_by= lambda self: self.invoc("49278", self.position+1)
-
-class TB_BaconUps_041:
-    # Rover de sécurité premium
-    hit_by= lambda self: self.invoc("58393", self.position+1)
-
-class BOT_606:
+class BOT_606(Minion):
     # Gro'Boum
-    def deathrattle(self, position):
+    nb_strike = 1
+    def deathrattle(self, sequence):
         self.append_action(
-            damage_fight,
-            self,
-            self.my_zone.opponent,
+            self.damage,
+            random.choice(self.controller.opponent.board.cards),
             4,
             overkill=False)
 
-class TB_BaconUps_028:
+
+class TB_BaconUps_028(BOT_606):
     # Gro'Boum premium
-    def deathrattle(self, position):
-        for _ in range(2):
-            BOT_606.deathrattle(self, position)
+    nb_strike = 2
 
-class OG_256:
+
+class OG_256(Minion):
     # Rejeton de N'Zoth
-    deathrattle= lambda self, position: self.buff('38796', *self.my_zone.cards)
+    def deathrattle(self, sequence):
+        self.buff(self.enchantment_dbfId, *sequence.controller.board.cards)
+TB_BaconUps_025= OG_256
 
-class TB_BaconUps_025:
-    # Rejeton de N'Zoth premium
-    deathrattle= lambda self, position: self.buff('58169', *self.my_zone.cards)
 
-class CFM_316:
+class CFM_316(deathrattle_repop):
     # Clan des rats
-    def deathrattle(self, position):
-        for nb in range(self.attack):
-            self.invoc('41839', position+nb)
+    @property
+    def nb_repop(self):
+        return min(self.attack, FIELD_SIZE)
+TB_BaconUps_027= CFM_316
 
-class TB_BaconUps_027:
-    # Clan des rats premium
-    def deathrattle(self, position):
-        for nb in range(self.attack):
-            self.invoc('58368', position+nb)
 
-class OG_216:
+class OG_216(deathrattle_repop):
     # Loup contaminé
-    def deathrattle(self, position):
-        self.invoc('38735', position)
-        self.invoc('38735', position+1)
+    nb_repop = 2
+TB_BaconUps_026= OG_216 # Loup contaminé premium
 
-class TB_BaconUps_026:
-    # Loup contaminé premium
-    def deathrattle(self, position):
-        self.invoc('58366', position)
-        self.invoc('58366', position+1)
 
-class EX1_534:
+class EX1_534(deathrattle_repop):
     # Crinière des savanes
-    def deathrattle(self, position):
-        for _ in range(2):
-            self.invoc('1624', position)
+    nb_repop = 2
+TB_BaconUps_049= EX1_534 # Crinière des savanes premium
 
-class TB_BaconUps_049:
-    # Crinière des savanes premium
-    def deathrattle(self, position):
-        for _ in range(2):
-            self.invoc('58410', position)
 
-class DMF_533:
+class DMF_533(deathrattle_repop):
     # Matrone de la piste
-    def deathrattle(self, position):
-        for _ in range(2):
-            self.invoc('63273', position)
+    nb_repop = 2
+TB_BaconUps_309= DMF_533 # Matrone de la piste premium
 
-class TB_BaconUps_309:
-    # Matrone de la piste premium
-    def deathrattle(self, position):
-        for _ in range(2):
-            self.invoc('67729', position)
 
-class UNG_999t2e:
-    def deathrattle(self, position):
-        for _ in range(2):
-            self.invoc('41067', position)
+class UNG_999t2e(deathrattle_repop):
+    # Spores vivantes
+    nb_repop = 2
 
-class LOOT_368:
+
+class LOOT_368(deathrattle_repop):
     # Seigneur du vide
-    def deathrattle(self, position):
-        self.invoc("48", position)
+    nb_repop = 3
+TB_BaconUps_059= LOOT_368 # Seigneur du vide premium
 
-class TB_BaconUps_059:
-    # Seigneur du vide premium
-    def deathrattle(self, position):
-        self.invoc("57299", position)
 
-class BOT_312:
+class BOT_312(deathrattle_repop):
     # Menace répliquante
-    def deathrattle(self, position):
-        for _ in range(3):
-            self.invoc('48842', position)
+    nb_repop = 3
+TB_BaconUps_032= BOT_312 # Menace répliquante premium
 
-class TB_BaconUps_032:
-    # Menace répliquante premium
-    def deathrattle(self, position):
-        for _ in range(3):
-            self.invoc('58377', position)
 
-class OG_221:
+class OG_221(Minion):
     # Héroïne altruiste
-    def deathrattle(self, position):
-        minions = self.my_zone.cards.exclude_hex(state=State.DIVINE_SHIELD).exclude(is_alive=False)
-
+    nb_strike = 1
+    def deathrattle(self, sequence):
+        minions = self.controller.board.cards.exclude(DIVINE_SHIELD=True, is_alive=False)
         if minions:
-            random.choice(minions).state |= State.DIVINE_SHIELD
+            random.choice(minions).DIVINE_SHIELD = True
 
-class TB_BaconUps_014:
+
+class TB_BaconUps_014(OG_221):
     # Héroïne altruiste premium
-    def deathrattle(self, position):
-        for _ in range(2):
-            OG_221.deathrattle(self, position)
+    nb_strike = 2
 
-class YOD_026:
+
+class YOD_026(Minion):
     # Serviteur diabolique
-    def deathrattle(self, position):
-        minions = self.my_zone.cards.filter(is_alive=True)
+    nb_strike = 1
+
+    def deathrattle(self, sequence):
+        minions = self.controller.board.cards.filter(is_alive=True)
         if minions:
-            self.buff('56113', random.choice(minions), attack=self.attack)
+            self.buff(self.enchantment_dbfId, random.choice(minions), attack=self.attack)
 
-class TB_BaconUps_112:
+
+class TB_BaconUps_112(YOD_026):
     # Serviteur diabolique premium
-    def deathrattle(self, position):
-        for _ in range(2):
-            YOD_026.deathrattle(self, position)
+    nb_strike = 2
 
-class FP1_024:
+
+class FP1_024(Minion):
     # Goule instable
-    def deathrattle(self, position):
-        self.append_action(
-            damage_fight,
-            self,
-            self.my_zone.opponent,
-            1,
-            overkill=False)
-        self.append_action(
-            damage_fight,
-            self,
-            self.my_zone,
-            1,
-            order=0,
-            overkill=False)
+    nb_strike = 1
 
-class TB_BaconUps_118:
+    def deathrattle(self, sequence):
+        for minion in self.controller.board.opponent.cards:
+            self.append_action(
+                self.damage,
+                minion,
+                1,
+                overkill=False)
+        for minion in self.controller.board.cards:
+            self.append_action(
+                self.damage,
+                minion,
+                1,
+                order=0,
+                overkill=False)
+
+
+class TB_BaconUps_118(FP1_024):
     # Goule instable premium
-    def deathrattle(self, position):
-        for _ in range(2):
-            FP1_024.deathrattle(self, position)
+    nb_strike = 2
 
-class BG20_101:
+
+class BG20_101(Minion):
     # Chauffard huran
-    def hit_by(self):
-        if self.has_frenzy:
-            self.remove_attr(state=State.FRENZY)
-            self.controller.hand.create_card_in("70136")
+    nb_strike = 1
+    def frenzy(self, sequence):
+        self.controller.hand.create_card_in(CardName.BLOOD_GEM)
 
-class BG20_101_G:
+
+class BG20_101_G(BG20_101):
     # Chauffard huran premium
-    def hit_by(self):
-        if self.has_frenzy:
-            self.remove_attr(state=State.FRENZY)
-            self.controller.hand.create_card_in("70136", "70136")
+    nb_strike = 2
 
-class BG20_102:
+
+class BG20_102(Minion):
     # Défense robuste
-    def add_enchantment_on(self, enchantment, target):
-        if target is self and enchantment.dbfId == CardName.BLOOD_GEM:
-            self.buff('70167', self)
-            self.buff('70167_x', self)
+    def enhance(self, sequence):
+        if sequence.enchantment.dbfId == CardName.BLOOD_GEM_ENCHANTMENT:
+            self.buff(self.enchantment_dbfId, self)
+            self.buff(-70167, self) # ??
 
-class BG20_102_G:
+
+class BG20_102_G(BG20_102):
     # Défense robuste premium
-    def add_enchantment_on(self, enchantment, target):
-        if target is self and enchantment.dbfId == CardName.BLOOD_GEM:
-            self.buff('70169', self)
-            self.buff('70169_x', self)
+    def enhance(self, sequence):
+        self.buff(self.enchantment_dbfId, self)
 
-class BG20_103:
+
+class BG20_103(Minion):
     # Brute dos-hirsute
-    def add_enchantment_on(self, enchantment, target):
-        if target is self and enchantment.dbfId == CardName.BLOOD_GEM:
-            enchantment.attack += 2
-            enchantment.max_health += 2
-            self.buff('92_e', self)
+    bonus_value = 2
 
-class BG20_103_G:
+    def enhance_start(self, sequence):
+        if sequence.enchantment.dbfId == CardName.BLOOD_GEM_ENCHANTMENT and self.temp_counter == 0:
+            sequence.enchantment.attack += self.__class__.bonus_value
+            sequence.enchantment.max_health += self.__class__.bonus_value
+            self.temp_counter += 1
+        else:
+            sequence.is_valid = False
+
+    def enhance(self, sequence):
+        self.buff(self.enchantment_dbfId, self)
+
+
+class BG20_103_G(BG20_103):
     # Brute dos-hirsute premium
-    def add_enchantment_on(self, enchantment, target):
-        if target is self and enchantment.dbfId == CardName.BLOOD_GEM:
-            enchantment.attack += 4
-            enchantment.max_health += 4
-            self.buff('92_e', self)
+    bonus_value = 4
 
-class BG20_105:
+
+class BG20_105(Minion):
     # Mande-épines
-    def battlecry(self, position=None):
-        self.controller.hand.create_card_in("70136")
+    nb_strike = 1
+    def battlecry(self, sequence):
+        self.controller.hand.create_card_in(CardName.BLOOD_GEM)
     deathrattle = battlecry
 
-class BG20_105_G:
+
+class BG20_105_G(BG20_105):
     # Mande-épines premium
-    def battlecry(self, position=None):
-        for _ in range(2):
-            BG20_105.battlecry(self, position)
-    deathrattle = battlecry
+    nb_strike = 2
 
-class BG20_202:
+
+class BG20_202(Minion):
     # Nécrolyte
-    def battlecry(self):
-        minion = self.choose_one_of_them(self.my_zone.cards.exclude(self))
-        if minion:
+    def play_start(self, sequence: Sequence):
+        super().play_start(sequence)
+        if sequence.is_valid:
+            minion = self.choose_one_of_them(
+                self.controller.board.cards)
+            sequence.add_target(minion)
+
+    def battlecry(self, sequence):
+        for minion in sequence.targets:
             for neighbour in minion.adjacent_neighbors():
                 change = False
                 for enchantment in neighbour.entities[::-1]:
-                    if enchantment.dbfId == CardName.BLOOD_GEM:
+                    if enchantment.dbfId == CardName.BLOOD_GEM_ENCHANTMENT:
                         enchantment.apply(minion)
                         change = True
                 if change:
                     neighbour.calc_stat_from_scratch()
             minion.calc_stat_from_scratch()
+BG20_202_G= BG20_202 # Nécrolyte premium
 
-BG20_202_G= BG20_202
-    
-class BG20_201:
+
+class BG20_201(Minion):
     # Porte-bannière huran
-    def end_turn(self):
-        for neighbour in self.adjacent_neighbors().filter_hex(race=Race.QUILBOAR):
-            self.buff(CardName.BLOOD_GEM, neighbour)
+    nb_strike = 1
 
-class BG20_201_G:
+    def turn_off(self, sequence):
+        for neighbour in self.adjacent_neighbors().filter(race='QUILBOAR'):
+            self.buff(CardName.BLOOD_GEM_ENCHANTMENT, neighbour)
+
+
+class BG20_201_G(BG20_201):
     # Porte-bannière huran premium
-    def end_turn(self):
-        for _ in range(2):
-            BG20_201.end_turn(self)
+    nb_strike = 2
 
-class BG20_104:
+
+class BG20_104(Minion):
     # Cogneur
-    def after_atk_myself(self):
+    def combat_end(self, sequence):
         self.controller.hand.create_card_in(CardName.BLOOD_GEM)
 BG20_104_G= BG20_104
 
-class BG20_207:
+
+class BG20_207(Minion):
     # Duo dynamique
-    def add_enchantment_on(self, enchantment, target, enchantment_id='70185'):
-        if target is not self and enchantment.dbfId == CardName.BLOOD_GEM and target.race & Race.QUILBOAR:
-            self.buff(enchantment_id, self)
+    def enhance_off(self, sequence):
+        source = sequence.source
+        if self.owner is source.owner and source.race.HURAN and\
+                sequence.enchantment.dbfId == CardName.BLOOD_GEM_ENCHANTMENT:
+            self.buff(self.enchantment_dbfId, self)
+BG20_207_G= BG20_207 # Duo dynamique premium
 
-class BG20_207_G:
-    # Duo dynamique premium
-    add_enchantment_on= lambda self, enchantment, target: BG20_207.add_enchantment_on(self, enchantment, target, '70192')
 
-class BG20_106:
+class BG20_106(Minion):
+    bonus_value = 2
     # Tremble-terre
-    def add_enchantment_on(self, enchantment, target, enchantment_id='71268'):
-        if self is target and enchantment.dbfId == CardName.BLOOD_GEM:
-            for minion in self.owner:
-                if minion is not self:
-                    self.buff(enchantment_id, minion, attack=2)
+    def enhance(self, sequence):
+        if sequence.enchantment.dbfId == CardName.BLOOD_GEM_ENCHANTMENT:
+            for minion in self.owner.cards.exlude(self):
+                self.buff(self.enchantment_dbfId, minion, attack=self.__class__.bonus_value)
 
-class BG20_106_G:
+
+class BG20_106_G(BG20_106):
     # Tremble-terre premium
-    def add_enchantment_on(self, enchantment, target, enchantment_id='71268'):
-        if self is target and enchantment.dbfId == CardName.BLOOD_GEM:
-            for minion in self.owner:
-                if minion is not self:
-                    self.buff(enchantment_id, minion, attack=4)
+    bonus_value = 4
 
-class BG20_204:
+
+class BG20_204(Minion):
     # Chevalier dos-hirsute
-    def hit_by(self):
-        if self.has_frenzy:
-            self.remove_attr(state=State.FRENZY)
-            self.state |= State.DIVINE_SHIELD
+    def frenzy(self, sequence):
+        self.DIVINE_SHIELD = True
+
 BG20_204_G= BG20_204
 
-class BG20_302:
+
+class BG20_302(Minion):
     # Aggem malépine
-    def add_enchantment_on(self, enchantment, target, enchantment_id='71163'):
-        if self is target and enchantment.dbfId == CardName.BLOOD_GEM:
-            for minion in self.my_zone.one_minion_by_type():
-                self.buff(enchantment_id, minion)
+    def enhance(self, sequence):
+        if sequence.enchantment.dbfId == CardName.BLOOD_GEM_ENCHANTMENT:
+            for minion in self.my_zone.cards.one_minion_by_type():
+                self.buff(self.enchantment_dbfId, minion)
 
-class BG20_302_G:
+
+class BG20_302_G(BG20_302):
     # Aggem malépine premium
-    add_enchantment_on= lambda self, enchantment, target: BG20_302.add_enchantment_on(self, enchantment, target, '70284')
+    pass
 
-class BG20_205:
+
+class BG20_205(Minion):
     # Agamaggan
-    def play_aura(self):
-        self.owner.add_aura(self, boost_blood_gem=self.double_if_premium(1))
+    bonus_value = 1
+    def enhance_start(self, sequence):
+        if sequence.enchantment.dbfId == CardName.BLOOD_GEM_ENCHANTMENT:
+            sequence.enchantment.attack += self.__class__.bonus_value
+            sequence.enchantment.max_health += self.__class__.bonus_value
 
-class BG20_205_G:
+class BG20_205_G(Minion):
     # Agamaggan premium
-    def play_aura(self):
-        self.owner.add_aura(self, boost_blood_gem=self.double_if_premium(1))
+    bonus_value = 2
 
-class BG20_303:
+
+class BG20_303(Minion):
     # Charlga
-    def end_turn(self):
+    nb_strike = 1
+    def turn_off(self):
         for minion in self.my_zone.cards:
-            if minion is not self:
-                self.buff(CardName.BLOOD_GEM, minion)
+            self.buff(CardName.BLOOD_GEM_ENCHANTMENT, minion)
 
-class BG20_303_G:
+
+class BG20_303_G(BG20_303):
     # Charlga premium
-    def end_turn(self):
-        for _ in range(2):
-            BG20_303.end_turn(self)
+    nb_strike = 2
 
-class BG20_206:
-    # Capitaine plate défense
-    def play_aura(self):
-        self.owner.add_aura(self, spend_gold=1, check='Capitaine_Plate_Defense_check')
 
-class BG20_206_G:
-    # Capitaine plate défense premium
-    def play_aura(self):
-        self.owner.add_aura(self, spend_gold=1, check='Capitaine_Plate_Defense_check')
+class BG20_206(Minion):
+    # Capitaine Plate-Défense
+    #TODO: sequence + optimisation
+    mod_quest_value = 4
+    def unknown(self, sequence):
+        for _ in range(sequence.gold_spend):
+            self.quest_value += 1
+            if self.quest_value % self.__class__.mod_quest_value == 0:
+                self.controller.hand.create_card_in(CardName.BLOOD_GEM)
 
-def Capitaine_Plate_Defense_check(self):
-    while self.quest_value >= 3:
-        self.quest_value -= 3
-        for _ in range(self.double_if_premium(1)):
-            self.owner.owner.hand.create_card_in("70136")
+
+class BG20_206_G(BG20_206):
+    # Capitaine Plate-Défense premium
+    nb_strike = 2
+    def unknown(self, sequence):
+        for _ in range(sequence.gold_spend):
+            self.quest_value += 1
+            if self.quest_value % self.__class__.mod_quest_value == 0:
+                self.controller.hand.create_card_in(CardName.BLOOD_GEM)
+                self.controller.hand.create_card_in(CardName.BLOOD_GEM)
+
 
 def wake_up(self):
     # Maeiv effect
-    self.create_and_apply_enchantment('62265')
+    self.create_and_apply_enchantment(62265)
     self.owner.opponent.owner.hand.append(self)
 
-class BG20_203:
+
+class BG20_203(Minion):
     # Prophète du sanglier
-    def after_play(self, source):
-        if source.race & Race.QUILBOAR and source is not self:
-            self.owner.owner.hand.create_card_in("70136")
-            self.buff('90_e', self)
+    def turn_on(self, sequence):
+        self.quest_value = 1
 
-class BG20_203_G:
+    def play_off(self, sequence):
+        source = sequence.source
+        if source.race.QUILBOAR and\
+                source.controller is self.controller and\
+                self.quest_value > 0:
+            self.controller.hand.create_card_in(CardName.BLOOD_GEM)
+            self.quest_value -= 1
+
+
+class BG20_203_G(BG20_203):
     # Prophète du sanglier premium
-    def after_play(self, source):
-        if source.race & Race.QUILBOAR and source is not self:
-            self.owner.owner.hand.create_card_in("70136", "70136")
-            self.buff('90_e', self)
+    def play_off(self, sequence):
+        source = sequence.source
+        if source.race.QUILBOAR and\
+                source.controller is self.controller and\
+                self.quest_value > 0:
+            self.controller.hand.create_card_in(CardName.BLOOD_GEM, CardName.BLOOD_GEM)
+            self.quest_value -= 1
 
-class BG20_304:
-    # Archidruide Amuul
-    def battlecry(self):
+
+class BG20_304(Minion):
+    # Archidruide Hamuul
+    #TODO
+    #note: c'est considéré une actualisation : le pouvoir de Ysera s'active
+    def battlecry(self, sequence):
         pass
 BG20_304_G= BG20_304
 
-class BGS_060:
+
+class BG21_027(Minion):
+    # Chromaile évolutive
+    def levelup_off(self, sequence):
+        self.buff(self.enchantment_dbfId, self, attack=self.bonus_value)
+
+    @property
+    def bonus_value(self) -> int:
+        return self.attack
+
+
+class BG21_027_G(Minion):
+    # Chromaile évolutive premium
+    @property
+    def bonus_value(self) -> int:
+        return self.attack*2
+
+
+class BG21_029(deathrattle_repop):
+    # Diablotin dégoûtant
+    nb_repop = 2
+BG21_029_G= BG21_029  # Diablotin dégoûtant premium
+
+
+class BG21_006(Minion):
+    # Entourloupeur impétueux
+    nb_strike = 1
+    def deathrattle(self, sequence):
+        minions = self.controller.board.cards.filter(is_alive=True).exclude(self)
+        if minions:
+            self.buff(self.enchantment_dbfId,
+                random.choice(minions),
+                max_health=self.max_health)
+
+
+class BG21_006_G(BG21_006):
+    # Entourloupeur impétueux premium
+    nb_strike = 2
+
+
+class BGS_060(Minion):
     # Yo oh ogre
     pass
-    """
-    def Yo_oh_ogre(self):
-        self.append_action_with_priority(self.prepare_attack)
-    """
 
-class TB_BaconUps_150:
+class TB_BaconUps_150(Minion):
     # Yo oh ogre premium
     pass
 
-class BGS_039:
+class BGS_039(Minion):
     # Lieutenant draconide
     pass
 
-class TB_BaconUps_146:
+class TB_BaconUps_146(Minion):
     # Lieutenant draconide premium
     pass
 
-class BGS_106:
+class BGS_106(Minion):
     # Acolyte de C'Thun
     pass
 
-class TB_BaconUps_255:
+class TB_BaconUps_255(Minion):
     # Acolyte de C'Thun premium
     pass
 
-class VAN_EX1_506a:
+class VAN_EX1_506a(Minion):
     # éclaireur murloc
     pass
 
-class TB_BaconUps_003t:
+class TB_BaconUps_003t(Minion):
     # éclaireur murloc premium
     pass
 
-class CFM_315t:
-    # chat de gouttière
+class CFM_315t(Minion):
+    # chat tigré
     pass
 
-class TB_BaconUps_093t:
-    # chat de gouttière premium
+class TB_BaconUps_093t(Minion):
+    # chat tigré premium
     pass
 
-class BGS_061t:
+class BGS_061t(Minion):
     # pirate du ciel
-    pass
+    def summon_off(self, sequence):
+        # attack immediatly
+        pass
 
-class TB_BaconUps_141t:
+class TB_BaconUps_141t(Minion):
     # pirate du ciel premium
     pass
 
-class BGS_115t:
+class BGS_115t(Minion):
     # Goutte d'eau
     pass
 
-class TB_BaconShop_HP_033t:
+class TB_BaconShop_HP_033t(Minion):
     # Amalgame
     pass
 
-class EX1_170:
+class EX1_170(Minion):
     # Cobra empereur
     pass
 
-class EX1_554t:
+class EX1_554t(Minion):
     # Serpent
     pass
 
-class KAR_005a:
+class KAR_005a(Minion):
     # Grand méchant loup
     pass
 
-class TB_BaconUps_004t:
+class TB_BaconUps_004t(Minion):
     # Grand méchant loup premium
     pass
 
-class skele21:
+class skele21(Minion):
     # Golem endommagé
     pass
 
-class TB_BaconUps_006t:
+class TB_BaconUps_006t(Minion):
     # Golem endommagé premium
     pass
 
-class EX1_062:
+
+class EX1_062(Minion):
     # Vieux troubloeil
-    pass
+    bonus_value = 1
+    @property
+    def attack(self):
+        bonus = 0
+        if self.my_zone.zone_type == Zone.PLAY:
+            for entity in self.owner.cards + getattr(self.owner.opponent, 'cards', []):
+                if entity.race.MURLOC and entity is not self:
+                    bonus += self.__class__.bonus_value
+        return super().attack + bonus
+    
+    @attack.setter
+    def attack(self, value):
+        self._attack = value
 
-class TB_BaconUps_036:
+
+class TB_BaconUps_036(EX1_062):
     # Vieux troubloeil premium
-    pass
+    bonus_value = 2
 
-class BRM_006t:
+
+class BRM_006t(Minion):
     # Diablotin
     pass
 
-class TB_BaconUps_030t:
+class TB_BaconUps_030t(Minion):
     # Diablotin premium
     pass
 
-class CFM_316t:
+class CFM_316t(Minion):
     # Rat
     pass
 
-class TB_BaconUps_027t:
+class TB_BaconUps_027t(Minion):
     # Rat premium
     pass
 
-class OG_216a:
+class OG_216a(Minion):
     # Araignée
     pass
 
-class TB_BaconUps_026t:
+class TB_BaconUps_026t(Minion):
     # Araignée premium
     pass
 
-class BOT_312t:
+class BOT_312t(Minion):
     # Microbot
     pass
 
-class TB_BaconUps_032t:
+class TB_BaconUps_032t(Minion):
     # Microbot premium
     pass
 
-class BGS_119:
+class BGS_119(Minion):
     # Cyclone crépitant
     pass
 
-class TB_BaconUps_159:
+class TB_BaconUps_159(Minion):
     # Cyclone crépitant premium
     pass
 
-class BGS_034:
+class BGS_034(Minion):
     # Gardien de bronze
     pass
 
-class TB_BaconUps_149:
+class TB_BaconUps_149(Minion):
     # Gardien de bronze premium
     pass
 
-class BOT_911:
+class BOT_911(Minion):
     # Ennuy-o-module
     pass
 
-class TB_BaconUps_099:
+class TB_BaconUps_099(Minion):
     # Ennuy-o-module premium
     pass
 
-class EX1_534t:
+
+class EX1_534t(Minion):
     # Hyène
     pass
 
-class TB_BaconUps_049t:
+
+class TB_BaconUps_049t(Minion):
     # Hyène premium
     pass
 
 
-class LOOT_078:
+class LOOT_078(Minion):
     # Hydre des cavernes
     pass
 
-class TB_BaconUps_151:
+class TB_BaconUps_151(LOOT_078):
     # Hydre des cavernes
     pass
 
-class BOT_537t:
+
+class BOT_537t(Minion):
     # Robosaure
     pass
 
-class TB_BaconUps_039t:
+class TB_BaconUps_039t(Minion):
     # Robosaure premium
     pass
 
-class BOT_218t:
+class BOT_218t(Minion):
     # Robot gardien
     pass
 
-class TB_BaconUps_041t:
+class TB_BaconUps_041t(Minion):
     # Robot gardien premium
     pass
 
-class DMF_533t:
+class DMF_533t(Minion):
     # Diablotin embrasé
     pass
 
-class TB_BaconUps_309t:
+class TB_BaconUps_309t(Minion):
     # Diablotin embrasé premium
     pass
 
-class TRL_232t:
+class TRL_232t(Minion):
     # Rejeton cuiracier
     pass
 
-class TB_BaconUps_051t:
+class TB_BaconUps_051t(Minion):
     # Rejeton cuiracier premium
     pass
 
-class CS2_065:
+class CS2_065(Minion):
     # Marcheur du vide
     pass
 
-class TB_BaconUps_059t:
+class TB_BaconUps_059t(Minion):
     # Marcheur du vide premium
     pass
 
-class BGS_131:
+class BGS_131(Minion):
     # Spore mortelle
     pass
 
-class TB_BaconUps_251:
+class TB_BaconUps_251(Minion):
     # Spore mortelle premium
     pass
 
-class GVG_113:
+class GVG_113(Minion):
     # Faucheur 4000
     pass
 
-class TB_BaconUps_153:
+class TB_BaconUps_153(Minion):
     # Faucheur 4000 premium
     pass
 
-class FP1_010:
+class FP1_010(Minion):
     # Maexxna
     pass
 
-class TB_BaconUps_155:
+class TB_BaconUps_155(Minion):
     # Maexxna premium
     pass
 
-class UNG_999t2t1:
+class UNG_999t2t1(Minion):
     # Plante
     pass
 
-class BGS_022:
-    # Zapp Mèche-sournoise
-    pass
 
-class TB_BaconUps_091:
+class BGS_022(Minion):
+    # Zapp Mèche-sournoise
+    def search_fight_target(self):
+        opponent_board = self.my_zone.opponent.cards.\
+            exclude(is_alive=False, DORMANT=True)
+
+        if not opponent_board:
+            return None
+
+        sorted_board = sorted(opponent_board, key=lambda x: x.attack)
+        for nb, card in enumerate(sorted_board):
+            if card.attack != sorted_board[0].attack:
+                break
+
+        return random.choice(sorted_board[:nb])
+
+
+class TB_BaconUps_091(BGS_022):
     # Zapp Mèche-sournoise premium
     pass
 
+
+class BG21_022(Minion):
+    # Robo-toutou
+    pass
+
+
+class BG21_022_G(Minion):
+    # Robo-toutou premium
+    pass
+
+
+class BG21_008(Minion):
+    # Boss écailles-salines
+    def play_off(self, sequence):
+        source = sequence.source
+        if source.race.MURLOC and source.controller is self.controller:
+            targets = self.owner.cards.filter(race='MURLOC').exclude(self)
+            random.shuffle(targets)
+            for target in targets[:2]:
+                self.buff(self.enchantment_dbfId, target)
+BG21_008_G= BG21_008 # Boss écailles-salines premium
+
+
+class BG19_010(deathrattle_repop):
+    # Rat d'égout
+    pass
+BG19_010_G= BG19_010 # Rat d'égout premium
+
+
+class BG19_010t(Minion):
+    # Demi-carapace
+    pass
+
+
+class BG19_010_Gt(Minion):
+    # Demi-carapace premium
+    pass
+
+
+class BG21_013(Minion):
+    # Contrebandier dragonnet
+    def enhance_on(self, sequence):
+        for target in sequence.targets:
+            if target.race.DRAGON and target.owner is self.owner and sequence.enchantment.attack > 0:
+                sequence(self.buff, self.enchantment_dbfId)
+BG21_013_G= BG21_013 # Contrebandier dragonnet premium
+
+
+class BG21_000(Minion):
+    # Saute-mouton
+    def deathrattle(self, sequence):
+        targets = self.owner.cards.filter(race='BEAST', is_alive=True)
+        if targets:
+            self.buff(self.enchantment_dbfId, random.choice(targets))
+BG21_000_G= BG21_000 # Saute-mouton premium
+
+
+class BG21_017(Minion):
+    # Contrebandier saumâtre
+    nb_strike = 1
+    def turn_off(self, sequence):
+        have_another_pirate = self.owner.cards.filter(race='PIRATE').exclude(self)
+        if have_another_pirate:
+            self.controller.hand.create_card_in(CardName.COIN)
+
+
+class BG21_017_G(BG21_017):
+    # Contrebandier saumâtre premium
+    nb_strike = 2
+
+
+class BG21_021(battlecry_select_one_minion_and_buff_it):
+    # Enfumeur
+    def battlecry(self, sequence: Sequence):
+        for minion in sequence.targets:
+            self.buff(self.enchantment_dbfId, minion, attack=self.bonus_value, max_health=self.bonus_value)
+
+    @property
+    def bonus_value(self) -> int:
+        return self.controller.level
+
+
+class BG21_021_G(BG21_021):
+    # Enfumeur premium
+    @property
+    def bonus_value(self) -> int:
+        return self.controller.level*2
+
+
+class BG21_037(Minion):
+    # Briseur de gemmes
+    nb_strike = 1
+    def loss_shield_off(self, sequence):
+        if sequence.source.controller is self.controller:
+            self.controller.hand.create_card_in(CardName.BLOOD_GEM)
+
+
+class BG21_037_G(BG21_037):
+    # Briseur de gemmes premium
+    nb_strike = 2
+
+
+class BG21_010(battlecry_buff_myself):
+    # Gonflalairon
+    @property
+    def nb_strike(self):
+        return len(self.owner.cards.filter(race='MURLOC').exclude(self))
+
+
+class BG21_010_G(BG21_010):
+    # Gonflalairon premium
+    pass
+
+
+class BG21_039(aura_buff_race):
+    # Kathra’natir
+    def summon_start(self, sequence):
+        super().summon_start(sequence)
+        if sequence.is_valid:
+            self.buff(-76567, self.controller)
+BG21_039_G= BG21_039 # Kathra’natir premium
+
+
+class BG21_030(Minion):
+    # Mainverte en herbe
+    def avenge(self, sequence):
+        for minion in self.adjacent_neighbors():
+            self.buff(self.enchantment_dbfId, minion)
+
+
+class BG21_030_G(BG21_030):
+    # Mainverte en herbe premium
+    pass
+
+
+class BG21_002(Minion):
+    # Pote à plumes
+    def avenge(self, sequence):
+        for minion in self.owner.cards.filter(race='BEAST'):
+            self.buff(self.enchantment_dbfId, minion)
+
+
+class BG21_002_G(BG21_002):
+    # Pote à plumes premium
+    pass
+
+
+class BG21_015(Minion):
+    # Tarecgosa
+    #TODO: rendre compatible avec le bonus de Nadina ou Héroïne altruiste
+    def enhance_start(self, sequence):
+        if self.in_fight_sequence:
+            try:
+                del sequence.enchantment.duration
+            except AttributeError:
+                pass
+
+
+class BG21_015_G(BG21_015):
+    # Tarecgosa premium
+    def enhance(self, sequence):
+        if self.in_fight_sequence:
+            getattr(sequence.enchantment, self.script)(self)
+
+
+class BG21_007(Minion):
+    # Auspice funeste impatient
+    nb_strike = 1
+    def avenge(self, sequence):
+        minion = random.choice(self.controller.bob.local_hand.filter(race='DEMON'))
+        self.controller.hand.append(minion)
+
+
+class BG21_007_G(BG21_007):
+    # Auspice funeste impatient premium
+    nb_strike = 2
+
+
+class BG21_024(Minion):
+    # Graiss-o-bot
+    def loss_shield_off(self, sequence):
+        if sequence.source.my_zone is self.my_zone:
+            self.buff(self.enchantment_dbfId, sequence.source)
+
+
+class BG21_024(BG21_024):
+    # Graiss-o-bot premium
+    pass
+
+
+class BG21_038(Minion):
+    # Matrone ensorçaile
+    nb_strike = 1
+    def avenge(self, sequence):
+        # TODO: à tester, probablement non fonctionnel
+        minion = random.choice(self.controller.bob.local_hand.filter(battlecry=True))
+        self.controller.hand.append(minion)
+
+
+class BG21_038_G(BG21_038):
+    # Matrone ensorçaile premium
+    nb_strike = 2
+
+
+class BG21_023(Minion):
+    # Méca-tank
+    nb_strike = 1
+
+    def avenge(self, sequence):
+        opponent_board = self.my_zone.opponent[:]
+        random.shuffle(opponent_board)
+        opponent_board.sort(key=lambda x: x.health)
+        target = opponent_board[-1]
+        self.damage(target, 6)
+
+
+class BG21_023_G(BG21_023):
+    # Méca-tank premium
+    nb_strike = 2
+
+
+class BG21_016(Minion):
+    # Peggy les Os-de-verre
+    def add_card_on_hand_off(self, sequence):
+        if sequence.source.controller is self.controller:
+            pirates = self.my_zone.cards.filter(race='PIRATE').exclude(self)
+            if pirates:
+                self.buff(self.enchantment_dbfId, random.choice(pirates))
+
+
+class BG21_016_G(BG21_016):
+    # Peggy les Os-de-verre premium
+    pass
+
+
+class BG21_012(Minion):
+    # Pyrogéniture de Prestor
+    bonus_value = 3
+
+    def combat_on(self, sequence):
+        if sequence.source.my_zone is self.my_zone and sequence.source.race.DRAGON:
+            for target in sequence.targets:
+                sequence(self.damage, target, self.__class__.bonus_value)
+
+
+class BG21_012_G(BG21_012):
+    # Pyrogéniture de Prestor
+    bonus_value = 6
+
+
+class BG21_020(Minion):
+    # Rejeton de Lumière éclatant
+    bonus_value = 1
+    #TODO: activer le bonus
+    def avenge(self, sequence):
+        self.buff(self.enchantment_dbfId,
+            self.controller,
+            bonus_value=self.__class__.bonus_value)
+
+
+class BG21_020_G(BG21_020):
+    # Rejeton de Lumière éclatant premium
+    bonus_value = 2
+
+
+class BG21_014(Minion):
+    # Super promo-Drake
+    bonus_value = 1
+    def fight_on(self, sequence):
+        nb_dragons = len(self.my_zone.filter(race='DRAGON'))
+        for minion in self.adjacent_neighbors():
+            for _ in range(nb_dragons):
+                self.buff(self.enchantment_dbfId, minion,
+                    attack=self.__class__.bonus_value,
+                    max_health=self.__class__.bonus_value)
+
+
+class BG21_014_G(BG21_014):
+    # Super promo-Drake premium
+    bonus_value = 2
+
+
+
+class BG21_040(Minion):
+    # Âme en peine recycleuse
+    nb_roll = 1
+    def play_off(self, sequence):
+        if self.my_zone is sequence.source.my_zone and sequence.source.race.ELEMENTAL:
+            self.buff(self.enchantment_dbfId, self.controller, bonus_value=self.__class__.nb_roll)
+
+
+class BG21_040_G(BG21_040):
+    # Âme en peine recycleuse premium
+    nb_roll = 2
+
+
+class BG21_001(Minion):
+    # Crocilisque claires-écailles
+    def avenge(self, sequence):
+        targets = self.my_zone.cards.filter(race='BEAST').exclude(self)
+        if targets:
+            self.buff(self.enchantment_dbfId, random.choice(targets))
+    deathrattle = avenge
+
+
+class BG21_001(BG21_001):
+    # Crocilisque claires-écailles premium
+    pass
+
+
+class BG21_003(battlecry_select_one_minion_and_buff_it):
+    # Crotale résurrecteur
+    pass
+
+
+class BG21_003_G(BG21_003):
+    # Crotale résurrecteur premium
+    pass
+
+
+class BG21_036(Minion):
+    # Maître des réalités
+    def enhance_on(self, sequence):
+        if sequence.source.my_zone is self.my_zone and\
+                sequence.source.race.ELEMENTAL and\
+                (sequence.enchantment.attack > 0 or\
+                sequence.enchantment.max_health > 0):
+            sequence(self.buff, self.enchantment_dbfId, self)
+
+
+class BG21_036(BG21_036):
+    # Maître des réalités premium
+    pass
+
+
+class BG20_401(Minion):
+    # Mécareau divin
+    def loss_shield_off(self, sequence):
+        if sequence.source.controller is self.controller:
+            self.DIVINE_SHIELD = True
+
+
+class BG20_401_G(BG20_401):
+    # Mécareau divin premium
+    pass
+
+
+class BG21_009(Minion):
+    #SI:septique
+    nb_strike = 1
+    def avenge(self, sequence):
+        targets = self.my_zone.cards.filter(race='MURLOC', POISONOUS=False, is_alive=True)
+        if targets:
+            self.buff(self.enchantment_dbfId, random.choice(targets))
+
+
+class BG21_009_G(BG21_009):
+    #SI:septique
+    nb_strike = 2
+
+
+class BG21_031(Minion):
+    # Tony Deux-Défenses
+    nb_strike = 1
+    def avenge(self, sequence):
+        targets = self.my_zone.cards.filter(race='PIRATE', is_premium=False, is_alive=True).exclude(self)
+        if targets:
+            target = random.choice(targets)
+            # ???
+
+
+class BG21_031_G(BG21_031):
+    # Tony Deux-Défenses
+    nb_strike = 2
+
+
+class BG21_004(Minion):
+    # Ur'Zul insatiable
+    bonus_mult = 1
+    def play_off(self, sequence):
+        if sequence.source.owner and self.owner and sequence.source.race.DEMON:
+            targets = self.my_zone.opponent
+            if targets:
+                target = random.choice(targets)
+                self.buff(self.enchantment_dbfId,
+                    self,
+                    attack=target.attack*self.__class__.bonus_mult,
+                    max_health=target.max_health*self.__class__.bonus_mult)
+                self.controller.opponent.hand.append(target)
+
+class BG21_004_G(BG21_004):
+    # Ur'Zul insatiable premium
+    bonus_mult = 2
+
+
+class BG21_025(deathrattle_repop):
+    # Casseur Oméga
+    nb_repop = 5
+    def deathrattle(self, sequence):
+        super().deathrattle(sequence)
+        nb_minion_repop = len(sequence._repops)
+        for minion in self.controller.board.cards.filter(race='MECHANICAL'):
+            for _ in range(self.__class__.nb_repop - nb_minion_repop):
+                self.buff(self.enchantment_dbfId, minion)
+BG21_025_G= BG21_025 # Casseur Oméga premium
+
+
+class BG21_005(Minion):
+    # Gangroptère affamé
+    bonus_mult = 1
+    def turn_off(self, sequence):
+        for demon in self.my_zone.cards.filter(race='DEMON'):
+            targets = self.my_zone.opponent
+            if not targets:
+                break
+            target = random.choice(targets)
+            self.buff(self.enchantment_dbfId,
+                demon,
+                attack=target.attack*self.__class__.bonus_mult,
+                max_health=target.max_health*self.__class__.bonus_mult)
+            self.controller.bob.hand.append(target)
+
+class BG21_005_G(BG21_005):
+    # Gangroptère affamé premium
+    bonus_mult = 2
+
+
+class BG21_011(Minion):
+    # Lanceur de crustacés
+    def play_start(self, sequence: Sequence):
+        super().play_start(sequence)
+        if sequence.is_valid:
+            minion = self.choose_one_of_them(
+                self.controller.board.cards.filter(race=self.synergy)+\
+                self.controller.board.opponent.cards.filter(race=self.synergy))
+            sequence.add_target(minion)
+
+    def battlecry(self, sequence):
+        for minion in sequence.targets:
+            #TODO
+            pass
+BG21_011_G= BG21_011 # Lanceur de crustacés premium
+
+
+class BG21_019(Minion):
+    # Pillarde curieuse
+    """
+        Fonctionnement ?
+        Carte au hasard prise dans la main de bob ? proba T1 > proba T2 > ... ?
+        Carte non prise dans la main de bob ? > proba T1 = proba T2 = ... ? puis enlevée ?
+        si carte enlevée, carte enlevée en 3 exemplaires ?
+    """
+    mod_quest_value = 2
+    def turn_on_off(self, sequence):
+        self.quest_value += 1
+        if self.quest_value % self.__class__.mod_quest_value == 0:
+            minion = random.choice(self.controller.bob.hand.cards)
+            self.controller.hand.append(minion)
+            #TODO: SET GOLD
+
+
+class BG21_019_G(BG21_019):
+    # Pillarde curieuse
+    mod_quest_value = 1

@@ -1,7 +1,8 @@
+from os import X_OK
 from typing import List
 
-VERSION = '20.8'
-BATTLE_SIZE = 7
+VERSION = '21.4'
+FIELD_SIZE = 7
 NB_PLAYER = 8
 HAND_SIZE = 10
 SECRET_SIZE = 5
@@ -14,10 +15,23 @@ BOB_MINION_COST = 1
 DEFAULT_MINION_COST = 3
 
 class CardName:
-    COIN = "58596"
-    BLOOD_GEM = "72191"
-    KHADGAR = "52502"
-    KHADGAR_P = "58380"
+    COIN = 58596
+    BLOOD_GEM = 70136
+    BLOOD_GEM_ENCHANTMENT = 72191
+    KHADGAR = 52502
+    KHADGAR_P = 58380
+    BOB = 57110
+    DEFAULT_HERO = -10
+    DEFAULT_GAME = -12
+    DEFAULT_HAND = -13
+    DEFAULT_BOARD = -14
+    DEFAULT_BOB_BOARD = -15
+    DEFAULT_PLAYER = -16
+    DEFAULT_SECRET_BOARD = -17
+    DEFAULT_GRAVEYARD = -18
+
+    LAPIN = 60122
+    LAPIN_P = 59664
 
 
 class Rarity:
@@ -32,103 +46,82 @@ class Rarity:
     DEFAULT = FREE
 
 CARD_NB_COPY = [0, 16, 15, 13, 11, 9, 7]
-LEVEL_UP_COST = [0, 6, 7, 8, 9, 10, 10]
+LEVELUP_COST = [0, 6, 7, 8, 9, 10, 10]
 GOLD_BY_TURN = [0, 3, 4, 5, 6, 7, 8, 9, 10]
 NB_CARD_BY_LEVEL = [0, 3, 4, 4, 5, 5, 6]
-NB_CARD_BY_LEVEL_ARANNA = BATTLE_SIZE
+NB_CARD_BY_LEVEL_ARANNA = FIELD_SIZE
 
-class Race(int):
-    NONE = 0x0
-    BEAST = 0x1
-    DEMON = 0x2
-    DRAGON = 0x4
-    ELEMENTAL = 0x8
-    MECHANICAL = 0x10
-    MURLOC = 0x20
-    PIRATE = 0x40
-    QUILBOAR = 0x80
-    ALL = 0xFF
-
-    MECH = MECHANICAL
-    DEFAULT = NONE
+class Race(str):
+    data = {
+        "NONE": [0x0, 'Neutre'],
+        "BEAST": [0x1, 'Bête'],
+        "DEMON": [0x2, 'Démon'],
+        "DRAGON": [0x4, 'Dragon'],
+        "ELEMENTAL": [0x8, 'Élémentaire'],
+        "MECHANICAL": [0x10, 'Méca'],
+        "MURLOC": [0x20, 'Murloc'],
+        "PIRATE": [0x40, 'Pirate'],
+        "QUILBOAR": [0x80, 'Huran'],
+        "ALL": [0xFF, 'Tout']}
+    data['DEFAULT'] = data['NONE']
 
     @classmethod
     def battleground_race(cls) -> List[int]:
         return [
-            cls.BEAST, cls.DEMON, cls.DRAGON, cls.ELEMENTAL,
-            cls.MECH, cls.MURLOC, cls.PIRATE, cls.QUILBOAR,
+            0x1, 0x2, 0x4, 0x8,
+            0x10, 0x20, 0x40, 0x80,
             ]
 
     @property
+    def hex(self) -> int:
+        return self.__class__.data[self][0]
+
+    @property
     def name(self) -> str:
-        return RACE_NAME.get(self, 'Inconnu')
+        return self.__class__.data[self][1]
 
-    #def __getattribute__(self, name: str):
-    #    if name.isupper():
-    #        return self & getattr(Type, name)
-    #    return getattr(self, name)
+    def __getattr__(self, race) -> int:
+        if race.isupper():
+            return self == race or self == 'ALL'
+        raise AttributeError
 
-RACE_NAME = {
-    Race.NONE: "Neutre",
-    Race.BEAST: "Bête",
-    Race.DEMON: "Démon",
-    Race.DRAGON: "Dragon",
-    Race.ELEMENTAL: "Elémentaire",
-    Race.MECH: "Méca",
-    Race.MURLOC: "Murloc",
-    Race.PIRATE: "Pirate",
-    Race.QUILBOAR: "Huran",
-    Race.ALL: "Tout"}
+    def __and__(self, value) -> int:
+        if isinstance(value, int):
+            return self.hex & value
+        return self.hex & self.__class__.data[value][0]
 
-class State(int):
-    NONE = 0x0
-    TAUNT = 0x1
-    DIVINE_SHIELD = 0x2
-    REBORN = 0x4
-    POISONOUS = 0x8
-    WINDFURY = 0x10
-    MEGA_WINDFURY = 0x20 # inexistant dans enums.py
-    MODULAR = 0x40
-    FREEZE = 0x80 # il n'existe pas de durée variable pour le gel
-    ATTACK_IMMEDIATLY = 0x100
-    CLEAVE = 0x200
-    ATTACK_WEAK = 0x400
-    DORMANT = 0x800
-    STEALTH = 0x1000
-    IS_POISONED = 0x2000
-    FRENZY = 0x4000 # Frénésie
-    IMMUNE = 0x8000
-    SECRET = 0x10000
-    ALL = 0xFFFFF
-    DEFAULT = NONE
+    def __sub__(self, value) -> int:
+        return self.hex - (self.hex & value)
 
-            # vol de vie, silence, ne peut pas attaquer
-    ALAKIR = TAUNT | DIVINE_SHIELD | WINDFURY
-    STILL_BOB = FREEZE | DORMANT
-    NOT_TARGETABLE = DORMANT
-    DEFAULT = NONE
+state_list= [
+    'BATTLECRY',
+    'ENCHANTMENT_INVISIBLE',
+    'TRIGGER_VISUAL',
+    'CHARGE',
+    'MODULAR',
+    'WINDFURY',
+    'AURA',
+    'DEATHRATTLE',
+    'REBORN',
+    'DIVINE_SHIELD',
+    'FRENZY',
+    'FREEZE',
+    'DISCOVER',
+    'POISONOUS',
+    'OVERKILL',
+    'SECRET',
+    'TAUNT',
+    'IMMUNE',
+    'AVENGE',
 
-STATE_NAME = {
-    State.NONE: 'Aucun',
-    State.TAUNT: 'Provocation',
-    State.DIVINE_SHIELD: 'Bouclier divin',
-    State.REBORN: 'Réincarnation',
-    State.POISONOUS: 'Toxicité',
-    State.WINDFURY: 'Furie des vents',
-    State.MEGA_WINDFURY: 'Méga Furie des vents',
-    State.MODULAR: 'Magnétisme',
-    State.FREEZE: 'Gelé',
-    State.ATTACK_IMMEDIATLY: 'Attaque immédiatement',
-    State.CLEAVE: 'Cleave',
-    State.ATTACK_WEAK: 'Attaque le plus faible', 
-    State.DORMANT: 'Endormi',
-    State.STEALTH: 'Furtivité',
-    State.IS_POISONED: 'Empoisonné',
-    State.FRENZY: 'Frénésie',
-    State.IMMUNE: 'Insensible',
-    State.SECRET: 'Secret',
-    }
+    'IS_POISONED',
+    'MEGA_WINDFURY',
+    'ATTACK_IMMEDIATLY',
+    'CLEAVE',
+    'DORMANT',
+]
 
+# obsolete
 class Event(int):
     NONE = 0x0
     BEGIN_TURN = 0x1 # début de tour chez bob
@@ -174,8 +167,7 @@ class Event(int):
     DEFAULT = NONE
 
     method_str = {
-        BEGIN_TURN: 'begin_turn',
-        INVOC: 'invoc',
+        BEGIN_TURN: 'turn_on',
         END_TURN: 'end_turn',
         FIRST_STRIKE: 'first_strike',
         SELL: 'sell',
@@ -184,11 +176,11 @@ class Event(int):
         ROLL: 'roll',
         PLAY: 'play',
         CREATION: 'creation',
-        INVOC: 'invoc',
+        INVOC: 'summon',
         BATTLECRY: 'battlecry',
         DEATHRATTLE: 'deathrattle',
         OVERKILL: 'overkill',
-        DIE: 'die',
+        DIE: 'kill',
         ATK_ALLY: 'atk_ally',
         DEFEND_ALLY: 'defend_ally',
         AFTER_PLAY: 'after_play',
@@ -226,6 +218,14 @@ class Type(int):
 
     DEFAULT = NONE
 
+    @property
+    def can_be_add_in_hand(self):
+        return self in (self.__class__.SPELL, self.__class__.MINION)
+
+    @property
+    def can_be_add_in_board(self):
+        return self == self.__class__.MINION
+
 
 class Zone(int):
     NONE = 0
@@ -238,4 +238,4 @@ class Zone(int):
     SECRET = 7
     DEFAULT = NONE
 
-ADAPT_ENCHANTMENT = ['41692', '41068', '41069', '41071', '41210', '41073', '41072', '41693']
+ADAPT_ENCHANTMENT = [41692, 41068, 41069, 41071, 41210, 41073, 41072, 41693]

@@ -1,4 +1,4 @@
-from enums import Event, Type, Zone, State, Race
+from enums import Event, Type, Zone, Race
 
 class Void:
     def __init__(self) -> None:
@@ -17,12 +17,8 @@ class Void:
         return Event.NONE
 
     @property
-    def state(self):
-        return State.NONE
-
-    @property
     def race(self):
-        return Race.NONE
+        return Race('NONE')
     synergy = race
 
     def __getattr__(self, attr):

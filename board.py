@@ -1,142 +1,127 @@
-from utils import Card_list, Board_Card_list, hasevent
-from enums import Type, NB_CARD_BY_LEVEL, State, Event, Race, Zone, BATTLE_SIZE, SECRET_SIZE, LEVEL_MAX
-from entity import Card
+from utils import Board_Card_list
+from enums import CardName, Type, Zone, FIELD_SIZE, SECRET_SIZE, LEVEL_MAX
 import random
-import script_event
-from collections import defaultdict
 from entity import Entity
-from typing import List
-from operator import itemgetter
+from typing import List, Generator
+from sequence import Sequence
 
 #TODO: bloquer les fonctions manuelles board en cours de combat
 class Board(Entity):
     default_attr = {
         'type': Type.ZONE,
         'zone_type': Zone.PLAY,
-        'opponent': None,
         'next_opponent': None, # adversaire rencontré après un end_turn
         'last_opponent': None,
-
     }
-    def __init__(self, **kwargs):
-        super().__init__("BOARD", **kwargs)
-        self.cards = Board_Card_list()
+
+    def __init__(self, dbfId, **kwargs):
+        super().__init__(dbfId, **kwargs)
+        self.purge()
+
         self.cards_copy = self.cards.__class__()
         self.entities_copy = self.entities.__class__()
-        self.secret = defaultdict(set) # dict('0x1': set())
-        #self.secret_key = []
-        #self.enchantment = []
+
+    def __iter__(self) -> Generator:
+        yield from (i for i in self.cards)
+
+    def purge(self):
+        self.cards = Board_Card_list()
 
     @property
-    def nb_minions(self):
-        return len(self.cards.exclude(state=State.DORMANT))
+    def opponent(self):
+        return self.owner.opponent.board
 
     @property
-    def level(self):
+    def size(self) -> int:
+        return len(self.cards)
+
+    @property
+    def size_without_dormant(self) -> int:
+        return len(self.cards.exclude(DORMANT=True))
+
+    @property
+    def level(self) -> int:
         return self.owner.level
 
-    def remove(self, *cards):
+    @property
+    def cumulative_level(self) -> int:
+        return sum(entity.level for entity in self.cards)
+
+    def remove(self, *cards) -> None:
         super().remove(*cards)
         for card in cards:
             #if card in self.cards:
             try:
-                self.old_position = self.position
                 self.cards.remove(card)
             except ValueError:
                 print(f'{card} remove but not in {self}')
                 return
 
-            if hasevent(card, Event.PLAY_AURA):
-                try:
-                    del self.controller.aura_active[card]
-                except KeyError:
-                    pass
-                    #print(f'{card} not in aura_active to {self.controller}')
-                card.apply_met_on_all_children(Entity.remove_my_aura_action, card.controller)
             for enchantment in card.entities:
                 if getattr(enchantment, 'aura', False):
                     enchantment.remove()
 
-    def append(self, card, position=BATTLE_SIZE) -> bool:
+    def append(self, card, position=FIELD_SIZE) -> bool:
         # TODO : problème de positionnement en cas de repop multiple
-        # faire pop avant le minion d'après ou en dernier en cas d'inexistance
-        # TODO: gestion des secrets et sorts
+        # faire pop avant le minion d'après ou en dernier en cas d'inexistance ?
+        if position is None:
+            position = FIELD_SIZE
+
         if card.owner is self and card in self.cards:
             if position != card.position:
                 del self.cards[self.cards.index(card)]
                 self.cards.insert(position, card)
             return True
 
-        if not self.can_add_card(card):
-            return False
-
-        if card.type == Type.MINION:
-            if position is None:
-                position = BATTLE_SIZE
-            old_owner = card.owner
-            card.owner.remove(card)
-            card.owner = self
-            self.entities.append(card)
-            self.cards.insert(position, card)
-            card.active_aura()
-            self.active_global_event(Event.INVOC, self.controller, source=card)
-            if old_owner.zone_type == Zone.HAND and \
-                    old_owner.owner is self.owner:
-                self.active_global_event(Event.PLAY, self.controller, source=card)
-                card.active_local_event(Event.BATTLECRY)
-                if self.owner.type == Type.HERO:
-                    self.owner.played_minions[self.nb_turn] += card
-                self.active_global_event(Event.AFTER_PLAY, self.controller, source=card)
-            return True
-        elif card.type == Type.SPELL:
-            self.active_global_event(Event.PLAY, self.controller, source=card)
-            self.active_global_event(Event.AFTER_PLAY, self.controller, source=card)
+        if self.can_add_card(card):
+            if card.type == Type.MINION:
+                card.owner.remove(card)
+                card.owner = self
+                self.entities.append(card)
+                self.cards.insert(position, card)
+                return True
+            elif card.type == Type.SPELL:
+                card.play()
 
         return False
 
-    def create_card_in(self, id, position=BATTLE_SIZE, **kwargs):
+    def create_card_in(self, id, position=FIELD_SIZE, **kwargs):
         """
             Create card and append it in self
         """
-        card_id = Card(id, **kwargs)
-        if self.append(card_id, position):
+        card_id = self.create_card(id, **kwargs)
+        if self.append(card_id, position=position):
             return card_id
         return None
 
+    @property
+    def is_full(self):
+        return self.size >= FIELD_SIZE
+
     def can_add_card(self, card_id) -> bool:
-        if card_id.type == Type.MINION:
-            return len(self.cards) <= BATTLE_SIZE-1
-
         if card_id.type == Type.SPELL:
-            if not card_id.state & State.SECRET:
-                return True
+            return not card_id.SECRET
 
-            current_secrets = self.entities.filter_hex(state=State.SECRET)
+        return card_id.type.can_be_add_in_board and not self.is_full
 
-            if len(current_secrets) >= SECRET_SIZE:
-                return False
 
-            return card_id.dbfId not in set(secret.dbfId for secret in current_secrets)
+class Player_board(Board):
+    def turn_on(self, sequence):
+        self.last_opponent = self.opponent
+        #self.next_opponent = ??
 
-        return False
+    def fight_off(self, sequence):
+        self.cards = self.cards_copy[:]
+        self.entities = self.entities_copy[:]
+        for card in self.entities:
+            card.owner = self
 
-    def classification_by_type(self) -> dict:
-        # exclu de fait les minions multi-type
-        return {typ: self.cards.filter(type=typ)
-            for typ in [0, 1, 2, 4, 8, 16, 32, 64, 128]}
-
-    def one_minion_by_type(self) -> Card_list:
-        """
-            Return a list which contains until one minion by type
-        """
-        tri = self.classification_by_type()
-        del tri[0] # exclusion des types neutres
-
-        result = Card_list(random.choice(minions)
-                for minions in tri.values()
-                    if minions)
-
-        return result + self.cards.filter(race=Race.ALL)
+    def turn_off(self, sequence):
+        self.cards_copy = self.cards[:]
+        self.entities_copy = self.entities[:]
+        #if self.is_bot:
+        if True:
+            self.auto_placement_card()
 
     def auto_placement_card(self) -> None:
         """
@@ -148,63 +133,131 @@ class Board(Entity):
 
         # placement initial de la plus forte attaque à la moins
         self.cards.sort(key=lambda x: (
-                        not x.state & State.CLEAVE,
-                        not x.event & Event.OVERKILL,
-                        not x.event & Event.ATK_ALLY,
-                        x.event & Event.DIE,
-                        x.event & Event.INVOC,
-                        x.event & Event.PLAY_AURA,
-                        x.event & Event.HIT_BY,
-                        not x.event & Event.DEATHRATTLE,
-                        x.state & State.TAUNT,
+                        not x.CLEAVE,
+                        not x.OVERKILL,
+                        #not x.event & Event.ATK_ALLY,
+                        #x.event & Event.DIE,
+                        #x.event & Event.INVOC,
+                        x.AURA,
+                        #x.event & Event.HIT_BY,
+                        not x.DEATHRATTLE,
+                        x.TAUNT,
                         -x.attack,
                         x.health))
 
 
+
 class Bob_board(Board):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
+    def can_add_card(self, card) -> bool:
+        return card.type == Type.MINION and not self.is_full
+
+    def turn_on(self, sequence: Sequence) -> None:
+        if self.game.no_bob is False:
+            self.fill_minion()
+
+    def turn_off(self, sequence: Sequence) -> None:
+        self.drain_minion()
+
+    def roll(self, sequence: Sequence) -> None:
+        self.drain_all_minion()
+        self.fill_minion()
 
     def freeze(self) -> None:
         if self.cards:
-            if self.cards[0].state & State.FREEZE: # unfreeze
+            if self.cards[0].FREEZE: # unfreeze
                 for minion in self.cards:
-                    minion.remove_attr(state=State.FREEZE)
+                    minion.remove_attr('FREEZE')
             else: # freeze
                 for minion in self.cards:
-                    minion.state |= State.FREEZE
+                    minion.FREEZE = True
 
     def drain_minion(self) -> None:
         self.owner.hand.append(
-            *self.cards.exclude_hex(state=State.STILL_BOB))
+            *self.cards.exclude(FREEZE=True, DORMANT=True))
 
     def drain_all_minion(self) -> None:
         self.owner.hand.append(
-            *self.cards.exclude_hex(state=State.DORMANT))
+            *self.cards.exclude(DORMANT=True))
 
     def fill_minion(self, nb_card_to_play=0, entity_list=[]) -> None:
-        nb_card_to_play = nb_card_to_play or (self.owner.nb_card_by_refresh - self.nb_minions)
+        #TODO? Sequence REFRESH ??
+        nb_card_to_play = nb_card_to_play or (self.owner.opponent.nb_card_by_roll - self.size_without_dormant)
         if nb_card_to_play >= 1:
             entity_list = entity_list or self.owner.local_hand
             random.shuffle(entity_list)
             for card_id in entity_list[:nb_card_to_play]:
-                self.append(card_id)
+                # Sequence SUMMON ?
+                # self.append(card_id)
+                card_id.owner = self.controller
+                card_id.summon()
 
     def fill_minion_battlecry(self) -> None:
-        entity_list = self.owner.local_hand.filter_hex(event=Event.BATTLECRY)
+        entity_list = self.owner.local_hand.filter(BATTLECRY=True)
         self.fill_minion(entity_list=entity_list)
 
     def fill_minion_temporal(self) -> None:
         bob = self.owner
         self.fill_minion(
             nb_card_to_play = \
-            self.owner.nb_card_by_refresh - self.nb_minions - 1)
+            self.owner.nb_card_by_refresh - self.size_without_dormant - 1)
 
         lvl = min(LEVEL_MAX, bob.level+1)
         entity_list = bob.hand.cards_of_tier_max(tier_max=lvl, tier_min=lvl)
         if entity_list:
             self.append(random.choice(entity_list))
 
-class Graveyard(Card_list):
-    def __init__(self, owner):
-        self.owner = owner
+class Graveyard(Board):
+    def __init__(self, dbfId=CardName.DEFAULT_GRAVEYARD):
+        super().__init__(dbfId)
+        self.owner = None
+
+    def append(self, card, **kwargs) -> bool:
+        if self.can_add_card(card):
+            card.owner.remove(card)
+            card.owner = self
+            self.entities.append(card)
+            self.cards.append(card)
+            return True
+
+        return False
+
+    @property
+    def is_full(self) -> bool:
+        return False
+
+    def can_add_card(self, card_id: Entity) -> bool:
+        return True
+
+    def turn_on(self, sequence: Sequence) -> None:
+        self.purge()
+
+
+class Secret_board(Entity):
+    @property
+    def is_full(self) -> bool:
+        return len(self.entities) >= SECRET_SIZE
+
+    @property
+    def dbfId_list(self) -> List[int]:
+        return [entity.dbfId for entity in self.entities]
+
+    def can_add_card(self, card_id: Entity) -> bool:
+        return card_id.type == Type.SPELL and\
+            card_id.SECRET and not self.is_full and\
+            card_id.dbfId not in self.dbfId_list
+
+    def append(self, card_id: Entity) -> bool:
+        if not self.can_add_card(card_id):
+            return False
+
+        super().append(card_id)
+        return True
+
+    def create_card_in(self, dbfId: int, position=None, **kwargs) -> Entity:
+        """
+            Create card and append it in self
+        """
+        card_id = self.create_card(dbfId, **kwargs)
+        if self.append(card_id):
+            return card_id
+        return None

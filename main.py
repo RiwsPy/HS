@@ -1,5 +1,5 @@
 import argparse
-from api import hearthstonejson
+from api.hearthstonejson import call_api, save_battlegrounds_cards
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -14,8 +14,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.updateDB:
-        hearthstonejson.call_api()
+        call_api()
     if args.updateBG:
-        hearthstonejson.save_battlegrounds_cards()
+        save_battlegrounds_cards()
     #app.run()
 

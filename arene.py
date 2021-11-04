@@ -1,43 +1,51 @@
 from os import stat
 from db_card import Card_data
-import game
-from enums import Race, VERSION
+from enums import VERSION, CardName
 import time
 import json
 import stats
-from entity import Entity, Meta_card_data
+from entity import Entity, Card
 from datetime import datetime
 from typing import Dict
+from sequence import Sequence
+from db_card import Meta_card_data
 
+"""
 compo_turn_3 = { # by synergy
-    Race.ALL: ('38797', '65661', '64040'), # rejeton, ritualiste tourmenté, goutte d'eau
-    Race.BEAST: ('39481', '59940'), # gentille grand mère, chef de meute
-    Race.DEMON: ('59937', '59186'), # emprisonneur, surveillant Nathrezim
-    Race.DRAGON: ('61029', '60621'), # gardien des glyphes, régisseur du temps
-    Race.ELEMENTAL: ('64056', '64296', '64040'), # élémentaire en fête, roche en fusion, goutte
-    Race.MECH: ('49279', '778'), # groboum, golem des moissons
-    Race.MURLOC: ('1063', '736'), # chef de guerre, vieux troubloeil
-    Race.PIRATE: ('61060', '680'), # yo-ho, capitaine des mers du sud
-    Race.QUILBOAR: ('70153', '70162'), # prophète du sanglier, défense robuste
+    Race.ALL: (38797, 65661, 64040), # rejeton, ritualiste tourmenté, goutte d'eau
+    Race.BEAST: (39481, 59940), # gentille grand mère, chef de meute
+    Race.DEMON: (59937, 59186), # emprisonneur, surveillant Nathrezim
+    Race.DRAGON: (61029, 60621), # gardien des glyphes, régisseur du temps
+    Race.ELEMENTAL: (64056, 64296, 64040), # élémentaire en fête, roche en fusion, goutte
+    Race.MECHANICAL: (49279, 778), # groboum, golem des moissons
+    Race.MURLOC: (1063, 736), # chef de guerre, vieux troubloeil
+    Race.PIRATE: (61060, 680), # yo-ho, capitaine des mers du sud
+    Race.QUILBOAR: (70153, 70162), # prophète du sanglier, défense robuste
 }
+"""
 
 class arene:
     def __init__(self, **kwargs) -> None:
         self.debut = time.time()
         self.type_ban = kwargs['type_ban']
-        self.g = game.Game(type_ban=self.type_ban, is_arene=True, no_bob=True)
+        self.g = Card(
+            CardName.DEFAULT_GAME,
+            type_ban=self.type_ban,
+            is_arene=True,
+            no_bob=True)
         self.version = self.g.version
         self.method = kwargs['method']
 
         self.db_arene = db_arene(**kwargs)
         self.p1 = self.g.card_db[kwargs['p1']]
         self.p2 = self.g.card_db[kwargs['p2']]
-        self.retro = kwargs.get('retro', 0)
+        self.retro = kwargs['retro']
 
         self.dic_add = kwargs
+        self.dic_add['p1'] = self.g.card_db[self.dic_add['p1']]['name']
+        self.dic_add['p2'] = self.g.card_db[self.dic_add['p2']]['name']
 
         self.begin()
-
 
     def begin(self):
         if self.db_arene.search(version=self.version, **self.dic_add):
@@ -61,7 +69,7 @@ class arene:
                 print('ERROR', card.name, card.counter, card.value)
 
         self.db_arene[self.version][self.method][str(datetime.now())] = self.dic_add
-        if self.p1 in ('59805', '66196'):
+        if self.p1 in (59805, 66196):
             value_lst = [card.value for card in result]
             esp = round(stats.esperance(value_lst, [1/len(result)]*len(result)), 4)
         else:
@@ -79,11 +87,11 @@ class arene:
         stat_data = self.db_arene.search(version=self.version, **dic_add)
         if stat_data:
             for card_dbfId, card_rating in stat_data['rating'].items():
-                crd = self.g.card_db[card_dbfId.split('_')[0]]
+                crd = self.g.card_db[int(card_dbfId.partition('_')[0])]
                 crd.rating = card_rating
                 cards_test.append(crd)
         else:
-            print(f'Retro {self.retro} de {method} introuvable.')
+            print(f'Retro {dic_add["retro"]} de {method} introuvable.')
 
         return cards_test
 
@@ -104,21 +112,22 @@ class arene:
             card_p1.value = 0
 
             for card_p2, proba_apparition_p2 in generator_p2:
+                print(card_p1.name, card_p2.name, proba_apparition_p2)
                 for _ in range(NB_FIGHT):
                     g.party_begin('rivvers', 'notoum', hero_p1=hero_p1, hero_p2=hero_p2)
                     j1, j2 = g.players
-                    for nb in range(2):
-                        g.begin_turn()
-                        j1.power.active_script_arene(card_p1)
-                        j2.power.active_script_arene(card_p2)
-                        g.end_turn()
-                        g.begin_fight()
-                        g.end_fight()
+                    for _ in range(2):
+                        with Sequence('TURN', g):
+                            j1.power.active_script_arene(card_p1)
+                            j2.power.active_script_arene(card_p2)
+
+                        Sequence('FIGHT', g).start_and_close()
 
                     card_p1.value += \
                         calc_damage(j1, j2)*proba_apparition_p2
                     card_p1.counter += proba_apparition_p2
 
+    """
     def base_T3(self, cards_test, p1, p2):
         cards_test = cards_test or self.g.card_can_collect.filter_maxmin_level(level_max=2)
         self.fight_base_T3(cards_test, p1, p2)
@@ -153,8 +162,8 @@ class arene:
                         j1.power.active_script_arene(card_p1, card_p1_2, force=True)
                         j2.power.active_script_arene(*compo, force=True)
                         g.end_turn()
-                        g.begin_fight()
-                        g.end_fight()
+                        g.fight_on()
+                        g.fight_off()
 
                         card_p1.counter += proba_c2
                         card_p1.value += calc_damage(j1, j2)*proba_c2
@@ -178,8 +187,8 @@ class arene:
                         {"method": "base_T3",
                         "type_ban": self.type_ban,
                         "retro": 1,
-                        "p1": "aaa",
-                        "p2": "aaa"},
+                        "p1": CardName.DEFAULT_HERO,
+                        "p2": CardName.DEFAULT_HERO},
                         method = 'base_T3')
         if not cards_T2:
             return
@@ -209,8 +218,8 @@ class arene:
                         j1.power.active_script_arene(card_p1_2, force=True)
                         j2.power.active_script_arene(*compo, force=True)
                         g.end_turn()
-                        g.begin_fight()
-                        g.end_fight()
+                        g.fight_on()
+                        g.fight_off()
 
                         card_p1.counter += proba_c2
                         card_p1.value += calc_damage(j1, j2)*proba_c2
@@ -223,19 +232,19 @@ class arene:
                 {"method": "base_T3",
                 "type_ban": self.type_ban,
                 "retro": 2,
-                "p1": "aaa",
-                "p2": "aaa"},
+                "p1": CardName.DEFAULT_HERO,
+                "p2": CardName.DEFAULT_HERO},
                 method = 'base_T3')
 
         # mousse du pont
         esp_without_roll = stats.esperance_2_cards(cards_list, 4, 0)
         esp_with_roll = stats.esperance_2_cards(cards_list, 4, 1)
-        cards_list['61055'].value += (esp_with_roll - esp_without_roll)*cards_list['61055'].counter
+        cards_list[61055].value += (esp_with_roll - esp_without_roll)*cards_list[61055].counter
 
         # anomalie actualisante
         esp_with_roll, conservation_rate, esp_moy = stats.esperance_2_cards_with_free_roll(cards_list, 4)
-        cards_list['64042'].value += (esp_with_roll - esp_without_roll)*cards_list['64042'].counter
-        cards_list['64042'].esp_moy = esp_moy
+        cards_list[64042].value += (esp_with_roll - esp_without_roll)*cards_list[64042].counter
+        cards_list[64042].esp_moy = esp_moy
 
         return cards_test, 1
 
@@ -253,8 +262,8 @@ class arene:
                         {"method": "base_T1_to_T3_no_refound",
                         "type_ban": self.type_ban,
                         "retro": 0,
-                        "p1": "aaa",
-                        "p2": "aaa"},
+                        "p1": CardName.DEFAULT_HERO,
+                        "p2": CardName.DEFAULT_HERO},
                         method = 'base_T1_to_T3_no_refound')
         for card in cards_T1_to_T3:
             self.g.card_db[card].T1_to_T3_rating = card.rating
@@ -263,13 +272,13 @@ class arene:
                         {"method": "base_T3",
                         "type_ban": self.type_ban,
                         "retro": 2,
-                        "p1": "aaa",
-                        "p2": "aaa"},
+                        "p1": CardName.DEFAULT_HERO,
+                        "p2": CardName.DEFAULT_HERO},
                         method = 'base_T3')
         if not cards_T2:
             return
 
-        for card_p1 in [self.g.card_db['64042']]: # card_list
+        for card_p1 in [self.g.card_db[64042]]: # card_list
             print(f'{card_p1.name} en cours...')
             generator_p2 = stats.card_proba(
                             cards_T2,
@@ -300,8 +309,8 @@ class arene:
                             j1.power.active_script_arene(card_p1_2, card_p1_3)
                             j2.power.active_script_arene(*compo, force=True)
                             g.end_turn()
-                            g.begin_fight()
-                            g.end_fight()
+                            g.fight_on()
+                            g.fight_off()
 
                             card_p1.counter += proba_c2*proba_c3
                             card_p1.value += calc_damage(j1, j2)*proba_c2*proba_c3
@@ -313,12 +322,12 @@ class arene:
                             {"method": "base_T2_to_T3",
                             "type_ban": self.type_ban,
                             "retro": 0,
-                            "p1": "aaa",
-                            "p2": "aaa"},
+                            "p1": CardName.DEFAULT_HERO,
+                            "p2": CardName.DEFAULT_HERO},
                             method = 'base_T2_to_T3')
             # 9.5/5 = 2/2 + 2/4 + 2/5, impact prévisionnel jusqu'au Tour 5
             # TODO: valeur sous-évaluée pour l'anomalie actualisante > conservation_rate
-            ref_rating = self.g.card_db['59670']
+            ref_rating = self.g.card_db[59670]
             for card in cards_test:
                 card.value = card.rating*9.5/5
 
@@ -326,8 +335,8 @@ class arene:
                             {"method": "base_T1",
                             "type_ban": self.type_ban,
                             "retro": 2,
-                            "p1": "aaa",
-                            "p2": "aaa"},
+                            "p1": CardName.DEFAULT_HERO,
+                            "p2": CardName.DEFAULT_HERO},
                             method = 'base_T1')
 
             for card in cards_test:
@@ -343,17 +352,18 @@ class arene:
                             {"method": "base_T2_to_T3",
                             "type_ban": self.type_ban,
                             "retro": 0,
-                            "p1": "aaa",
-                            "p2": "aaa"},
+                            "p1": CardName.DEFAULT_HERO,
+                            "p2": CardName.DEFAULT_HERO},
                             method = 'base_T2_to_T3')
             for card in cards_test:
                 card.value += card.rating*9.5/5
 
         return cards_test, 1
+        """
 
 def ordered_rating(result: Meta_card_data) -> Dict[Card_data, int]:
-    return {card_id + '_' + card_id.name: round(card_id.value, 2)
-        for card_id in sorted(result, lambda x: x.value, reverse=True)}
+    return {str(card_id) + '_' + card_id.name: round(card_id.value, 2)
+        for card_id in sorted(result, key=lambda x: x.value, reverse=True)}
 
 def calc_damage(p1: Entity, p2: Entity) -> int:
     return (p2.max_health - p2.health)*3/5 / (p2.max_health/40) - \
@@ -379,7 +389,7 @@ def search_value_in_list(value, lst, lon=None):
 
 
 class db_arene(dict):
-    filename = 'db_arene.json'
+    filename = 'db/arene.json'
 
     def __init__(self, version=VERSION, method='no_method', **kwargs):
         with open(self.__class__.filename, 'r') as file:
@@ -392,10 +402,21 @@ class db_arene(dict):
             self[version][method] = {}
 
     def search(self, version=VERSION, **kwargs) -> dict:
+        for data in self[version][kwargs['method']].values():
+            find = True
+            for info_name, info_value in kwargs.items():
+                if data.get(info_name) != info_value:
+                    find = False
+                    break
+            if find:
+                return data
+        return {}
+        """
         for info_stat in self[version][kwargs['method']].values():
             if info_stat.get('kwargs') == kwargs:
                 return info_stat
         return {}
+        """
 
     def search_minion_rate(self, minion, **kwargs) -> int:
         for card, rate in self.search(**kwargs)['rating'].items():
@@ -410,12 +431,14 @@ class db_arene(dict):
 if __name__ == '__main__':
     """
     db = db_arene()
-    print(db.search_minion_rate('63614', **{
+    print(db.search_minion_rate(63614, **{
      "method": "base_T1",
      "type_ban": 0,
      "retro": 0,
-     "p1": "aaa",
-     "p2": "aaa"}))
+     "p1": CardName.DEFAULT_HERO,
+     "p2": CardName.DEFAULT_HERO}))
     """
 
-    arene(method='base_T1', type_ban=0, retro=0, p1="aaa", p2="aaa")
+    arene(method='base_T1', type_ban=0, retro=0,
+        p1=CardName.DEFAULT_HERO,
+        p2=CardName.DEFAULT_HERO)

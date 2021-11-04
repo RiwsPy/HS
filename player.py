@@ -1,45 +1,51 @@
 from collections import defaultdict
-from enums import Event, Type, LEVEL_UP_COST, State, NB_CARD_BY_LEVEL, MAX_GOLD, \
-    GOLD_BY_TURN, LEVEL_MAX
-import board
+from enums import LEVELUP_COST, NB_CARD_BY_LEVEL, MAX_GOLD, \
+    GOLD_BY_TURN, LEVEL_MAX, CardName, Type, FIELD_SIZE
 import hand
-from entity import Card, Entity
+from entity import Entity
 from utils import Card_list
 from stats import *
-import random
+from sequence import Sequence
 
 class Player(Entity):
     default_attr = {
         '_max_health': 40,
         '_health': 40,
-        'state': State.DEFAULT,
-        'event': Event.ALL,
         '_gold': 0,
         'is_bot': False,
-        'state': State.DEFAULT,
-        'winning_streak': 0, # série de victoire
-        'win_last_match': False,
-        'fight': None,
+        'combat': None,
+        'field': None,
         'bonus_nomi': 0,
         'method': 'player',
+        'roll_nb_free': 0,
+        'roll_cost_mod': 0,
+        'levelup_cost_mod': 0,
+        'card_by_roll_mod': 0,
     }
-    def __init__(self, pseudo, champion, **kwargs):
+    def __init__(self, dbfId, **kwargs):
+        champion = kwargs.pop('champion')
+        pseudo = kwargs.pop('pseudo')
         super().__init__(champion,
+            fights=[],
             gold_by_turn=GOLD_BY_TURN[:],
             bought_minions=defaultdict(Card_list),
             sold_minions=defaultdict(Card_list),
-            played_minions=defaultdict(Card_list),
-            aura_active={},
+            played_cards=defaultdict(Card_list),
             **kwargs)
 
         self.pseudo = pseudo
         self.health = self.max_health
-        if self.type == Type.HERO:
+        if self.dbfId != CardName.BOB:
             self.hand = hand.Player_hand()
             self.append(self.hand)
-            self.board = board.Board(event=Event.ALL, method="player_board")
+            self.board = self.create_card(CardName.DEFAULT_BOARD)
+            self.secret_board = self.create_card(CardName.DEFAULT_SECRET_BOARD)
+            self.graveyard = self.create_card(CardName.DEFAULT_GRAVEYARD)
+            self.graveyard.owner = self
+
             self.append(self.board)
-        self.power = Card(self.power_id)
+            self.append(self.secret_board)
+        self.power = self.create_card(self.power_id)
         self.method = 'player'
         self.append(self.power)
 
@@ -70,8 +76,10 @@ class Player(Entity):
         self.bob.level = value
 
     @property
-    def opponent(self) -> board.Board:
-        return self.board.opponent.owner
+    def opponent(self):
+        if self is not self.field.p1:
+            return self.field.p1
+        return self.field.p2
 
     @property
     def health(self) -> int:
@@ -79,12 +87,27 @@ class Player(Entity):
 
     @health.setter
     def health(self, value) -> None:
-        #if value < self._health:
-        #    self.active_global_event(Event.LOSS_HP, self)
         self._health = value
-        if self._health <= 0:
-            # Event DIE ?
-            self.active_global_event(Event.DIE_PLAYER, self.game, victim=self)
+
+    def dec_health(self, value):
+        self.health -= value
+
+    @property
+    def winning_streak(self) -> int:
+        ret = 0
+        for fight in self.fights:
+            if fight.winner is self.board:
+                ret += 1
+            elif fight.loser is self.board:
+                break
+
+        return ret
+
+    @property
+    def win_last_match(self) -> bool:
+        if self.fights:
+            return self.fights[-1].winner is self.board
+        return False
 
     @property
     def gold(self) -> int:
@@ -110,43 +133,64 @@ class Player(Entity):
             return GOLD_BY_TURN[-1]
 
     @property
-    def roll_cost(self) -> int:
-        return self.power.roll_cost
+    def levelup_cost(self) -> int:
+        return max(0, 
+            LEVELUP_COST[self.level] +\
+            self.power.levelup_cost_mod +\
+            self.levelup_cost_mod)
 
     def can_buy_minion(self, cost=None) -> bool:
-        if self.hand.can_add_card():
-            if cost is None:
-                if self.gold >= self.minion_cost:
-                    return True
-            elif self.gold >= cost:
-                return True
-        return False
+        return not self.hand.is_full and\
+            (cost is None and self.gold >= self.minion_cost or
+            self.gold >= cost)
 
-    def sell_minion(self, card, buyer, cost=None) -> Entity:
-        if card.type == Type.MINION and card in self.board.cards:
-            if cost is None:
-                cost = buyer.minion_cost
-            if buyer.can_buy_minion(cost=cost):
-                buyer.gold -= cost
-                self.gold += cost
-
-                card.active_local_event(Event.SELL, source=card)
-                self.active_global_event(Event.SELL, self.controller, source=card)
-                buyer.active_global_event(Event.BUY, buyer, source=card)
-
-                buyer.hand.append(card)
-                self.sold_minions[self.nb_turn].append(card)
-                buyer.bought_minions[self.nb_turn].append(card)
-                return card
-        return None
-
-    def buy_minion(self, card, cost=None) -> Entity:
-        return card.controller.sell_minion(card, self, cost=cost)
-
-    def die(self) -> None:
+    def die(self, *args, **kwargs) -> None:
         # s'active au début du tour ?
-        # gestion bloc de glace
-        self.active_global_event(Event.DIE, self.game, victim=self)
+        # gestion bloc de glace > ne s'active que lors de 'FIGHT'
+        pass
+
+    def roll(self, sequence: Sequence=None) -> None:
+        if sequence is None:
+            Sequence('ROLL', self, cost=self.cost_next_roll).start_and_close()
+        else:
+            self.board.opponent.roll(sequence)
+
+    @property
+    def cost_next_roll(self) -> int:
+        if self.roll_nb_free >= 1:
+            return 0
+        return max(0, self.power.roll_cost + self.roll_cost_mod)
+
+    def roll_start(self, sequence: Sequence=None) -> None:
+        if self.in_fight_sequence or self.gold < sequence.cost:
+            sequence.is_valid = False
+            return
+
+        self.roll_cost_mod = 0
+        self.roll_nb_free = max(0, self.roll_nb_free-1)
+        self.gold -= sequence.cost
+
+    def levelup(self, sequence=None):
+        if sequence is None:
+            Sequence('LEVELUP', self).start_and_close()
+
+    def levelup_start(self, sequence) -> None:
+        if self.level >= LEVEL_MAX or\
+                self.gold < self.levelup_cost:
+            sequence.is_valid = False
+            return
+
+        self.gold -= self.levelup_cost
+        self.levelup_cost_mod = 0
+        self.level += 1
+
+    @property
+    def nb_card_by_roll(self) -> int:
+        return min(FIELD_SIZE, 
+            NB_CARD_BY_LEVEL[self.level] +
+            self.card_by_roll_mod +
+            self.power.card_by_roll_mod)
+
 
 
 class Bob(Player):
@@ -154,24 +198,22 @@ class Bob(Player):
         '_max_health': 40,
         '_health': 40,
         'level': 1,
-        'state': State.DEFAULT,
-        'event': Event.ALL,
-        'nb_free_roll': 0,
         'method': "bob",
     }
 
     def __init__(self, **attr) -> None:
-        super().__init__('Bob', "57110", **attr,
-            level_up_cost_list=LEVEL_UP_COST[:],
+        super().__init__(
+            CardName.DEFAULT_PLAYER, 
+            pseudo='Bob', 
+            champion=57110, 
+            **attr,
             nb_minion_by_refresh_list=NB_CARD_BY_LEVEL[:],
             )
-        self.level_up_cost = self.level_up_cost_list[self.level]
-
         self.type = Type.BOB
-        self.method = 'bob'
-        self.board = board.Bob_board()
+        self.id = 'bob'
+        self.board = self.create_card(CardName.DEFAULT_BOB_BOARD)
         self.append(self.board)
-        self.power = Card(self.power_id)
+        self.power = self.create_card(self.power_id)
         self.append(self.power)
 
     @property
@@ -182,48 +224,9 @@ class Bob(Player):
     def level(self, value) -> None:
         self._level = max(1, min(LEVEL_MAX, value))
 
-    def level_up(self) -> bool:
-        if self.level >= LEVEL_MAX:
-            return False
-
-        if self.opponent.gold < self.level_up_cost:
-            print(f"Levelup impossible ! {self.opponent.gold} gold")
-            return False
-
-        self.opponent.gold -= self.level_up_cost
-        self.level += 1
-        self.level_up_cost = self.level_up_cost_list[self.level]
-
-        self.active_global_event(Event.LEVELUP, self.opponent)
-
-        return True
-
-    def roll(self, nb=1) -> bool:
-        if nb < 1:
-            return False
-
-        for _ in range(nb):
-            if self.nb_free_roll >= 1:
-                self.nb_free_roll -= 1
-            elif self.opponent.gold < self.roll_cost:
-                return False
-            else:
-                self.opponent.gold -= self.roll_cost
-
-            self.active_global_event(Event.ROLL, self, self.opponent, source=self.opponent)
-        return True
-
-    @property
-    def level_up_cost(self) -> int:
-        return self._level_up_cost
-
-    @level_up_cost.setter
-    def level_up_cost(self, value) -> None:
-        self._level_up_cost = max(0, value)
-
     @property
     def hand(self) -> hand:
-        return self.owner.hand
+        return self.game.hand
 
     @property
     def local_hand(self) -> Card_list:
@@ -231,7 +234,7 @@ class Bob(Player):
 
     @property
     def nb_card_by_refresh(self) -> int:
-        return self.nb_minion_by_refresh_list[self.level]
+        return min(FIELD_SIZE, self.nb_minion_by_refresh_list[self.level])
 
     @property
     def gold(self) -> int:
@@ -244,9 +247,9 @@ class Bob(Player):
     def can_buy_minion(self, *args, **kwargs) -> bool:
         return True
 
-    def die(self) -> None:
+    def die(self, *args, **kwargs) -> None:
         pass
-
+    summon_on= die
 
 
 """

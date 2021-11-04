@@ -1,16 +1,16 @@
-from enums import Zone, Type, Event, State, LEVEL_MAX, HAND_SIZE, CARD_NB_COPY
-from entity import Card, Entity, card_db
-from typing import List, Generator
+from enums import Type, Event, LEVEL_MAX, HAND_SIZE, CardName
+from entity import Entity
+from typing import Generator
 from itertools import chain
 from utils import Card_list
-import script_event
+from sequence import Sequence
 
 class Player_hand(Entity):
     default_attr = {
-
     }
-    def __init__(self, **kwargs):
-        super().__init__("HAND", **kwargs)
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(CardName.DEFAULT_HAND, **kwargs)
         self.cards = Card_list()
 
     def append(self, *entities, position=None) -> None:
@@ -20,14 +20,16 @@ class Player_hand(Entity):
             *param card: card_id to append
             *type card: card.Card
         """
-        if entities:
-            for entity in entities[::-1]:
-                if entity.type in (Type.MINION, Type.SPELL):
-                    if self.can_add_card():
-                        super().append(entity)
-                        self.cards.append(entity)
-                #elif entity.type != Type.ZONE:
-                #    super().append(entity)
+        #if entities:
+        for entity in entities[::-1]:
+            if not self.is_full and entity.type.can_be_add_in_hand:
+                Sequence('ADD_CARD_IN_HAND', entity).start_and_close()
+                super().append(entity)
+                self.cards.append(entity)
+
+    @property
+    def size(self):
+        return len(self.cards)
 
     def remove(self, *entities) -> None:
         super().remove(*entities)
@@ -37,26 +39,27 @@ class Player_hand(Entity):
             except ValueError:
                 pass
 
-    def can_add_card(self, card=None) -> bool:
+    @property
+    def is_full(self) -> bool:
         """
             Returns a boolean indicating if it is possible to add a card to player's hand
-            *rtype: bool
         """
-        return len(self.cards) <= HAND_SIZE-1
+        return self.size >= HAND_SIZE
 
-    def auto_play(self):
+    def auto_play(self) -> None:
         self.cards.sort(key=lambda x:(
                         x.type != Type.MINION,
-                        not x.event & Event.INVOC,
-                        not x.event & Event.PLAY,
-                        not x.event & Event.PLAY_AURA,
-                        x.state & State.MODULAR,
-                        x.event & Event.BATTLECRY,
+                        #not x.event & Event.INVOC,
+                        #not x.event & Event.PLAY,
+                        not x.AURA,
+                        x.MODULAR,
+                        x.BATTLECRY,
                         x.level,
                 ), reverse=True)
         for card in self.cards[::-1]:
             if card.type == Type.SPELL:
-                getattr(script_event, card.method).play(card)
+                card.play()
+                #getattr(script_event, card.id).play(card)
                 self.remove(card)
             else:
                 card.play()
@@ -68,7 +71,7 @@ class Bob_hand(Entity):
 
     }
     def __init__(self, **kwargs) -> None:
-        super().__init__("HAND", entities=[
+        super().__init__(CardName.DEFAULT_HAND, entities=[
             Card_list(),
             Card_list(),
             Card_list(),
@@ -127,13 +130,12 @@ class Bob_hand(Entity):
     def __iter__(self) -> Generator:
         yield from (i for i in self.cards)
 
-    def can_add_card(self, card=None) -> bool:
+    @property
+    def is_full(self) -> bool:
         """
             Returns a boolean indicating if it is possible to add a card to bob's hand
-            *return: True (always)
-            *rtype: bool
         """
-        return True
+        return False
 
     def cards_of_tier_max(self, tier_max=LEVEL_MAX, tier_min=1) -> Card_list:
         """
@@ -150,7 +152,7 @@ class Bob_hand(Entity):
     def cards(self) -> Card_list:
         return self.cards_of_tier_max()
 
-    def create_card_in(self, *args, **kwargs) -> Card:
+    def create_card_in(self, *args, **kwargs):
         """
             Create a copy of each card in ``entities_id`` parameter to bob's hand
             *return: last card_id created
@@ -158,7 +160,7 @@ class Bob_hand(Entity):
         """
         card_id = None
         for id in args:
-            card_id = Card(id, **kwargs, from_bob=True)
+            card_id = self.create_card(id, **kwargs, from_bob=True)
             card_id.owner = self
             self.entities[card_id.level].append(card_id)
         return card_id
