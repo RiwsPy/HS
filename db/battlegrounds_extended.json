@@ -251,7 +251,7 @@
 "61056":{"name":"Capitaine grondéventre", "synergy":"PIRATE", "enchantment_dbfId":62256},
 "62257":{"name":"Capitaine grondéventre", "synergy":"PIRATE", "enchantment_dbfId":62258, "cant_collect":1},
 "63630":{"name":"Chambellan Executus", "synergy":"ELEMENTAL", "enchantment_dbfId":65180},
-"64459":{"name":"Chambellan Executus", "synergy":"ELEMENTAL", "enchantment_dbfId":-65180, "cant_collect":1},
+"64459":{"name":"Chambellan Executus", "synergy":"ELEMENTAL", "enchantment_dbfId":65180, "cant_collect":1},
 "60028":{"name":"Guetteur primaileron", "synergy":"MURLOC"},
 "60027":{"name":"Guetteur primaileron", "synergy":"MURLOC", "cant_collect":1},
 "60498":{"name":"Héraut de la flamme", "synergy":"DRAGON", "ban":1},
@@ -548,7 +548,7 @@
 "62258": {"max_health":2, "attack":2, "name":"Grondement"},
 "54810": {"attack":1, "name":"Microbandelettes"},
 "64344": {"attack":2, "name":"Microbandelettes"},
-"65180": {"max_health":1, "attack":1, "name":"Égide du seigneur du feu"},
+"65180": {"max_health":0, "attack":0, "name":"Égide du seigneur du feu"},
 "42441": {"attack":3, "name":"Écailles de dragon"},
 "61443": {"attack":6, "name":"Écailles de dragon"},
 "59709": {"max_health":2, "attack":2, "name":"Béni"},
@@ -835,7 +835,6 @@
 "0": {"name": "Inconnu", "cost": 0, "hero_script": "Default_script", "type": "HERO_POWER", "ban":1, "id":"Inconnu"},
 "-1": {"name": "Taverne", "cost": 0, "hero_script": "Default_script", "type": "HERO_POWER", "minion_cost": 1, "ban": 1, "id":"Taverne"},
 "-70167": {"menanics":["DIVINE_SHIELD"], "duration":1, "name":"Robuste", "type":"ENCHANTMENT"},
-"-65180": {"max_health":2, "attack":2, "name":"Égide du seigneur du feu", "type":"ENCHANTMENT"},
 "-76567": {"mechanics":["IMMUNE"], "name":"Emprise de Kathra’natir", "type":"ENCHANTMENT"}
 
 }

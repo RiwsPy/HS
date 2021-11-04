@@ -318,16 +318,20 @@ TB_BaconUps_250= ULD_217 # Micromomie premium
 
 class BGS_105(Minion):
     # Chambellan Executus
+    bonus_value = 1
     def turn_off(self, sequence):
         target = self.my_zone[0]
         self.buff(self.enchantment_dbfId, target)
         for _ in self.controller.played_cards[self.nb_turn].filter(type='MINION', race='ELEMENTAL'):
-            self.buff(self.enchantment_dbfId, target)
+            self.buff(self.enchantment_dbfId,
+                target,
+                attack=self.__class__.bonus_value,
+                max_health=self.__class__.bonus_value)
 
 
 class TB_BaconUps_207(BGS_105):
     # Chambellan Executus premium
-    pass
+    bonus_value = 2
 
 
 class ICC_029(Minion):

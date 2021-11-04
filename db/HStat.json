@@ -5135,7 +5135,7 @@
  {
   "name": "Chambellan Executus",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": -65180,
+  "enchantment_dbfId": 65180,
   "cant_collect": 1,
   "dbfId": 64459,
   "attack": 12,
@@ -9990,8 +9990,8 @@
   "type": "ENCHANTMENT"
  },
  {
-  "max_health": 1,
-  "attack": 1,
+  "max_health": 0,
+  "attack": 0,
   "name": "Égide du seigneur du feu",
   "dbfId": 65180,
   "cardClass": "NEUTRAL",
@@ -13059,13 +13059,6 @@
   "name": "Robuste",
   "type": "ENCHANTMENT",
   "dbfId": -70167
- },
- {
-  "max_health": 2,
-  "attack": 2,
-  "name": "Égide du seigneur du feu",
-  "type": "ENCHANTMENT",
-  "dbfId": -65180
  },
  {
   "mechanics": [
