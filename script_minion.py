@@ -320,14 +320,14 @@ class BGS_105(Minion):
     # Chambellan Executus
     bonus_value = 1
     def turn_off(self, sequence):
-        target = self.my_zone[0]
-        self.buff(self.enchantment_dbfId, target)
-        for _ in self.controller.played_cards[self.nb_turn].filter(type='MINION', race='ELEMENTAL'):
-            self.buff(self.enchantment_dbfId,
-                target,
-                attack=self.__class__.bonus_value,
-                max_health=self.__class__.bonus_value)
+        self.buff(self.enchantment_dbfId,
+            self.my_zone[0],
+            attack=self.__class__.bonus_value,
+            max_health=self.__class__.bonus_value)
 
+    @property
+    def nb_strike(self) -> int:
+        return self.controller.played_cards[self.nb_turn].filter(type='MINION', race='ELEMENTAL')+1
 
 class TB_BaconUps_207(BGS_105):
     # Chambellan Executus premium
