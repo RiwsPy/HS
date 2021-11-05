@@ -170,3 +170,28 @@ def test_khadgar2(reinit_game):
         assert p1.board.cards[cat.position+1].attack == cat.dbfId.attack +5
         assert p1.board.cards[cat.position+2].attack == cat.dbfId.attack +10
 
+
+def test_roll(reinit_game):
+    p1 = g.players[0]
+    with Sequence('TURN', g):
+        old_bob_board = p1.bob.board.cards[:]
+        p1_gold = p1.gold
+        p1.roll()
+        assert p1.gold == p1_gold - p1.power.roll_cost
+        assert old_bob_board != p1.bob.board.cards
+
+        ano = p1.hand.create_card_in(64045) # Anomalie actualisante premium
+        ano.play()
+
+        for _ in range(ano.bonus_value):
+            old_bob_board = p1.bob.board.cards[:]
+            p1_gold = p1.gold
+            p1.roll()
+            assert p1.gold == p1_gold
+            assert old_bob_board != p1.bob.board.cards
+
+        old_bob_board = p1.bob.board.cards[:]
+        p1_gold = p1.gold
+        p1.roll()
+        assert p1.gold == p1_gold-p1.power.roll_cost
+        assert old_bob_board != p1.bob.board.cards

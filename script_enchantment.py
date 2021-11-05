@@ -229,18 +229,23 @@ FP1_020e= add_stat # Vengeance
 BGS_104e1= add_stat # Festin de taverne
 BG21_020e= add_stat # Ébloui
 
-# Unofficial enchantment
-IMMUNE_000= add_stat # Bloc de glace, Étreinte de Mal’Ganis, Emprise de Kathra’natir
+
+class BG21_040e(Enchantment):
+    # L’actualisation coûte (1)_pièce de moins.
+    def roll_on(self, sequence):
+        sequence.cost -= 1
+
+    def roll_off(self, sequence):
+        self.remain_use -= 1
+        if self.remain_use <= 0:
+            self.remove()
 
 
-"""
-NONE= add_stat # Poisson test
-NONE= add_stat # George le Déchu
-NONE= add_stat # Al’Akir
+class BGS_116e(BG21_040e):
+    # Actualiser coûte 0.
+    def roll_on(self, sequence):
+        sequence.cost = 0
 
-BG21_040e= SPECIAL # L’actualisation coûte (1)_pièce de moins.
-NONE= remove_mechanics # Robuste
-"""
 
 class BG20_HERO_201p2e(Enchantment):
     # Esprit échangé
@@ -264,6 +269,7 @@ BG20_HERO_201p3e= TB_BaconShop_HP_101e # Marqué pour échange (Vol'Jin)
 
 class BGS_045e(add_stat):
     # Souffle froid
+    #TODO: bonus rétroactif ou fixe ? A tester ig avec Illidan
     @property
     def attack(self) -> int:
         return self.owner.attack
@@ -295,3 +301,12 @@ class BGS_104pe(Enchantment):
 BG21_020pe= BGS_104pe # Ench. de joueur Rejeton de Lumière éclatant
 
 
+# Unofficial enchantment
+IMMUNE_000= add_stat # Bloc de glace, Étreinte de Mal’Ganis, Emprise de Kathra’natir
+
+
+class POISSON(Enchantment):
+    # Poisson de N'Zoth
+    def apply(self):
+        self.owner.DEATHRATTLE = True
+        setattr(self, 'deathrattle', self.deathrattle_met)

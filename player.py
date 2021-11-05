@@ -17,8 +17,6 @@ class Player(Entity):
         'field': None,
         'bonus_nomi': 0,
         'method': 'player',
-        'roll_nb_free': 0,
-        'roll_cost_mod': 0,
         'levelup_cost_mod': 0,
         'card_by_roll_mod': 0,
     }
@@ -153,22 +151,19 @@ class Player(Entity):
         if sequence is None:
             Sequence('ROLL', self, cost=self.cost_next_roll).start_and_close()
         else:
-            self.board.opponent.roll(sequence)
+            if self.gold >= sequence.cost:
+                self.gold -= max(0, sequence.cost)
+                self.bob.board.roll(sequence)
+            else:
+                sequence.is_valid = False
 
     @property
     def cost_next_roll(self) -> int:
-        if self.roll_nb_free >= 1:
-            return 0
-        return max(0, self.power.roll_cost + self.roll_cost_mod)
+        #TODO: rajouter un moyen de connaître le vrai coût du roll avant de l'effectuer
+        return max(0, self.power.roll_cost)
 
     def roll_start(self, sequence: Sequence=None) -> None:
-        if self.in_fight_sequence or self.gold < sequence.cost:
-            sequence.is_valid = False
-            return
-
-        self.roll_cost_mod = 0
-        self.roll_nb_free = max(0, self.roll_nb_free-1)
-        self.gold -= sequence.cost
+        sequence.is_valid = not self.in_fight_sequence
 
     def levelup(self, sequence=None):
         if sequence is None:

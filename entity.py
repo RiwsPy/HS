@@ -465,6 +465,7 @@ class Minion(Entity):
 
     def discover(self, card_list: Card_list, nb: int=3) -> Entity:
         #TODO: Warning, problem if the card is moving during the discover
+        # toutes les découvertes sont retirées du pool
         card_list = card_list.copy()
         random.shuffle(card_list)
         list_card_choice = Card_list()
@@ -707,7 +708,8 @@ class Enchantment(Entity):
         old_owner = self.owner
         super().remove(self)
         # uniquement si en cas de modification de caractéristiques ?
-        old_owner.calc_stat_from_scratch()
+        if old_owner.type is Type.MINION:
+            old_owner.calc_stat_from_scratch()
 
 
 class Hero_power(Entity):

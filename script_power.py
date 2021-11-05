@@ -108,9 +108,10 @@ class TB_BaconShop_HP_082(Hero_power):
 
 class TB_BaconShop_HP_063(Hero_power):
     # Nozdormu
-    def turn_on(self, sequence):
-        if self.owner.roll_nb_free < 1:
-            self.owner.roll_nb_free = 1
+    def roll_on(self, sequence):
+        if self.temp_counter == 0:
+            self.temp_counter += 1
+            sequence.cost = 0
 
 
 class TB_BaconShop_HP_040(Hero_power):
@@ -393,6 +394,7 @@ class TB_BaconShop_HP_069(Hero_power):
 class TB_BaconShop_HP_068(Hero_power):
     # Maiev
     #TODO: non fonctionnel
+    # If a minion in Bob's Tavern is made Dormant due to Maiev Shadowsong's Imprison and her hand is full by the time the Dormant ends, the minion will die in Bob's Tavern and trigger its Deathrattle, causing every minion in the tavern to react.
     def user_power_start(self, sequence):
         minion = self.choose_one_of_them(self.board.opponent)
         if minion:
@@ -475,6 +477,7 @@ class BG20_HERO_201p2(BG20_HERO_201p):
             for entity in minion.entities:
                 if entity.dbfId == 71653:
                     minion1 = minion
+                    entity.remove()
                     break
 
         minion2 = self.temp_counter

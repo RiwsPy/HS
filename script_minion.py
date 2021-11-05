@@ -65,6 +65,7 @@ class battlecry_buff_myself(Minion):
 
 class BGS_043(Minion):
     # Murozond
+    # les cartes sont retirées du pool
     nb_strike = 1
     def battlecry(self, sequence):
         pass
@@ -557,13 +558,10 @@ class BGS_078(Minion):
     def combat_end(self, sequence):
         minions_with_deathrattle = []
         for minion in self.my_zone.cards.filter(is_alive=True).exclude(self):
-            if minion.DEATHRATTLE:
-                minions_with_deathrattle.append(minion)
-            else:
-                for entity in minion:
-                    if entity.DEATHRATTLE:
-                        minions_with_deathrattle.append(minion)
-                        break
+            for entity in [minion] + minion.entities:
+                if entity.DEATHRATTLE:
+                    minions_with_deathrattle.append(minion)
+                    break
 
         if minions_with_deathrattle:
             target = random.choice(minions_with_deathrattle)
@@ -625,16 +623,25 @@ TB_BaconUps_046= GVG_106 # Brik-a-bot premium
 
 class TB_BaconShop_HP_105t(Minion):
     # Poisson
+    # le dbfId 78747 match pour le poisson premium (et non Carpe) néanmoins IG
+    # le minion s'appelle bien Poisson de N'Zoth, soit le dbfId originel 67213
+    # TODO: à surveiller
+    nb_strike = 1
     def die_off(self, sequence):
         source = sequence.source
         if source.DEATHRATTLE and\
-            source.my_zone is self.my_zone:
+            source.controller is self.controller:
 
-            self.buff(-105, self, method=source.id, mechanics=["DEATHRATTLE"])
+            for entity in [source] + source.entities:
+                if hasattr(entity, 'deathrattle'):
+                    self.buff(-105, self, deathrattle_met=entity.deathrattle)
 
-class TB_BaconUps_307(Minion):
+TB_BaconShop_HP_105t_SKIN_A= TB_BaconShop_HP_105t # Carpe de NZoth
+
+
+class TB_BaconUps_307(TB_BaconShop_HP_105t):
     # Poisson premium
-    die_off= TB_BaconShop_HP_105t.die_off
+    nb_strike = 2
 
 
 class BGS_035(Minion):
@@ -651,7 +658,7 @@ class BGS_116(Minion):
     # Anomalie actualisante
     bonus_value = 1
     def battlecry(self, sequence):
-        self.controller.roll_nb_free = self.__class__.bonus_value
+        self.buff(self.enchantment_dbfId, self.controller, remain_use=self.__class__.bonus_value)
 
 
 class TB_BaconUps_167(BGS_116):
@@ -1983,18 +1990,17 @@ class BG21_014_G(BG21_014):
     bonus_value = 2
 
 
-
 class BG21_040(Minion):
     # Âme en peine recycleuse
-    nb_roll = 1
+    bonus_value = 1
     def play_off(self, sequence):
-        if self.my_zone is sequence.source.my_zone and sequence.source.race.ELEMENTAL:
-            self.buff(self.enchantment_dbfId, self.controller, bonus_value=self.__class__.nb_roll)
+        if self.controller is sequence.source.controller and sequence.source.race.ELEMENTAL:
+            self.buff(self.enchantment_dbfId, self.controller, remain_use=self.__class__.bonus_value)
 
 
 class BG21_040_G(BG21_040):
     # Âme en peine recycleuse premium
-    nb_roll = 2
+    bonus_value = 2
 
 
 class BG21_001(Minion):

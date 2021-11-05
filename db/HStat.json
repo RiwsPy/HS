@@ -859,6 +859,7 @@
  },
  {
   "name": "Anomalie actualisante",
+  "enchantment_dbfId": 64043,
   "synergy": "ELEMENTAL",
   "phase": [
    "BATTLECRY"
@@ -881,6 +882,7 @@
  },
  {
   "name": "Anomalie actualisante",
+  "enchantment_dbfId": 64043,
   "synergy": "ELEMENTAL",
   "phase": [
    "BATTLECRY"
@@ -1042,14 +1044,40 @@
   "phase": [
    "DIE"
   ],
-  "battlegroundsPremiumDbfId": 67216,
   "dbfId": 67213,
   "attack": 2,
+  "battlegroundsPremiumDbfId": 67216,
   "cardClass": "NEUTRAL",
   "cost": 1,
   "elite": true,
   "health": 2,
   "id": "TB_BaconShop_HP_105t",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "race": "BEAST",
+  "referencedTags": [
+   "DEATHRATTLE"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "Une fois qu’un serviteur allié avec <b>Râle d’agonie</b> meurt, gagne son <b>Râle d’agonie</b>.",
+  "type": "MINION"
+ },
+ {
+  "name": "Carpe de N’Zoth",
+  "synergy": "ALL",
+  "cant_collect": 1,
+  "phase": [
+   "DIE"
+  ],
+  "dbfId": 78747,
+  "attack": 2,
+  "battlegroundsPremiumDbfId": 67216,
+  "cardClass": "NEUTRAL",
+  "cost": 1,
+  "elite": true,
+  "health": 2,
+  "id": "TB_BaconShop_HP_105t_SKIN_A",
   "mechanics": [
    "TRIGGER_VISUAL"
   ],
@@ -1068,9 +1096,9 @@
   "phase": [
    "DIE"
   ],
-  "battlegroundsNormalDbfId": 78747,
   "dbfId": 67216,
   "attack": 4,
+  "battlegroundsNormalDbfId": 78747,
   "cardClass": "NEUTRAL",
   "cost": 1,
   "elite": true,
@@ -11466,6 +11494,14 @@
   "type": "ENCHANTMENT"
  },
  {
+  "name": "Actualiser coûte 0.",
+  "dbfId": 64043,
+  "cardClass": "NEUTRAL",
+  "id": "BGS_116e",
+  "set": "BATTLEGROUNDS",
+  "type": "ENCHANTMENT"
+ },
+ {
   "attack": 6,
   "max_health": 6,
   "name": "Claires-écailles",
@@ -11805,6 +11841,7 @@
   "type": "ENCHANTMENT"
  },
  {
+  "duration": 1,
   "name": "Marqué pour échange",
   "dbfId": 71653,
   "cardClass": "NEUTRAL",
@@ -13021,9 +13058,9 @@
   "dbfId": -2203
  },
  {
-  "duration": 1,
   "name": "Poisson test",
   "type": "ENCHANTMENT",
+  "id": "POISSON",
   "dbfId": -105
  },
  {
@@ -13032,6 +13069,7 @@
   ],
   "name": "George le Déchu",
   "type": "ENCHANTMENT",
+  "id": "add_stat",
   "dbfId": -100
  },
  {
@@ -13042,6 +13080,7 @@
   ],
   "name": "Al’Akir",
   "type": "ENCHANTMENT",
+  "id": "add_stat",
   "dbfId": -101
  },
  {

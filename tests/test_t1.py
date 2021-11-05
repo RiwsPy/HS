@@ -70,10 +70,10 @@ def test_tisse_colere(reinit_game):
 
 def test_forban(reinit_game):
     with Sequence('TURN', g):
-        aco = g.players[0].hand.create_card_in(61061) # Forban
-        aco.play()
+        forb = g.players[0].hand.create_card_in(61061) # Forban
+        forb.play()
     with Sequence('FIGHT', g):
-        aco.die()
+        forb.die()
         assert g.players[0].board.size == 1
         assert g.players[0].board[0].dbfId == 62213
 
@@ -109,3 +109,20 @@ def test_chasseur_rochecave(reinit_game):
 
 #TODO test dragonnet ? anomalie... ?
 
+
+def test_poisson(reinit_game):
+    with Sequence('TURN', g):
+        fish = g.players[0].hand.create_card_in(67213) # Poisson
+        fish.play()
+        fish2 = g.players[0].hand.create_card_in(67213) # Poisson
+        fish2.play()
+        forb = g.players[0].hand.create_card_in(61061) # Forban
+        forb.play()
+
+    with Sequence('FIGHT', g):
+        forb.die()
+        assert g.players[0].board.size == 3
+        assert len(fish.entities) == 1
+        fish.die()
+        assert g.players[0].board.size == 3
+        assert len(fish2.entities) == 2
