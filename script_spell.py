@@ -92,7 +92,7 @@ class TB_Bacon_Secrets_02(Spell):
 
 
 # cumulable avec Khadgar ?
-# Cumul avec Reborn (théoriquement oui)
+# Cumul avec Reborn ? (oui)
 class TB_Bacon_Secrets_10(Spell):
     # Rédemption
     # Resurrecting effects such as Redemption don't move the dead minion. They summon a new copy of it.

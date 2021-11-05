@@ -16,7 +16,7 @@ class Player(Entity):
         'combat': None,
         'field': None,
         'bonus_nomi': 0,
-        'method': 'player',
+        #'method': 'player', # ??
         'levelup_cost_mod': 0,
         'card_by_roll_mod': 0,
     }
@@ -44,7 +44,7 @@ class Player(Entity):
             self.append(self.board)
             self.append(self.secret_board)
         self.power = self.create_card(self.power_id)
-        self.method = 'player'
+        #self.method = 'player'
         self.append(self.power)
 
     def __repr__(self) -> str:
@@ -193,7 +193,7 @@ class Bob(Player):
         '_max_health': 40,
         '_health': 40,
         'level': 1,
-        'method': "bob",
+        #'method': "bob",
     }
 
     def __init__(self, **attr) -> None:
@@ -305,21 +305,6 @@ class Bob(Player):
 
             for card in lst:
                 self.bob.hand.append(card)
-
-    def discover_secret(self, nb=3): # Akazamzarak
-        lst = ["2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007"]
-        for secret_key in set(self.board.secret_key+self.power.secret_limitation):
-            lst.remove(secret_key)
-
-        random.shuffle(lst)
-        self.discover_secret_choice(lst[:nb])
-
-    def discover_secret_choice(self, lst):
-        choice = self.choose_one_of_them(lst, "Découverte d'un secret")
-
-        if choice:
-            card_id = Card(choice)
-            card_id.owner = self.board
 
     def best_card_T1(self, *players, nb_turn=2):
         # renvoie la "meilleure" carte que peut choisir un héros qui rencontre un héros précis au tour n°2

@@ -1,10 +1,10 @@
 # coding : utf-8
 
 import random
-from enums import FIELD_SIZE, CardName, Type, Zone, Race
+from enums import FIELD_SIZE, CardName, Zone
 from utils import *
 from action import *
-from entity import Entity, Minion
+from entity import Minion
 from sequence import Sequence
 
 class battlecry_select_one_minion_and_buff_it(Minion):

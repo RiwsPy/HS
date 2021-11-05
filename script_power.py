@@ -1,7 +1,7 @@
 from entity import Hero_power
 from action import attack
 import random
-from enums import FIELD_SIZE, LEVEL_MAX, Race, Type, CardName
+from enums import FIELD_SIZE, LEVEL_MAX, Race, Type, CardName, AKAZAM_SECRETS
 
 class TB_BaconShop_HP_049(Hero_power):
     # Baz'hial
@@ -243,9 +243,24 @@ class TB_BaconShop_HP_065(Hero_power):
 
 class TB_BaconShop_HP_020(Hero_power):
     # Akazamzarak
-    # TODO
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.secrets_choice = AKAZAM_SECRETS[:]
+
     def use_power(self, sequence):
-        self.discover_secret(nb=3)
+        available_secret = self.secrets_choice[:]
+        random.shuffle(available_secret)
+        for entity in self.owner.secret_board.entities:
+            if entity.SECRET and entity.dbfId in available_secret:
+                available_secret.remove(entity.dbfId)
+
+        choice = self.choose_one_of_them(available_secret[:3], "Découverte d'un secret")
+        if choice:
+            card_id = self.create_card(choice)
+            # Only one Ice Block / game
+            if choice == CardName.ICE_BLOCK:
+                self.secrets_choice.remove(choice)
+            self.owner.secret_board.append(card_id)
 
 
 class TB_BaconShop_HP_066(Hero_power):

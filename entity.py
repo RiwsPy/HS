@@ -728,7 +728,7 @@ class Hero_power(Entity):
             self.health = self.max_health
 
     def enable(self) -> None:
-        self.is_enabled = getattr(self, 'remain_use', 0) > 0
+        self.is_enabled = getattr(self, 'remain_use', 1) > 0
 
     def disable(self) -> None:
         self.is_enabled = False
