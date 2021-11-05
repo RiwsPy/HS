@@ -623,8 +623,6 @@ class Minion(Entity):
                     elif target.FRENZY:
                         target.FRENZY = False
                         Sequence('FRENZY', target).start_and_close()
-        damage_resolve(self, 
-            *(self.controller.board.cards + self.controller.opponent.board.cards))
 
     @khadgar_aura
     def reborn(self, sequence) -> Entity:

@@ -186,9 +186,8 @@ class Bob_board(Board):
             entity_list = entity_list or self.owner.local_hand
             random.shuffle(entity_list)
             for card_id in entity_list[:nb_card_to_play]:
-                # Sequence SUMMON ?
-                # self.append(card_id)
                 card_id.owner = self.controller
+                self.game.hand.remove(card_id)
                 card_id.summon()
 
     def fill_minion_battlecry(self) -> None:

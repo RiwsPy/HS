@@ -7,4 +7,4 @@ def damage_resolve(self, *targets):
 def attack(sequence):
     for target in sequence.targets.filter(is_alive=True):
         sequence.source.damage(target, sequence.source.attack, overkill=True)
-        target.damage(target, target.attack, overkill=False)
+        target.damage(sequence.source, target.attack, overkill=False)

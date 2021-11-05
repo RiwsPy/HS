@@ -2,9 +2,10 @@ from utils import my_zone, controller, game
 from game import Game
 from enums import *
 from entity import Entity
-import entity
 from db_card import CARD_DB
 import pytest
+from sequence import Sequence
+from db_card import Meta_card_data, Card_data
 
 # pytest --cov=../HS tests/test_v2.py
 # 25% avec beaucoup de fichiers obsolètes
@@ -15,7 +16,7 @@ g = Game()
 
 
 def test_enums():
-    assert len(CARD_NB_COPY) == len(LEVEL_UP_COST)
+    assert len(CARD_NB_COPY) == len(LEVELUP_COST)
     assert len(NB_CARD_BY_LEVEL) == LEVEL_MAX+1
     assert GOLD_BY_TURN[-1] == MAX_GOLD
 
@@ -60,23 +61,25 @@ def test_all_in_bob(reinit_game, monkeypatch):
     assert len(player.bob.board.cards) == 0
 
     len_old_hand = len(g.hand.cards)
-    player.bob.board.fill_minion()
-    len_new_hand = len(g.hand.cards)
-    assert len_new_hand + NB_CARD_BY_LEVEL[player.level] == len_old_hand
-    assert len(player.hand.cards) == 0
+    with Sequence('TURN', g):
+        len_new_hand = len(g.hand.cards)
+        assert len_new_hand + NB_CARD_BY_LEVEL[player.level]*len(g.players) == len_old_hand
+        assert len(player.hand.cards) == 0
+        assert player.bob.board.size == 3
 
-    monkeypatch.setattr('player.Player.can_buy_minion', lambda *args, **kwargs: True)
-    crd = player.bob.board[0]
-    player.buy_minion(crd)
-    assert len(player.hand.cards) == 1
+        monkeypatch.setattr('player.Player.can_buy_minion', lambda *args, **kwargs: True)
+        crd = player.bob.board[0]
+        crd.buy()
+        assert player.bob.board.size == 2
+        assert len(player.hand.cards) == 1
 
-    player.all_in_bob()
-    assert len(player.hand.cards) == 0
+        player.all_in_bob()
+        assert len(player.hand.cards) == 0
 
-    g.all_in_bob()
-    assert len_old_hand == len(g.hand.cards)
+        g.all_in_bob()
+        assert len_old_hand == len(g.hand.cards)
 
-def test_game_hand():
+def test_game_hand(reinit_game):
     entity_level = 1
     entity = g.hand[entity_level][0]
     id = entity.dbfId
@@ -93,7 +96,7 @@ def test_game_hand():
             tier_max=entity_level, tier_min=entity_level)) == \
                 CARD_NB_COPY[entity_level]*nb
 
-def test_minion():
+def test_minion(reinit_game):
     minion_id = 1915 # Baron
     entity_data = g.card_can_collect[minion_id]
     assert entity_data != None
@@ -115,51 +118,51 @@ def test_player(reinit_game):
     assert player.level == LEVEL_MAX
 
 def test_board_bob(reinit_game):
-    g.begin_turn()
-    player = g.players[0]
-    bob_board =  player.bob.board
-    assert len(bob_board.cards) == NB_CARD_BY_LEVEL[player.level]
-    old_len_bob_hand = len(g.hand.cards)
-    bob_board.drain_minion()
-    assert len(bob_board.cards) == 0
-    assert len(g.hand.cards) == old_len_bob_hand + NB_CARD_BY_LEVEL[player.level]
-    bob_board.fill_minion_battlecry()
-    assert len(bob_board.cards) == NB_CARD_BY_LEVEL[player.level]
-    for minion in bob_board.cards:
-        assert minion.BATTLECRY
-    old_bob_board = bob_board.cards[:]
-    bob_board.freeze()
-    for minion in bob_board.cards:
-        assert minion.FREEZE
-    bob_board.drain_minion()
-    assert len(bob_board.cards) == NB_CARD_BY_LEVEL[player.level]
-    assert old_bob_board == bob_board.cards
-    player.level = 2
-    bob_board.fill_minion()
-    assert len(bob_board.cards) == NB_CARD_BY_LEVEL[player.level]
-    assert old_bob_board == bob_board.cards[:len(old_bob_board)]
+    with Sequence('TURN', g):
+        player = g.players[0]
+        bob_board =  player.bob.board
+        assert len(bob_board.cards) == NB_CARD_BY_LEVEL[player.level]
+        old_len_bob_hand = len(g.hand.cards)
+        bob_board.drain_minion()
+        assert len(bob_board.cards) == 0
+        assert len(g.hand.cards) == old_len_bob_hand + NB_CARD_BY_LEVEL[player.level]
+        bob_board.fill_minion_battlecry()
+        assert len(bob_board.cards) == NB_CARD_BY_LEVEL[player.level]
+        for minion in bob_board.cards:
+            assert minion.BATTLECRY
+        old_bob_board = bob_board.cards[:]
+        bob_board.freeze()
+        for minion in bob_board.cards:
+            assert minion.FREEZE
+        bob_board.drain_minion()
+        assert len(bob_board.cards) == NB_CARD_BY_LEVEL[player.level]
+        assert old_bob_board == bob_board.cards
+        player.level = 2
+        bob_board.fill_minion()
+        assert len(bob_board.cards) == NB_CARD_BY_LEVEL[player.level]
+        assert old_bob_board == bob_board.cards[:len(old_bob_board)]
 
 def test_play(reinit_game):
     player = g.players[0]
-    g.begin_turn()
-    assert player.gold == GOLD_BY_TURN[g.nb_turn]
-    assert player.bob.level_up_cost == LEVEL_UP_COST[player.level]-1
-    nb_minions = len(player.bob.board.cards)
-    player.gold = player.minion_cost
-    assert len(player.hand.cards) == 0
-    homoncule = player.bob.hand.create_card_in(43121)
-    homoncule.play(board=player.bob.board)
-    assert player.bob.max_health == player.bob.health
-    bought_card = player.buy_minion(homoncule)
-    assert player.gold == 0
-    assert bought_card in player.hand.cards
-    assert len(player.bob.board.cards) == nb_minions
-    bought_card.play()
-    g.active_action()
-    assert player.health + 2 == player.max_health
-    assert bought_card not in player.hand.cards
-    assert bought_card in player.board.cards
-    assert len(player.board.cards) == 1
+    with Sequence('TURN', g):
+        assert player.gold == GOLD_BY_TURN[g.nb_turn]
+        assert player.levelup_cost == LEVELUP_COST[player.level]-1
+        nb_minions = len(player.bob.board.cards)
+        player.gold = player.minion_cost
+        assert len(player.hand.cards) == 0
+        homoncule = player.bob.create_card(43121)
+        homoncule.play()
+        #assert player.bob.max_health == player.bob.health
+        homoncule.buy()
+        assert player.gold == 0
+        assert homoncule in player.hand.cards
+        assert player.bob.board.size == nb_minions
+        homoncule.play()
+        g.active_action()
+        assert player.health + 2 == player.max_health
+        assert homoncule not in player.hand.cards
+        assert homoncule in player.board.cards
+        assert len(player.board.cards) == 1
 
 def test_play_2(reinit_game):
     player = g.players[0]
@@ -226,38 +229,36 @@ def test_append_action(reinit_game):
     assert g.action_stack[0][0][1] == (player,)
 
 def test_fight_1_1(reinit_game):
-    g.begin_turn()
-    player1 = g.players[0]
-    player2 = g.players[1]
-    crd = player1.hand.create_card_in(40425) # chat tigré
-    crd.play()
-    crd = player2.hand.create_card_in(40425)
-    crd.play()
-    g.end_turn()
-    winner, damage = player1.fight.fight_initialisation()
+    with Sequence('TURN', g):
+        crd = g.players[0].hand.create_card_in(40425) # chat tigré
+        crd.play()
+        crd = g.players[1].hand.create_card_in(40425)
+        crd.play()
 
+    Sequence('FIGHT', g).start_and_close()
+    winner = g.players[0].combat.winner
+    damage = g.players[0].combat.damage
     assert winner is None
     assert damage == 0
-    g.nb_turn = 1
 
 def test_aura_1(reinit_game):
     player1 = g.players[0]
-    g.begin_turn()
-    crd = player1.hand.create_card_in(61061) # Forban
-    crd.play()
-    assert crd.attack == crd.dbfId.attack
+    with Sequence('TURN', g):
+        crd = player1.hand.create_card_in(61061) # Forban
+        crd.play()
+        assert crd.attack == crd.dbfId.attack
 
-    crd2 = player1.hand.create_card_in(680) # Capitaine des mers du sud
-    crd2.play()
-    g.active_action()
-    assert crd2.attack == crd2.dbfId.attack
-    assert crd.attack == crd.dbfId.attack+1
-    assert crd.health == crd.dbfId.health+1
+        crd2 = player1.hand.create_card_in(680) # Capitaine des mers du sud
+        crd2.play()
+        g.active_action()
+        assert crd2.attack == crd2.dbfId.attack
+        assert crd.attack == crd.dbfId.attack+1
+        assert crd.health == crd.dbfId.health+1
 
-    player1.bob.board.drain_minion()
-    crd = player1.board.create_card_in(736) # vieux troubloeil
-    player1.board.create_card_in(736)
-    assert crd.attack == crd.dbfId.attack + 1
+        player1.bob.board.drain_minion()
+        crd = player1.board.create_card_in(736) # vieux troubloeil
+        player1.board.create_card_in(736)
+        assert crd.attack == crd.dbfId.attack + 1
 
 def test_adjacent_neighbors(reinit_game):
     player = g.players[0]
@@ -279,9 +280,9 @@ def test_meta_card_data(reinit_game):
     crd2 = g.card_db[475]
     crd1.rating = 2
     crd2.rating = 1.1
-    meta = entity.Meta_card_data(crd1, crd2)
+    meta = Meta_card_data(crd1, crd2)
     meta.sort('rating')
     assert meta == [475, 41245]
-    assert type(meta) is entity.Meta_card_data
-    assert type(meta[0]) is entity.Card_data
+    assert type(meta) is Meta_card_data
+    assert type(meta[0]) is Card_data
 

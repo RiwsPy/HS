@@ -52,6 +52,9 @@ class Combat:
 
         while not self.fight_is_over():
             self.next_round()
+            damage_resolve(self, 
+                *(self.combattants[0].cards + self.combattants[1].cards))
+
             self.owner.active_action()
             self.attacker = self.attacker.opponent
 

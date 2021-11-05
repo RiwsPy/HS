@@ -55,8 +55,3 @@ def test_card_list_exclude(reinit_game):
     crd3 = g.create_card(2016) # Blondisseur dent-de-métal
     db.append(crd3)
     assert db.exclude(level=2, race='MURLOC') == [crd2]
-
-def test_(reinit_game):
-    crd1 = g.create_card(70114) # Esprit combatif
-    print(crd1.race)
-    assert 0 == 1
