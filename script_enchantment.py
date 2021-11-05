@@ -4,7 +4,7 @@ buff_attr_add = {
     'attack', # : int
     'max_health', # : int
     'health', # int
-    'mecanics', # list
+    #'mechanics', # list
 }
 
 class add_stat(Enchantment):
@@ -12,8 +12,8 @@ class add_stat(Enchantment):
         target = self.owner
         for attr in buff_attr_add & set(dir(self)) & set(dir(target)):
             target[attr] += self[attr]
-        for mecanic in self.mechanics:
-            setattr(target, mecanic, True)
+        for mechanic in self.mechanics:
+            setattr(target, mechanic, True)
 
 BGS_066e= add_stat # Or raflé
 TB_BaconUps_130e= add_stat # Or raflé
@@ -229,20 +229,26 @@ FP1_020e= add_stat # Vengeance
 BGS_104e1= add_stat # Festin de taverne
 BG21_020e= add_stat # Ébloui
 
+# Unofficial enchantment
+IMMUNE_000= add_stat # Bloc de glace, Étreinte de Mal’Ganis, Emprise de Kathra’natir
+
+
 """
-NONE= add_stat # Bloc de glace
-NONE= add_stat # Étreinte de Mal’Ganis
 NONE= add_stat # Poisson test
 NONE= add_stat # George le Déchu
 NONE= add_stat # Al’Akir
-NONE= add_stat # Égide du seigneur du feu
-NONE= add_stat # Emprise de Kathra’natir
 
 BG21_040e= SPECIAL # L’actualisation coûte (1)_pièce de moins.
 BG20_HERO_201p2e= set_stat # Esprit échangé
-BG20_HERO_101pe2= set_stat # Gage de paix
-NONE= remove_mecanics # Robuste
+NONE= remove_mechanics # Robuste
 """
+
+class BG20_HERO_101pe2(Enchantment):
+    # Gage de paix
+    def apply(self):
+        self.owner.attack = 2
+        self.owner.max_health = 2
+
 
 class TB_BaconShop_HP_101e(Enchantment):
     # Ticket de Sombrelune
@@ -255,11 +261,21 @@ class BGS_045e(add_stat):
     def attack(self) -> int:
         return self.owner.attack
 
+    @attack.setter
+    def attack(self, value) -> None:
+        self._attack = value
+
+
 class TB_BaconUps_115e(add_stat):
     # Souffle froid premium
     @property
     def attack(self) -> int:
         return self.owner.attack*2
+
+    @attack.setter
+    def attack(self, value) -> None:
+        self._attack = value
+
 
 class BGS_104pe(Enchantment):
     # Ench. de joueur Nomi

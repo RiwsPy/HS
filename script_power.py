@@ -475,15 +475,15 @@ class BG20_HERO_201p(Hero_power): # + BG20_HERO_201p2
 class BG20_HERO_101p(Hero_power):
     # Xyrella
     def use_power_start(self, sequence):
-        minion = self.choose_one_of_them(self.board.cards + self.board.opponent.cards)
+        minion = self.choose_one_of_them(self.board.opponent.cards)
         if minion:
             self.temp_counter = minion
         else:
             sequence.is_valid = False
 
     def use_power(self, sequence):
-        self.buff(self.enchantment_dbfId, self.temp_counter)
         self.owner.hand.append(self.temp_counter)
+        self.buff(self.enchantment_dbfId, self.temp_counter)
 
 
 class TB_BaconShop_HP_106(Hero_power):
