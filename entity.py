@@ -4,8 +4,7 @@ from enums import FIELD_SIZE, MAX_TURN, CardName, Rarity, Zone, Type, \
 from typing import Any
 from utils import Card_list, controller, game, my_zone
 from action import *
-import script_hero_arene
-import script_minion_arene
+from scripts import hero_arene, minion_arene
 import void
 from db_card import CARD_DB, Card_data
 from sequence import Sequence
@@ -319,13 +318,13 @@ class Entity:
 
     def active_script_arene(self, *args, strat='', **kwargs) -> None:
         if self.type == Type.HERO_POWER:
-            met = getattr(script_hero_arene, self.hero_script)
+            met = getattr(hero_arene, self.hero_script)
             if met:
                 met_turn = getattr(met, f'turn_{self.game.nb_turn}', None)
                 if met_turn:
                     met_turn(self.owner, *args, **kwargs)
         elif self.type == Type.MINION:
-            met = getattr(script_minion_arene, self.id)
+            met = getattr(minion_arene, self.id)
             if met:
                 getattr(getattr(met, strat), f'turn_{self.game.nb_turn}')(self, *args, **kwargs)
 
@@ -782,8 +781,8 @@ class Spell(Entity):
 
 class Card:
     def __new__(cls, dbfId, **kwargs):
-        import script_event
-        self = getattr(script_event, str(CARD_DB[dbfId]['id']))
+        from scripts import event
+        self = getattr(event, str(CARD_DB[dbfId]['id']))
         #Card.init_class[CARD_DB[dbfId].get('type', 'DEFAULT')].__init__(self, dbfId, **kwargs)
         return self(dbfId, **kwargs)
 

@@ -157,5 +157,6 @@ class Game(Entity):
 
 if __name__ == "__main__":
     g = Card(CardName.DEFAULT_GAME)
-    g.party_begin('rivvers', 'notoum', hero_p1=57946)
+    g.party_begin('rivvers', 'notoum', hero_p1=58021)
     p1, p2 = g.players
+
