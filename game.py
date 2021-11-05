@@ -85,6 +85,8 @@ class Game(Entity):
         self._nb_turn = value
 
     def party_begin(self, *players, hero_p1='', hero_p2='') -> None:
+        #TODO: Players are assigned opponents for the first round when the game begins before the heroes are chosen.
+        #TODO: Players will not face the same player, or Kel'Thuzad, more than once in every 3 combat rounds (unless there are 2 players remaining).
         if not players:
             return None
 
@@ -157,14 +159,3 @@ if __name__ == "__main__":
     g = Card(CardName.DEFAULT_GAME)
     g.party_begin('rivvers', 'notoum', hero_p1=57946)
     p1, p2 = g.players
-
-    with Sequence('TURN', g):
-        rob = p1.hand.create_card_in(70162)
-        rob.play()
-        p1.buff(CardName.BLOOD_GEM_ENCHANTMENT, rob)
-        assert rob.attack == rob.dbfId.attack +1
-        assert rob.DIVINE_SHIELD == True
-
-    with Sequence('TURN', g):
-        assert rob.attack == rob.dbfId.attack +1
-        assert rob.DIVINE_SHIELD == False
