@@ -180,7 +180,6 @@ class Entity:
     def buff(self, enchantment_dbfId, *args, **kwargs):
         for target in args:
             if target:
-                #Enchantment(enchantment_dbfId, source=self, **kwargs).apply(target)
                 enchant = Card(enchantment_dbfId, source=self, **kwargs)
                 Sequence('ENHANCE', enchant, target=target).start_and_close()
 
@@ -432,10 +431,10 @@ class Minion(Entity):
     def die_start(self, sequence):
         if self.type == Type.MINION and self.in_fight_sequence:
             if self.AURA:
-                print('die de', sequence.source)
                 for entity in self.controller.field:
-                    if entity.type == Type.ENCHANTMENT: # and entity.source is self and entity.aura:
-                        print(entity, entity.source, entity.aura)
+                    if entity.type == Type.ENCHANTMENT and\
+                            entity.aura and\
+                            entity.source is self:
                         sequence(entity.remove)
             sequence(self.controller.graveyard.append, self)
         else:
@@ -708,7 +707,7 @@ class Enchantment(Entity):
         old_owner = self.owner
         super().remove(self)
         # uniquement si en cas de modification de caractéristiques ?
-        if old_owner.type is Type.MINION:
+        if old_owner.type == Type.MINION:
             old_owner.calc_stat_from_scratch()
 
 
