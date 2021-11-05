@@ -721,6 +721,7 @@
 "71457": {"attack":1, "name":"Pour la Horde !"},
 "59882": {"max_health":1, "attack":1, "name":"Ciré"},
 "72192": {"max_health":1, "attack":1, "name":"Esprit échangé"},
+"71653": {"name":"Marqué pour échange"},
 "70959": {"max_health":2, "attack":2, "name":"Gage de paix"},
 "64675": {"name":"Ticket de Sombrelune"},
 "74633": {"max_health":2, "attack":2, "name":"Préparation au combat"},
@@ -743,7 +744,7 @@
 
 "70115": {"max_health":1, "attack":1, "name":"Esprit combatif"},
 "1812": {"max_health":2, "attack":3, "name":"Vengeance"},
-"-58512": {"mecanics":["IMMUNE"], "duration":1, "name":"Bloc de glace"},
+"-58512": {"mechanics":["IMMUNE"], "duration":1, "name":"Bloc de glace", "id":"IMMUNE_000"},
 
 
 "59891": {"name": "Procrastination", "hero_script": "AFK"},
@@ -804,7 +805,7 @@
 "71459": {"name": "Liés par le sang", "hero_script": "Default_script"},
 "71455": {"name": "Pour la Horde !", "enchantment_dbfId":71457, "hero_script": "Default_script"},
 "59863": {"name": "Troupe de guerre cirière", "enchantment_dbfId":59882, "hero_script": "Default_script"},
-"71464": {"name": "Échange spirituel", "hero_script": "Default_script"},
+"71464": {"name": "Échange spirituel", "enchantment_dbfId":71653, "hero_script": "Default_script"},
 "71644": {"name": "Échange spirituel", "enchantment_dbfId":72192, "hero_script": "Default_script"},
 "70957": {"name": "Vision de Lumière", "enchantment_dbfId":70959, "hero_script": "Xyrella"},
 "62267": {"name": "Trésor en toc", "hero_script": "Default_script"},
@@ -828,13 +829,12 @@
 "-59202":{"name":"Amalgame", "race":"ALL", "synergy":"ALL", "techLevel":1, "attack":4, "health":4, "cant_collect":1, "type":"MINION", "battlegroundsNormalDbfId":59202},
 
 "-10":{"name":"Héros tout nul", "synergy":"ALL", "max_health":40, "type":"HERO", "power_id":0},
-"-2203": {"mechanics":["IMMUNE"], "name":"Étreinte de Mal’Ganis", "type":"ENCHANTMENT"},
+"-2203": {"mechanics":["IMMUNE"], "name":"Étreinte de Mal’Ganis", "type":"ENCHANTMENT", "id":"IMMUNE_000"},
 "-105": {"duration":1, "name": "Poisson test", "type": "ENCHANTMENT"},
 "-100": {"mechanics":["DIVINE_SHIELD"], "name":"George le Déchu", "type":"ENCHANTMENT"},
 "-101": {"mechanics":["TAUNT","DIVINE_SHIELD","WINDFURY"], "name":"Al’Akir", "type":"ENCHANTMENT"},
 "0": {"name": "Inconnu", "cost": 0, "hero_script": "Default_script", "type": "HERO_POWER", "ban":1, "id":"Inconnu"},
 "-1": {"name": "Taverne", "cost": 0, "hero_script": "Default_script", "type": "HERO_POWER", "minion_cost": 1, "ban": 1, "id":"Taverne"},
-"-70167": {"menanics":["DIVINE_SHIELD"], "duration":1, "name":"Robuste", "type":"ENCHANTMENT"},
-"-76567": {"mechanics":["IMMUNE"], "name":"Emprise de Kathra’natir", "type":"ENCHANTMENT"}
+"-76567": {"mechanics":["IMMUNE"], "name":"Emprise de Kathra’natir", "type":"ENCHANTMENT", "id":"IMMUNE_000"}
 
 }

@@ -11805,6 +11805,15 @@
   "type": "ENCHANTMENT"
  },
  {
+  "name": "Marqué pour échange",
+  "dbfId": 71653,
+  "cardClass": "NEUTRAL",
+  "id": "BG20_HERO_201p3e",
+  "set": "BATTLEGROUNDS",
+  "text": "Les caractéristiques peuvent être échangées.",
+  "type": "ENCHANTMENT"
+ },
+ {
   "max_health": 2,
   "attack": 2,
   "name": "Gage de paix",
@@ -12000,11 +12009,12 @@
   "type": "ENCHANTMENT"
  },
  {
-  "mecanics": [
+  "mechanics": [
    "IMMUNE"
   ],
   "duration": 1,
   "name": "Bloc de glace",
+  "id": "IMMUNE_000",
   "dbfId": -58512
  },
  {
@@ -12797,6 +12807,7 @@
  },
  {
   "name": "Échange spirituel",
+  "enchantment_dbfId": 71653,
   "hero_script": "Default_script",
   "dbfId": 71464,
   "cardClass": "NEUTRAL",
@@ -13006,6 +13017,7 @@
   ],
   "name": "Étreinte de Mal’Ganis",
   "type": "ENCHANTMENT",
+  "id": "IMMUNE_000",
   "dbfId": -2203
  },
  {
@@ -13052,20 +13064,12 @@
   "dbfId": -1
  },
  {
-  "menanics": [
-   "DIVINE_SHIELD"
-  ],
-  "duration": 1,
-  "name": "Robuste",
-  "type": "ENCHANTMENT",
-  "dbfId": -70167
- },
- {
   "mechanics": [
    "IMMUNE"
   ],
   "name": "Emprise de Kathra’natir",
   "type": "ENCHANTMENT",
+  "id": "IMMUNE_000",
   "dbfId": -76567
  }
 ]
