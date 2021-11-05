@@ -110,8 +110,10 @@ class TB_BaconShop_HP_063(Hero_power):
     # Nozdormu
     def roll_on(self, sequence):
         if self.temp_counter == 0:
-            self.temp_counter += 1
             sequence.cost = 0
+
+    def roll_off(self, sequence):
+        self.temp_counter += 1
 
 
 class TB_BaconShop_HP_040(Hero_power):
