@@ -243,6 +243,12 @@ BG20_HERO_201p2e= set_stat # Esprit échangé
 NONE= remove_mechanics # Robuste
 """
 
+class BG20_HERO_201p2e(Enchantment):
+    # Esprit échangé
+    def apply(self):
+        self.owner.attack = self.attack
+        self.owner.max_health = self.max_health
+
 class BG20_HERO_101pe2(Enchantment):
     # Gage de paix
     def apply(self):
@@ -253,6 +259,7 @@ class BG20_HERO_101pe2(Enchantment):
 class TB_BaconShop_HP_101e(Enchantment):
     # Ticket de Sombrelune
     pass
+BG20_HERO_201p3e= TB_BaconShop_HP_101e # Marqué pour échange (Vol'Jin)
 
 
 class BGS_045e(add_stat):

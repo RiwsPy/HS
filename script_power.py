@@ -188,7 +188,7 @@ class TB_BaconShop_HP_087(Hero_power):
     def die_off(self, sequence):
         self.quest_value += 1
         if self.quest_value >= 25:
-            self = self.create_card(64426)
+            self.change(64426)
 
 
 class TB_BaconShop_HP_087t(Hero_power):
@@ -235,7 +235,7 @@ class TB_BaconShop_HP_065(Hero_power):
     def roll_on(self, sequence):
         self.quest_value += 1
         if self.quest_value >= 5:
-            self = self.create_card(62035)
+            self.change(62035)
 
 
 class TB_BaconShop_HP_020(Hero_power):
@@ -446,30 +446,52 @@ class TB_BaconShop_HP_037a(Hero_power):
             self.buff(self.enchantment_dbfId, minion)
 
 
-class BG20_HERO_201p(Hero_power): # + BG20_HERO_201p2
-    # Vol'jin
-    #TODO: 2 differents powers
+class BG20_HERO_201p(Hero_power):
+    # Vol'jin 1
     def use_power_start(self, sequence):
         minion = self.choose_one_of_them(self.board.cards + self.board.opponent.cards)
         if minion:
-            self.temp_counter = minion
-            #+ changement de pouvoir
+            self.buff(self.enchantment_dbfId, minion)
         else:
             sequence.is_valid = False
 
     def use_power(self, sequence):
-        if self.temp_counter:
-            pass
-            """
-            first_minion = self.temp_counter
-            second_minion = self.choose_one_of_them(
-                        self.board.cards.exclude(first_minion) + \
-                        self.board.cards.opponent)
-            if second_minion:
-                self.buff(self.enchantment_dbfId, second_minion, attack=first_minion.attack, health=first_minion.health)
-                self.buff(self.enchantment_dbfId, first_minion, attack=second_minion.attack, health=second_minion.health)
-                self.temp_counter = 0
-            """
+        self.change(71644)
+
+
+class BG20_HERO_201p2(BG20_HERO_201p):
+    # Vol'jin 2
+    # pouvoir utilisable sur la même cible ?
+    def use_power_start(self, sequence):
+        minion = self.choose_one_of_them(self.board.cards + self.board.opponent.cards)
+        if minion:
+            self.temp_counter = minion
+        else:
+            sequence.is_valid = False
+
+    def use_power(self, sequence):
+        minion1 = None
+        for minion in self.board.cards + self.board.opponent.cards:
+            for entity in minion.entities:
+                if entity.dbfId == 71653:
+                    minion1 = minion
+                    break
+
+        minion2 = self.temp_counter
+
+        if minion2 and minion1:
+            self.buff(self.enchantment_dbfId, 
+                minion2,
+                attack=minion1.attack, 
+                max_health=minion1.health)
+
+            self.buff(self.enchantment_dbfId,
+                minion1,
+                attack=minion2.attack,
+                max_health=minion2.health)
+
+    def turn_on(self, sequence):
+        self.change(71464)
 
 
 class BG20_HERO_101p(Hero_power):
