@@ -54,3 +54,16 @@ def test_capitaine_mer_du_sud(reinit_game):
         cap.die()
         assert forb.attack == forb.dbfId.attack
         assert forb2.attack == forb2.dbfId.attack
+
+def test_defense_robuste(reinit_game):
+    p1 = g.players[0]
+    with Sequence('TURN', g):
+        rob = p1.hand.create_card_in(70162)
+        rob.play()
+        p1.buff(CardName.BLOOD_GEM_ENCHANTMENT, rob)
+        assert rob.attack == rob.dbfId.attack +1
+        assert rob.DIVINE_SHIELD == True
+
+    with Sequence('TURN', g):
+        assert rob.attack == rob.dbfId.attack +1
+        assert rob.DIVINE_SHIELD == False

@@ -239,7 +239,6 @@ NONE= add_stat # George le Déchu
 NONE= add_stat # Al’Akir
 
 BG21_040e= SPECIAL # L’actualisation coûte (1)_pièce de moins.
-BG20_HERO_201p2e= set_stat # Esprit échangé
 NONE= remove_mechanics # Robuste
 """
 
@@ -248,6 +247,7 @@ class BG20_HERO_201p2e(Enchantment):
     def apply(self):
         self.owner.attack = self.attack
         self.owner.max_health = self.max_health
+
 
 class BG20_HERO_101pe2(Enchantment):
     # Gage de paix

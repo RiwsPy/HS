@@ -540,8 +540,9 @@ class TB_BaconShop_HP_103(Hero_power):
                     tier_max=self.owner.level,
                     tier_min=self.owner.level)
             crd = random.choice(card_lst)
-            self.board.create_card_in(crd.entity_id)
-            self.owner.hand.append(crd)
+            minion = self.board.create_card_in(crd.entity_id)
+            if minion in self.board.cards:
+                self.owner.hand.append(crd)
 
 
 class TB_BaconShop_HP_065t2(Hero_power):

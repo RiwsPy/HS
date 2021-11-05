@@ -3,10 +3,10 @@ from entity import Entity
 class Field(Entity):
     default_attr = {}
 
-    def __init__(self, dbfId, **kwargs):
+    def __init__(self, *args, **kwargs):
         self.p1 = None
         self.p2 = None
-        super().__init__(dbfId, **kwargs)
+        super().__init__(*args, **kwargs)
         self.append(self.p1)
         self.append(self.p2)
         self.p1.field = self

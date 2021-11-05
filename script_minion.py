@@ -530,7 +530,8 @@ class BGS_045(Minion):
     # Gardien des glyphes
     def combat_start(self, sequence):
         super().combat_start(sequence)
-        self.buff(self.enchantment_dbfId, self)
+        if sequence.is_valid:
+            self.buff(self.enchantment_dbfId, self)
 TB_BaconUps_115= BGS_045 # Gardien des glyphes premium
 
 class BGS_019(Minion):
@@ -1172,17 +1173,11 @@ class BG20_102(Minion):
     # Défense robuste
     def enhance_off(self, sequence):
         if sequence.target is self and\
-                sequence.source.dbfId == CardName.BLOOD_GEM_ENCHANTMENT:
+                sequence.source.dbfId == CardName.BLOOD_GEM_ENCHANTMENT and\
+                self.temp_counter == 0:
             self.buff(self.enchantment_dbfId, self)
-            self.buff(-70167, self) # ??
-
-
-class BG20_102_G(BG20_102):
-    # Défense robuste premium
-    def enhance_off(self, sequence):
-        if sequence.target is self and\
-                sequence.source.dbfId == CardName.BLOOD_GEM_ENCHANTMENT:
-            self.buff(self.enchantment_dbfId, self)
+            self.temp_counter = 1
+BG20_102_G= BG20_102 # Défense robuste premium
 
 
 class BG20_103(Minion):

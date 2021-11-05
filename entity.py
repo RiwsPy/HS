@@ -42,7 +42,7 @@ class Entity:
     default_attr = {
         'quest_value': 0,
         'type': Type.DEFAULT,
-        #'attack': 0,
+        'attack': 0,
         'owner': Void,
         'from_bob': False,
         'ban': 0, # utile ? techniquement une carte ban n'a pas à être créée ?
@@ -276,23 +276,27 @@ class Entity:
     def has_frenzy(self):
         return self.FRENZY and self.is_alive
 
-    def calc_stat_from_scratch(self, heal=False):
+    def calc_stat_from_scratch(self, heal=False) -> None:
         if self.DORMANT:
             return None
 
         old_health = self.health
         old_mechanics = {mechanic: getattr(self, mechanic, False)
             for mechanic in state_list}
+
+        # reset stats & mechanics
         self.max_health = self.dbfId.health
-        for mechanic in self.dbfId.mechanics:
-            setattr(self, mechanic, True)
         self.attack = self.dbfId.attack
-        self.id = self.dbfId.id[:]
+        for mechanic in state_list:
+            setattr(self, mechanic, mechanic in self.dbfId.mechanics)
+
         for entity in self.entities[::-1]:
+            if entity.type == Type.ENCHANTMENT and entity.is_over:
+                self.entities.remove(entity)
+
+        for entity in self.entities:
             if entity.type == Type.ENCHANTMENT:
-                entity.apply(self)
-        #for entity, aura_met in self.controller.active_aura.items():
-        #    aura_met(entity, self)
+                entity.apply()
 
         if heal:
             self.health = self.max_health
@@ -441,9 +445,10 @@ class Minion(Entity):
     def copy_enchantment_from(self, source: Entity) -> None:
         for entity in source.entities:
             if entity.type == Type.ENCHANTMENT and not getattr(entity, 'aura', False):
-                attrs = entity.__dict__.copy()
-                del attrs['dbfId']
-                enchant = Card(entity.dbfId, **attrs)
+                #attrs = entity.__dict__.copy()
+                #del attrs['dbfId']
+                #enchant = Card(entity.dbfId, **attrs)
+                enchant = Card(**entity.__dict__)
                 self.append(enchant)
                 enchant.apply()
 
@@ -641,7 +646,6 @@ class Enchantment(Entity):
             > Duration MAX_TURN otherwise
     """
     #TODO: fusion des enchantements de dbfId identiques ? > gène la rétroactivité des bonus
-    #TODO: rétroactivité des bonus à faire > class pour chaque enchantment
     default_attr = {
         'aura': False,
         'source': Void,
@@ -651,7 +655,7 @@ class Enchantment(Entity):
         'attack', # : int
         'max_health', # : int
         'health', # int
-        'mecanics', # list
+        'mechanics', # list
     }
 
     def __init__(self, dbfId, **kwargs):
@@ -666,6 +670,10 @@ class Enchantment(Entity):
             self.duration = MAX_TURN
         else:
             self.duration += self.source.game.nb_turn
+
+    @property
+    def is_over(self) -> bool:
+        return self.duration <= self.nb_turn
 
     def enhance_start(self, sequence: Sequence) -> None:
         target = sequence.target
@@ -683,12 +691,12 @@ class Enchantment(Entity):
     def add_stat(self, target_id):
         for attr in self.__class__.buff_attr_add & set(dir(self)) & set(dir(target_id)):
             target_id[attr] += self[attr]
-        for mecanic in self.mechanics:
-            setattr(target_id, mecanic, True)
+        for mechanic in self.mechanics:
+            setattr(target_id, mechanic, True)
 
-    def remove_mecanics(self, target_id):
-        for mecanic in self.mecanics:
-            setattr(target_id, mecanic, False)
+    def remove_mechanics(self, target_id):
+        for mechanic in self.mechanics:
+            setattr(target_id, mechanic, False)
 
     def set_stat(self, target_id):
         for attr in self.__class__.buff_attr_add & set(dir(self)) & set(dir(target_id)):
@@ -704,7 +712,6 @@ class Enchantment(Entity):
 
 class Hero_power(Entity):
     default_attr = {
-        'script': '',
         'minion_cost': DEFAULT_MINION_COST,
         'hero_script': 'Default_script',
         'roll_cost': 1,
@@ -716,7 +723,7 @@ class Hero_power(Entity):
 
     def __init__(self, dbfId, **kwargs):
         super().__init__(dbfId, **kwargs)
-        if hasattr(self, 'max_health'):
+        if hasattr(self, 'max_health') and self.nb_turn == 1:
             self.health = self.max_health
 
     def enable(self) -> None:
@@ -742,8 +749,14 @@ class Hero_power(Entity):
                         self.disable()
 
     @property
-    def board(self):
+    def board(self) -> Entity:
         return self.owner.board
+
+    def change(self, dbfId) -> None:
+        #TODO: test
+        new_power_id = self.create_card(dbfId)
+        if new_power_id.type == Type.HERO_POWER:
+            self = new_power_id
 
 
 class Spell(Entity):
