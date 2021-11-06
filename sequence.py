@@ -84,18 +84,9 @@ class Sequence:
 
         self.active_phase('_START', self.source)
         if self.is_valid:
-            self.nb_strike = getattr(self.source, 'nb_strike', 1)
             self.active_phase('_ON')
             self.execute_effect()
-
-            # Brann/Vaillefendre effect
-            if getattr(self, 'triple_effect', False):
-                self.nb_strike *= 3
-            elif getattr(self, 'double_effect', False):
-                self.nb_strike *= 2
-
-            for _ in range(self.nb_strike):
-                self.active_phase('', self.source)
+            self.active_phase('', self.source)
 
         return self
     start = __enter__
@@ -111,4 +102,7 @@ class Sequence:
         source = source or self.phase_range()
         getattr(source, self.method_name, source.no_method)(self)
         for entity in source._iter_seq(self):
-            getattr(entity, self.method_name, entity.no_method)(self)
+            method = getattr(entity, self.method_name, None)
+            if method:
+                method(self)
+

@@ -1,6 +1,6 @@
 from db_card import CARD_DB
 from utils import Card_list
-from enums import Race, Type, NB_PRESENT_TYPE, VERSION, CardName
+from enums import Race, Type, NB_PRESENT_TYPE, VERSION, CardName, ADAPT_ENCHANTMENT
 import random
 import player
 from entity import Entity, Card
@@ -160,3 +160,12 @@ if __name__ == "__main__":
     g.party_begin('rivvers', 'notoum', hero_p1=58021)
     p1, p2 = g.players
 
+    p1 = g.players[0]
+    with Sequence('TURN', g):
+        aml = p1.hand.create_card_in(74910)
+        aml.play()
+
+    with Sequence('FIGHT', g):
+        aml.die()
+        print(p1.board.cards)
+    print(p1.board.cards)

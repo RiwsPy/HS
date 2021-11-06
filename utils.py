@@ -3,6 +3,20 @@ import json
 from types import GeneratorType
 import random
 
+def repeat_effect(function):
+    def decorator(self, sequence):
+        nb_strike = getattr(self, 'nb_strike', 1)
+
+        # Brann/Vaillefendre effect
+        if getattr(sequence, 'triple_effect', False):
+            nb_strike *= 3
+        elif getattr(sequence, 'double_effect', False):
+            nb_strike *= 2
+
+        for _ in range(nb_strike):
+            function(self, sequence)
+    return decorator
+
 def game(self):
     ret = self
     while ret.type > Type.GAME:
@@ -99,8 +113,10 @@ class Card_list(list):
         result = Card_list(random.choice(minions)
                 for minions in tri.values()
                     if minions)
+        minion_with_all_race = self.filter(race='ALL')
+        random.shuffle(minion_with_all_race)
 
-        return result + self.filter(race=Race.ALL)
+        return (result + minion_with_all_race)[:len(Race.battleground_race())]
 
 
 

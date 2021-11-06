@@ -2,6 +2,7 @@ from entity import Hero_power
 from action import attack
 import random
 from enums import FIELD_SIZE, LEVEL_MAX, Race, Type, CardName, AKAZAM_SECRETS
+from utils import repeat_effect
 
 class TB_BaconShop_HP_049(Hero_power):
     # Baz'hial
@@ -370,6 +371,8 @@ class TB_BaconShop_HP_038(Hero_power):
 class TB_BaconShop_HP_042(Hero_power):
     # Daryl
     nb_strike = 3
+
+    @repeat_effect
     def sell_off(self, sequence):
         brd = self.owner.opponent.board.cards
         if brd:

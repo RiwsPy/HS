@@ -1,6 +1,6 @@
 import random
 from enums import FIELD_SIZE, MAX_TURN, CardName, Rarity, Zone, Type, \
-    DEFAULT_MINION_COST, ADAPT_ENCHANTMENT, state_list
+    DEFAULT_MINION_COST, state_list
 from typing import Any
 from utils import Card_list, controller, game, my_zone
 from action import *
@@ -449,17 +449,6 @@ class Minion(Entity):
                 enchant = Card(**entity.__dict__)
                 self.append(enchant)
                 enchant.apply()
-
-    def add_adapt(self, nb: int=0) -> None:
-        if not nb:
-            enchantment_id = random.choice(ADAPT_ENCHANTMENT)
-        else:
-            try:
-                enchantment_id = ADAPT_ENCHANTMENT[nb]
-            except KeyError:
-                print(f'add_adapt error : unknown adapt n°{nb}')
-
-        self.buff(enchantment_id, self)
 
     def discover(self, card_list: Card_list, nb: int=3) -> Entity:
         #TODO: Warning, problem if the card is moving during the discover

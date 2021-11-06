@@ -1,6 +1,8 @@
 from entity import Minion
 from enums import CardName
 import random
+from utils import repeat_effect
+
 
 class AT_121(Minion):
     # Favori de la foule
@@ -63,6 +65,8 @@ TB_BaconUps_303= BGS_112 # Héraut qiraji premium
 class BGS_200(Minion):
     # Gardienne d'antan
     nb_strike = 1
+
+    @repeat_effect
     def deathrattle(self, sequence):
         self.controller.hand.create_card_in(CardName.COIN)
 
@@ -84,6 +88,8 @@ TB_BaconUps_257= BGS_201
 class BGS_046(Minion):
     # Nat Pagle
     nb_strike = 1
+
+    @repeat_effect
     def attack_end(self, sequence):
         # n'est pas une découverte à 1 car peut se découvrir lui-même
         for minion in sequence.targets:
@@ -128,3 +134,15 @@ class BGS_027(Minion):
     def turn_on(self, sequence):
         sequence(self.buff, self.enchantment_dbfId, self)
 TB_BaconUps_094= BGS_027 # Micro-machine premium
+
+
+class BGS_113(Minion):
+    # Habitue_sans_visage
+    @repeat_effect
+    def battlecry(self, sequence):
+        # comment se passe la gestion lors de la revente, la copie est enlevée de la taverne ou est-ce 
+        # l'habitué ?
+        pass
+TB_BaconUps_305= BGS_113 # Habitue_sans_visage premium
+
+
