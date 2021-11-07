@@ -1,9 +1,9 @@
 import random
-from enums import FIELD_SIZE, MAX_TURN, CardName, Rarity, Zone, Type, \
+from enums import MAX_TURN, CardName, Rarity, Zone, Type, \
     DEFAULT_MINION_COST, state_list
 from typing import Any
 from utils import Card_list, controller, game, my_zone
-from action import *
+from action import attack
 from scripts import hero_arene, minion_arene
 import void
 from db_card import CARD_DB, Card_data
@@ -11,8 +11,10 @@ from sequence import Sequence
 
 Void = void.Void()
 
+
 def card_db():
     return CARD_DB
+
 
 def func_name(function):
     def new_function(self, *args, **kwargs):
@@ -20,6 +22,7 @@ def func_name(function):
         return function(self, *args, **kwargs)
 
     return new_function
+
 
 def khadgar_aura(function):
     def double_invoc(self, sequence, *args, **kwargs):
@@ -30,7 +33,7 @@ def khadgar_aura(function):
                     for _ in range(entity.nb_strike):
                         clone_card = card_id.clone()
                         sequence.position += 1
-                        #TODO: activation de SUMMON
+                        # TODO: activation de SUMMON
                         clone_card.summon(position=sequence.position)
         return card_id
     return double_invoc
@@ -50,8 +53,9 @@ class Entity:
         'rarity': Rarity.DEFAULT,
         'techLevel': 0,
         'name': '',
-        'temp_counter': 0, # set to 0 during each 'turn_on' sequence
+        'temp_counter': 0,  # set to 0 during each 'turn_on' sequence
     }
+
     def __init__(self, dbfId, **kwargs) -> None:
         self.entities = Card_list()
         db = {
@@ -64,11 +68,6 @@ class Entity:
             setattr(self, key, data)
 
         self.dbfId = Card_data(**db)
-
-    def __repr__(self) -> str:
-        #if hasattr(self, 'name'):
-        #    return self.name
-        return super().__repr__()
 
     def __getitem__(self, attr):
         if isinstance(attr, str):
@@ -91,7 +90,9 @@ class Entity:
     def _iter_seq(self, sequence: Sequence, *args):
         next_entities = Card_list()
         for ent in args or self.entities:
-            if ent.type != Type.ZONE or 'ALL' in ent.phase or sequence.name in ent.phase:
+            if ent.type != Type.ZONE or\
+                    'ALL' in ent.phase or\
+                    sequence.name in ent.phase:
                 next_entities += ent.entities
             yield ent
         # ON / OFF phase inaccessible pour la source de la séquence
@@ -143,16 +144,12 @@ class Entity:
         entity.owner = self
         self.entities.append(entity)
 
-    def remove(self, *entities):
-        for entity in entities:
-            if entity.owner.type >= Type.GAME:
-                #self.game.owner.append(entity) # before .remove, if self is in entities...
-                try:
-                    entity.owner.entities.remove(entity)
-                    #entity.owner = Void
-                except ValueError:
-                    pass
-                    #print(f'{entity} not in owner.entities')
+    def remove(self, entity: 'Entity') -> None:
+        if entity.owner.type >= Type.GAME:
+            try:
+                entity.owner.entities.remove(entity)
+            except ValueError:
+                pass
 
     def create_card_in(self, dbfId: int, position=None, **kwargs) -> 'Entity':
         """
@@ -167,18 +164,18 @@ class Entity:
         card_id.owner = self.controller
         return card_id
 
-    def buff(self, enchantment_dbfId, *args, **kwargs):
+    def buff(self, enchantment_dbfId, *args, **kwargs) -> None:
         for target in args:
             if target:
                 enchant = Card(enchantment_dbfId, source=self, **kwargs)
                 Sequence('ENHANCE', enchant, target=target).start_and_close()
 
     @property
-    def controller(self):
+    def controller(self) -> 'Entity':
         return controller(self)
 
     @property
-    def my_zone(self):
+    def my_zone(self) -> 'Entity':
         return my_zone(self)
 
     @property
@@ -186,15 +183,15 @@ class Entity:
         return game(self)
 
     @property
-    def attack(self):
+    def attack(self) -> int:
         return self._attack
 
     @attack.setter
-    def attack(self, value):
+    def attack(self, value) -> None:
         self._attack = value
 
     @property
-    def position(self):
+    def position(self) -> int:
         try:
             return self.my_zone.cards.index(self)
         except (ValueError, AttributeError):
@@ -214,7 +211,7 @@ class Entity:
             return 2
         return 1
 
-    def choose_one_of_them(self, choice_list: list, pr: str='') -> Any:
+    def choose_one_of_them(self, choice_list: list, pr: str = '') -> Any:
         """
             player chooses one card among ``choice_list`` list
             *return: chosen card id or None
@@ -243,7 +240,7 @@ class Entity:
     def nb_turn(self) -> int:
         return self.game._turn
 
-    def all_in_bob(self):
+    def all_in_bob(self) -> None:
         for entity in self.entities[::-1]:
             self.game.hand.append(entity)
 
@@ -256,14 +253,14 @@ class Entity:
                 if zone[1]:
                     return Card_list(zone[1])
             else:
-                return Card_list(minion
-                for minion in zone[position-1:position+2:2]
-                    if minion)
+                return Card_list(
+                    minion
+                    for minion in zone[position-1:position+2:2] if minion)
 
         return Card_list()
 
     @property
-    def has_frenzy(self):
+    def has_frenzy(self) -> bool:
         return self.FRENZY and self.is_alive
 
     def calc_stat_from_scratch(self, heal=False) -> None:
@@ -271,7 +268,8 @@ class Entity:
             return None
 
         old_health = self.health
-        old_mechanics = {mechanic: getattr(self, mechanic, False)
+        old_mechanics = {
+            mechanic: getattr(self, mechanic, False)
             for mechanic in state_list}
 
         # reset stats & mechanics
@@ -295,19 +293,6 @@ class Entity:
             for mechanic, value in old_mechanics.items():
                 setattr(self, mechanic, value)
 
-    def search_id(self, target):
-        if target in Void.temp_list:
-            print(f'{target} found in {Void}')
-            return True
-
-        if target in self.entities:
-            print(f'{target} found in {self}')
-            return True
-        for entity in self.entities:
-            if entity.search_id(target):
-                break
-        return False
-
     def active_script_arene(self, *args, strat='', **kwargs) -> None:
         if self.type == Type.HERO_POWER:
             met = getattr(hero_arene, self.hero_script)
@@ -318,19 +303,20 @@ class Entity:
         elif self.type == Type.MINION:
             met = getattr(minion_arene, self.id)
             if met:
-                getattr(getattr(met, strat), f'turn_{self.game.nb_turn}')(self, *args, **kwargs)
-
+                getattr(
+                    getattr(met, strat),
+                    f'turn_{self.game.nb_turn}'
+                )(self, *args, **kwargs)
 
     @khadgar_aura
-    def invoc(self, sequence, repop_dbfId) -> 'Entity':
-        #TODO: remplacer position par l'entité présente dans la position suivante
-        # ainsi chaque repop sera invoqué juste avant
+    def invoc(self, sequence: Sequence, repop_dbfId: int) -> 'Entity':
         minion_id = self.create_card(repop_dbfId)
         if sequence.source in self.controller.board.cards:
             sequence.position += 1
 
         minion_id.summon(position=sequence.position)
-        if minion_id not in self.controller.board: # échec de la séquence summon
+        if minion_id not in self.controller.board:
+            # échec de la séquence summon
             return None
 
         return minion_id
@@ -348,8 +334,6 @@ class Minion(Entity):
         self._max_health = self.health
 
     def __repr__(self) -> str:
-        #if self.type == Type.MINION:
-        #    return f'{self.name} ({self.attack}-{self.health})'
         return f'{self.name}'
 
     @property
@@ -370,11 +354,13 @@ class Minion(Entity):
             kwargs['position'] = kwargs.get('position', None)
             with Sequence('PLAY', self, **kwargs) as seq:
                 if seq.is_valid:
-                    with Sequence('SUMMON', self, **kwargs) as summon_seq:
-                        Sequence('BATTLECRY',
+                    with Sequence('SUMMON', self, **kwargs):
+                        Sequence(
+                            'BATTLECRY',
                             self,
                             targets=seq.targets,
-                            position=self.position).start_and_close()
+                            position=self.position
+                        ).start_and_close()
 
     def die(self, sequence=None, **kwargs):
         if sequence is None:
@@ -382,14 +368,18 @@ class Minion(Entity):
             with Sequence('DIE', self, **kwargs) as seq:
                 if seq.is_valid:
                     Sequence('DEATHRATTLE', self, **kwargs).start_and_close()
-                    #TODO: vérifier le sens d'exécution entre les deux suivants
+                    # TODO: vérifier le sens d'exécution
                     Sequence('REBORN', self, **kwargs).start_and_close()
                     Sequence('AVENGE', self, **kwargs).start_and_close()
 
     def play_start(self, sequence):
-        if self.my_zone.zone_type != Zone.HAND and self.controller.type != Type.BOB:
+        if self.my_zone.zone_type != Zone.HAND and\
+                self.controller.type != Type.BOB:
             sequence.is_valid = False
-            print(f'Carte {self.name} non jouée : zone_type {self.my_zone.zone_type} {self.my_zone}')
+            print(
+                f'Carte {self.name} non jouée : ' +
+                f'zone_type {self.my_zone.zone_type} {self.my_zone}'
+            )
             return None
         elif self.in_fight_sequence:
             sequence.is_valid = False
@@ -434,16 +424,14 @@ class Minion(Entity):
 
     def copy_enchantment_from(self, source: Entity) -> None:
         for entity in source.entities:
-            if entity.type == Type.ENCHANTMENT and not getattr(entity, 'aura', False):
-                #attrs = entity.__dict__.copy()
-                #del attrs['dbfId']
-                #enchant = Card(entity.dbfId, **attrs)
+            if entity.type == Type.ENCHANTMENT and\
+                    not getattr(entity, 'aura', False):
                 enchant = Card(**entity.__dict__)
                 self.append(enchant)
                 enchant.apply()
 
-    def discover(self, card_list: Card_list, nb: int=3) -> Entity:
-        #TODO: Warning, problem if the card is moving during the discover
+    def discover(self, card_list: Card_list, nb: int = 3) -> Entity:
+        # TODO: Warning, problem if the card is moving during the discover
         # toutes les découvertes sont retirées du pool
         card_list = card_list.copy()
         random.shuffle(card_list)
@@ -546,10 +534,20 @@ class Minion(Entity):
             for target in sequence.targets:
                 position = target.position
                 if target.owner.cards[position-1]:
-                    sequence(self.damage, target.owner.cards[position-1], self.attack, overkill=True)
+                    sequence(
+                        self.damage,
+                        target.owner.cards[position-1],
+                        self.attack,
+                        overkill=True
+                    )
                 sequence(attack, sequence)
                 if target.owner.cards[position+1]:
-                    sequence(self.damage, target.owner.cards[position+1], self.attack, overkill=True)
+                    sequence(
+                        self.damage,
+                        target.owner.cards[position+1],
+                        self.attack,
+                        overkill=True
+                    )
         else:
             sequence(attack, sequence)
 
@@ -561,17 +559,18 @@ class Minion(Entity):
         if targets:
             return random.choice(targets)
         return None
-    
-    def loss_shield_start(self, sequence):
+
+    def loss_shield_start(self, sequence: Sequence) -> None:
         sequence.is_valid = self.DIVINE_SHIELD
 
     def set_premium(self) -> None:
         if hasattr(self, 'battlegroundsPremiumDbfId') is False:
             return None
-        #TODO: l'origine de la carte est erroné si une nouvelle carte ne remplace pas l'ancienne
-        #Dans ce cas, des informations utiles peuvent être perdues
+        # TODO: l'origine de la carte est erroné si
+        # une nouvelle carte ne remplace pas l'ancienne
+        # Dans ce cas, des informations utiles peuvent être perdues
         golden_card = Card(self.battlegroundsPremiumDbfId)
-        #self.dbfId = golden_card.dbfId
+        # self.dbfId = golden_card.dbfId
 
     def clone(self) -> Entity:
         clone_card = self.create_card(self.dbfId)
@@ -581,13 +580,19 @@ class Minion(Entity):
         clone_card.health = self.health
         return clone_card
 
-    def damage(self, target: Entity, damage_value: int, overkill=False) -> None:
-        with Sequence('HIT',
+    def damage(
+            self,
+            target: Entity,
+            damage_value: int,
+            overkill=False) -> None:
+        with Sequence(
+                'HIT',
                 self,
                 target=target,
                 damage_value=damage_value,
                 position=self.position) as seq:
-            if seq.is_valid and target.IMMUNE is False and target.DORMANT is False:
+            if seq.is_valid and target.IMMUNE is False\
+                    and target.DORMANT is False:
                 if target.DIVINE_SHIELD:
                     with Sequence('LOSS_SHIELD', target) as loss_shield_seq:
                         if loss_shield_seq.is_valid:
@@ -623,17 +628,18 @@ class Enchantment(Entity):
             > Duration 1 if applied during fight_sequence
             > Duration MAX_TURN otherwise
     """
-    #TODO: fusion des enchantements de dbfId identiques ? > gène la rétroactivité des bonus
+    # TODO: fusion des enchantements de dbfId identiques ?
+    # > gène la rétroactivité des bonus
     default_attr = {
         'aura': False,
         'source': Void,
     }
 
     buff_attr_add = {
-        'attack', # : int
-        'max_health', # : int
-        'health', # int
-        'mechanics', # list
+        'attack',  # : int
+        'max_health',  # : int
+        'health',  # int
+        'mechanics',  # list
     }
 
     def __init__(self, dbfId, **kwargs):
@@ -641,7 +647,7 @@ class Enchantment(Entity):
 
         if not hasattr(self, 'duration'):
             if self.source.in_fight_sequence:
-                self.duration = self.source.game.nb_turn +1
+                self.duration = self.source.game.nb_turn + 1
             else:
                 self.duration = MAX_TURN
         elif self.duration == -1:
@@ -664,22 +670,6 @@ class Enchantment(Entity):
 
     def apply(self) -> None:
         pass
-
-    """
-    def add_stat(self, target_id):
-        for attr in self.__class__.buff_attr_add & set(dir(self)) & set(dir(target_id)):
-            target_id[attr] += self[attr]
-        for mechanic in self.mechanics:
-            setattr(target_id, mechanic, True)
-
-    def remove_mechanics(self, target_id):
-        for mechanic in self.mechanics:
-            setattr(target_id, mechanic, False)
-
-    def set_stat(self, target_id):
-        for attr in self.__class__.buff_attr_add & set(dir(self)) & set(dir(target_id)):
-            target_id[attr] = self[attr]
-    """
 
     def remove(self):
         old_owner = self.owner
@@ -732,7 +722,7 @@ class Hero_power(Entity):
         return self.owner.board
 
     def change(self, dbfId, **kwargs) -> None:
-        #TODO: test
+        # TODO: test
         new_power_id = self.create_card(dbfId, **kwargs)
         if new_power_id.type == Type.HERO_POWER:
             self = new_power_id
@@ -744,10 +734,11 @@ class Spell(Entity):
 
     def play(self, sequence=None):
         if sequence is None:
-            if not self.in_fight_sequence and self.cost <= self.controller.gold:
+            if not self.in_fight_sequence and\
+                    self.cost <= self.controller.gold:
                 self.controller.gold -= self.cost
                 with Sequence('PLAY', self) as seq:
-                    #TODO: conterspell effect ?
+                    # TODO: conterspell effect ?
                     if seq.is_valid:
                         if self.SECRET is False:
                             self.owner.remove(self)
@@ -756,15 +747,14 @@ class Spell(Entity):
                         else:
                             self.controller.secret_board.append(self)
 
-
     def die(self, sequence=None):
         self.controller.graveyard.append(self)
+
 
 class Card:
     def __new__(cls, dbfId, **kwargs):
         from scripts import event
         self = getattr(event, str(CARD_DB[dbfId]['id']))
-        #Card.init_class[CARD_DB[dbfId].get('type', 'DEFAULT')].__init__(self, dbfId, **kwargs)
         return self(dbfId, **kwargs)
 
 
