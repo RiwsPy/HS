@@ -1,3 +1,4 @@
+from collections import defaultdict
 from enums import Type, LEVEL_MAX, VERSION, Race
 import json
 from types import GeneratorType
@@ -101,12 +102,31 @@ class Card_list(list):
             for card in self
                 if level_min <= card.level <= level_max)
 
-    def one_minion_by_type(self) -> 'Card_list':
+    def one_minion_by_race(self) -> 'Card_list':
         """
-            Return a list which contains until one minion by type
+            Return a list which contains until one minion by race
         """
-        #TODO: gestion des Race.ALL incorrecte sur le fond
-        # exclu de fait les minions multi-type
+        # Non fonctionnel en cas de serviteur bi-race sans être de race ALL (Bête/Dragon...)
+        # les race 'ALL' sont pris par défaut (en cas de non représentation d'un serviteur d'une race)
+        # A suivre
+
+        shuffle_copy = self[:]
+        random.shuffle(shuffle_copy)
+        tri = defaultdict(list)
+        for minion in shuffle_copy:
+            tri[minion.race].append(minion)
+
+        ret = Card_list()
+        all_race = Race('ALL')
+        for race in Race.battleground_race():
+            try:
+                ret.append(tri[race][0]) # ajout du premier minion
+            except IndexError:
+                if tri[all_race]:
+                    ret.append(tri[all_race].pop(0))
+        return ret
+
+        """
         tri = {minion_race: self.filter(race=minion_race)
             for minion_race in Race.battleground_race()}
 
@@ -117,6 +137,7 @@ class Card_list(list):
         random.shuffle(minion_with_all_race)
 
         return (result + minion_with_all_race)[:len(Race.battleground_race())]
+        """
 
 
 

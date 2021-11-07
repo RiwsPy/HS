@@ -28,9 +28,9 @@ class Void:
         pass
     #append = remove
 
-    def append(self, entity):
+    def append(self, entity, **kwargs) -> None:
         self.temp_list.append(entity)
 
     @property
-    def owner(self):
+    def owner(self) -> 'Void':
         return self

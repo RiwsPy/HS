@@ -1,7 +1,7 @@
 from utils import Board_Card_list
 from enums import CardName, Type, Zone, FIELD_SIZE, SECRET_SIZE, LEVEL_MAX
 import random
-from entity import Entity
+from entity import Entity, card_db
 from typing import List, Generator
 from sequence import Sequence
 
@@ -13,6 +13,7 @@ class Board(Entity):
         'next_opponent': None, # adversaire rencontré après un end_turn
         'last_opponent': None,
     }
+    MAX_SIZE = FIELD_SIZE
 
     def __init__(self, dbfId, **kwargs):
         super().__init__(dbfId, **kwargs)
@@ -61,48 +62,38 @@ class Board(Entity):
                 if getattr(enchantment, 'aura', False):
                     enchantment.remove()
 
-    def append(self, card, position=FIELD_SIZE) -> bool:
+    def append(self, entity: Entity, position=None) -> None:
         # TODO : problème de positionnement en cas de repop multiple
         # faire pop avant le minion d'après ou en dernier en cas d'inexistance ?
         if position is None:
-            position = FIELD_SIZE
+            position = self.MAX_SIZE
 
-        if card.owner is self and card in self.cards:
-            if position != card.position:
-                del self.cards[self.cards.index(card)]
-                self.cards.insert(position, card)
+        if entity.owner is self and entity in self.cards:
+            if position != entity.position:
+                del self.cards[self.cards.index(entity)]
+                self.cards.insert(position, entity)
             return True
 
-        if self.can_add_card(card):
-            if card.type == Type.MINION:
-                card.owner.remove(card)
-                card.owner = self
-                self.entities.append(card)
-                self.cards.insert(position, card)
-                return True
-            elif card.type == Type.SPELL:
-                card.play()
+        if self.can_add_card(entity):
+            super().append(entity)
+            self.cards.insert(position, entity)
 
-        return False
-
-    def create_card_in(self, id, position=FIELD_SIZE, **kwargs):
+    def create_card_in(self, dbfId: int, position=None, **kwargs) -> Entity:
         """
             Create card and append it in self
         """
-        card_id = self.create_card(id, **kwargs)
-        if self.append(card_id, position=position):
+        card_id = self.create_card(dbfId, **kwargs)
+        if self.can_add_card(card_id):
+            self.append(card_id, position=position)
             return card_id
         return None
 
     @property
-    def is_full(self):
-        return self.size >= FIELD_SIZE
+    def is_full(self) -> bool:
+        return self.size >= self.MAX_SIZE
 
     def can_add_card(self, card_id) -> bool:
-        if card_id.type == Type.SPELL:
-            return not card_id.SECRET
-
-        return card_id.type.can_be_add_in_board and not self.is_full
+        return card_id.type.MINION and not self.is_full
 
 
 class Player_board(Board):
@@ -163,21 +154,18 @@ class Bob_board(Board):
         self.fill_minion()
 
     def freeze(self) -> None:
-        if self.cards:
-            if self.cards[0].FREEZE: # unfreeze
-                for minion in self.cards:
-                    minion.remove_attr('FREEZE')
-            else: # freeze
-                for minion in self.cards:
-                    minion.FREEZE = True
+        if self.size > 0:
+            is_freeze = self.cards[0].FREEZE
+            for minion in self.cards:
+                minion.FREEZE = not is_freeze
 
     def drain_minion(self) -> None:
-        self.owner.hand.append(
-            *self.cards.exclude(FREEZE=True, DORMANT=True))
+        for minion in self.cards.exclude(FREEZE=True, DORMANT=True):
+            self.owner.hand.append(minion)
 
     def drain_all_minion(self) -> None:
-        self.owner.hand.append(
-            *self.cards.exclude(DORMANT=True))
+        for minion in self.cards.exclude(DORMANT=True):
+            self.owner.hand.append(minion)
 
     def fill_minion(self, nb_card_to_play=0, entity_list=[]) -> None:
         #TODO? Sequence REFRESH ??
@@ -206,19 +194,11 @@ class Bob_board(Board):
             self.append(random.choice(entity_list))
 
 class Graveyard(Board):
+    MAX_SIZE = 9999
+
     def __init__(self, dbfId=CardName.DEFAULT_GRAVEYARD):
         super().__init__(dbfId)
         self.owner = None
-
-    def append(self, card, **kwargs) -> bool:
-        if self.can_add_card(card):
-            card.owner.remove(card)
-            card.owner = self
-            self.entities.append(card)
-            self.cards.append(card)
-            return True
-
-        return False
 
     @property
     def is_full(self) -> bool:
@@ -231,32 +211,14 @@ class Graveyard(Board):
         self.purge()
 
 
-class Secret_board(Entity):
-    @property
-    def is_full(self) -> bool:
-        return len(self.entities) >= SECRET_SIZE
+class Secret_board(Board):
+    MAX_SIZE = SECRET_SIZE
 
     @property
     def dbfId_list(self) -> List[int]:
-        return [entity.dbfId for entity in self.entities]
+        return [entity.dbfId for entity in self.cards]
 
-    def can_add_card(self, card_id: Entity) -> bool:
-        return card_id.type == Type.SPELL and\
-            card_id.SECRET and not self.is_full and\
-            card_id.dbfId not in self.dbfId_list
-
-    def append(self, card_id: Entity) -> bool:
-        if not self.can_add_card(card_id):
-            return False
-
-        super().append(card_id)
-        return True
-
-    def create_card_in(self, dbfId: int, position=None, **kwargs) -> Entity:
-        """
-            Create card and append it in self
-        """
-        card_id = self.create_card(dbfId, **kwargs)
-        if self.append(card_id):
-            return card_id
-        return None
+    def can_add_card(self, entity: Entity) -> bool:
+        return entity.type == Type.SPELL and\
+            entity.SECRET and not self.is_full and\
+            entity.dbfId not in self.dbfId_list

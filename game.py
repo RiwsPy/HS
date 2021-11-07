@@ -1,5 +1,5 @@
 from db_card import CARD_DB
-from utils import Card_list
+from utils import Card_list, db_arene
 from enums import Race, Type, NB_PRESENT_TYPE, VERSION, CardName, ADAPT_ENCHANTMENT
 import random
 import player
@@ -8,10 +8,9 @@ from hand import Bob_hand
 from itertools import chain
 from stats import *
 import entity
-import utils
 from collections import deque
-from sequence import Sequence
 from combat import Combat
+import db_card
 
 
 class Game(Entity):
@@ -29,60 +28,40 @@ class Game(Entity):
 
         self.reinit()
 
-        type_ban = attr.get('type_ban')
-        if type_ban is None:
-            self.type_present = self.determine_present_type()
-        else:
-            self.type_present = Race('ALL') - type_ban
+        type_ban = attr.get('type_ban', self.determine_present_type())
+        self.type_present = Race('ALL').hex - type_ban
 
-        all_cards = entity.card_db()
-        if self.type_present:
+        all_cards = entity.card_db().filter(ban=None)
+        if self.type_present != 0:
             self.craftable_card = all_cards.\
-                filter_hex(synergy=self.type_present).\
-                filter(ban=None)
+                filter_hex(synergy=self.type_present)
         else: # tous types ban
-            self.craftable_card = all_cards.\
-                filter(synergy=Race('ALL')).\
-                filter(ban=None)
+            self.craftable_card = all_cards.filter(synergy='ALL')
 
         self.craftable_hero = self.craftable_card.\
-            filter(type=Type.HERO).exclude(dbfId=CardName.BOB)
+            filter(type=Type.HERO) #.exclude(dbfId=CardName.BOB) # test avec BOB ban
 
-        self.card_can_collect = self.craftable_card.\
-            filter(type=Type.MINION).\
-            filter(cant_collect=None)
+        self.minion_can_collect = self.craftable_card.\
+            filter(type=Type.MINION, cant_collect=None)
 
         self.hand = Bob_hand()
         self.hand.owner = self
 
-        self.hand.create_card_in(*chain(*
+        for dbfId in self.minion_can_collect:
+            for _ in range(dbfId.nb_copy):
+                self.hand.create_card_in(int(dbfId))
+            """
+            *chain(*
             ([int(dbfId)]*dbfId.nb_copy
-                for dbfId in self.card_can_collect)))
-
-    def arene_on_creation(self):
-        minion_rating = utils.db_arene(
-            version=self.version,
-            type_ban=Race.ALL - self.type_present)
-        for card in self.card_can_collect:
-            try:
-                card.all_rating = minion_rating[card]['rating']
-            except KeyError:
-                card.all_rating = {}
+                for dbfId in self.minion_can_collect)))
+            """
 
     def reinit(self):
         self.entities = Card_list()
-        self._nb_turn = 0
+        self._turn = 0
         self.action_stack = deque()
         self.players = Card_list()
         self.fields = Card_list()
-
-    @property
-    def nb_turn(self) -> int:
-        return self._nb_turn
-
-    @nb_turn.setter
-    def nb_turn(self, value) -> None:
-        self._nb_turn = value
 
     def party_begin(self, *players, hero_p1='', hero_p2='') -> None:
         #TODO: Players are assigned opponents for the first round when the game begins before the heroes are chosen.
@@ -97,7 +76,7 @@ class Game(Entity):
 
         for nb, player_name in enumerate(players):
             bob = player.Bob(
-                    card_can_collect=self.card_can_collect, 
+                    minion_can_collect=self.minion_can_collect, 
                     type_present=self.type_present)
 
             # de base, 4 héros sont disponibles lors de la sélection
@@ -122,7 +101,7 @@ class Game(Entity):
                 is_bot=True)
             self.players.append(plyr)
 
-            new_field = Card(-19, p1=plyr, p2=plyr.bob)
+            new_field = Card(CardName.DEFAULT_FIELD, p1=plyr, p2=plyr.bob)
             self.append(new_field)
 
     def determine_present_type(self) -> int:
@@ -132,10 +111,10 @@ class Game(Entity):
         return sum(lst[:NB_PRESENT_TYPE])
 
     def turn_start(self, sequence):
-        self.nb_turn += 1
+        self._turn += 1
         self.entities = Card_list()
         for player in self.players:
-            self.append(Card(-19, p1=player, p2=player.bob))
+            self.append(Card(CardName.DEFAULT_FIELD, p1=player, p2=player.bob))
 
         self.temp_counter = 0
         for entity in self:
@@ -145,7 +124,7 @@ class Game(Entity):
         self.entities = Card_list()
         players = self.players
         for p1, p2 in zip(players[::2], players[1::2]):
-            self.append(Card(-19, p1=p1, p2=p2))
+            self.append(Card(CardName.DEFAULT_FIELD, p1=p1, p2=p2))
 
     def fight_start(self, sequence):
         for field in self.entities:
@@ -155,17 +134,20 @@ class Game(Entity):
         for field in self.entities:
             field.combat.fight_initialisation()
 
+    def arene_on_creation(self):
+        minion_rating = db_arene(
+            version=self.version,
+            type_ban=Race('ALL').hex - self.type_present)
+        for card in self.minion_can_collect:
+            try:
+                card.all_rating = minion_rating[card]['rating']
+            except KeyError:
+                card.all_rating = {}
+
+
 if __name__ == "__main__":
     g = Card(CardName.DEFAULT_GAME)
     g.party_begin('rivvers', 'notoum', hero_p1=58021)
     p1, p2 = g.players
 
-    p1 = g.players[0]
-    with Sequence('TURN', g):
-        aml = p1.hand.create_card_in(74910)
-        aml.play()
 
-    with Sequence('FIGHT', g):
-        aml.die()
-        print(p1.board.cards)
-    print(p1.board.cards)

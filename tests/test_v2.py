@@ -89,7 +89,7 @@ def test_game_hand(reinit_game):
     assert isinstance(entity, Entity)
     assert len(g.hand.cards.filter(dbfId=id)) == CARD_NB_COPY[entity_level]
     nb = 0
-    for card_id in g.card_can_collect:
+    for card_id in g.minion_can_collect:
         if card_id.level == entity_level:
             nb += 1
     assert len(g.hand.cards_of_tier_max(
@@ -98,7 +98,7 @@ def test_game_hand(reinit_game):
 
 def test_minion(reinit_game):
     minion_id = 1915 # Baron
-    entity_data = g.card_can_collect[minion_id]
+    entity_data = g.minion_can_collect[minion_id]
     assert entity_data != None
 
     for minion in g.hand.entities[entity_data['level']]:

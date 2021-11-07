@@ -355,7 +355,7 @@ TB_BaconUps_120= ICC_029 # Plaiedécailles cobalt premium
 class BGS_009(Minion):
     # Massacreuse croc radieux
     def turn_off(self, sequence):
-        for minion in self.my_zone.cards.one_minion_by_type():
+        for minion in self.my_zone.cards.one_minion_by_race():
             self.buff(self.enchantment_dbfId, minion)
 TB_BaconUps_082= BGS_009  # Massacreuse croc radieux premium
 
@@ -376,18 +376,16 @@ class TB_BaconUps_156(Minion):
 
 class BG20_301(Minion):
     # Bronze couenne
-    nb_strike = 1
+    nb_strike = 2
 
     @repeat_effect
     def sell_end(self, sequence):
-        self.controller.hand.create_card_in(
-            CardName.BLOOD_GEM,
-            CardName.BLOOD_GEM)
+        self.controller.hand.create_card_in(CardName.BLOOD_GEM)
 
 
 class BG20_301_G(BG20_301):
     # Bronze couenne premium
-    nb_strike = 2
+    nb_strike = 4
 
 
 class BG20_100(Minion):
@@ -697,7 +695,7 @@ class BGS_069(battlecry_buff_myself):
     # Amalgadon
     @property
     def nb_strike(self) -> int:
-        return len(self.my_zone.cards.exclude(self).one_minion_by_type())
+        return len(self.my_zone.cards.exclude(self).one_minion_by_race())
 
     @property
     def enchantment_dbfId(self) -> int:
@@ -891,7 +889,7 @@ class BGS_082(Minion):
 
     @repeat_effect
     def battlecry(self, sequence):
-        minion_list = self.my_zone.cards.one_minion_by_type()
+        minion_list = self.my_zone.cards.one_minion_by_race()
         if minion_list:
             random.shuffle(minion_list)
             self.buff(self.enchantment_dbfId, *minion_list[:3])
@@ -992,7 +990,7 @@ class TRLA_149(deathrattle_repop):
 
     @property
     def repop_dbfId(self):
-        cards = self.game.card_can_collect.filter(DEATHRATTLE=True).exlude(self.dbfId)
+        cards = self.game.minion_can_collect.filter(DEATHRATTLE=True).exlude(self.dbfId)
         return random.choice(cards)
 
 
@@ -1007,7 +1005,7 @@ class BGS_079(deathrattle_repop):
 
     @property
     def repop_dbfId(self):
-        cards = self.game.card_can_collect.filter(race='PIRATE').exlude(self.dbfId)
+        cards = self.game.minion_can_collect.filter(race='PIRATE').exlude(self.dbfId)
         return random.choice(cards)
 
 
@@ -1022,7 +1020,7 @@ class BGS_006(deathrattle_repop):
 
     @property
     def repop_dbfId(self):
-        cards = self.game.card_can_collect.filter(elite=True).exlude(self.dbfId)
+        cards = self.game.minion_can_collect.filter(elite=True).exlude(self.dbfId)
         return random.choice(cards)
 
 
@@ -1082,7 +1080,7 @@ class BGS_044(hit_by_repop):
 
     @property
     def repop_dbfId(self):
-        return random.choice(self.game.card_can_collect.filter(race='DEMON').exclude(self.dbfId))
+        return random.choice(self.game.minion_can_collect.filter(race='DEMON').exclude(self.dbfId))
 
 
 class TB_BaconUps_116(BGS_044):
@@ -1369,7 +1367,7 @@ class BG20_302(Minion):
     def enhance_off(self, sequence):
         if sequence.source.dbfId == CardName.BLOOD_GEM_ENCHANTMENT and\
                 self is sequence.target:
-            for minion in self.my_zone.cards.one_minion_by_type():
+            for minion in self.my_zone.cards.one_minion_by_race():
                 self.buff(self.enchantment_dbfId, minion)
 BG20_302_G= BG20_302 # Aggem malépine premium
 
@@ -1435,16 +1433,13 @@ def wake_up(self):
 
 class BG20_203(Minion):
     # Prophète du sanglier
-    def turn_on(self, sequence):
-        self.quest_value = 1
-
     def play_off(self, sequence):
         source = sequence.source
         if source.race.QUILBOAR and\
                 source.controller is self.controller and\
-                self.quest_value > 0:
+                self.temp_counter == 0:
             self.controller.hand.create_card_in(CardName.BLOOD_GEM)
-            self.quest_value -= 1
+            self.temp_counter += 1
 
 
 class BG20_203_G(BG20_203):
@@ -1453,9 +1448,10 @@ class BG20_203_G(BG20_203):
         source = sequence.source
         if source.race.QUILBOAR and\
                 source.controller is self.controller and\
-                self.quest_value > 0:
-            self.controller.hand.create_card_in(CardName.BLOOD_GEM, CardName.BLOOD_GEM)
-            self.quest_value -= 1
+                self.temp_counter == 0:
+            self.controller.hand.create_card_in(CardName.BLOOD_GEM)
+            self.controller.hand.create_card_in(CardName.BLOOD_GEM)
+            self.temp_counter += 1
 
 
 class BG20_304(Minion):
@@ -1821,11 +1817,16 @@ class BG19_010_Gt(Minion):
 
 class BG21_013(Minion):
     # Contrebandier dragonnet
+    # Partiellement faux : Pouvoir de Vol'Jin
+    #TODO: test
+    def enhance_on(self, sequence):
+        self.quest_value = getattr(sequence.target, 'attack', None)
+
     def enhance_off(self, sequence):
-        if sequence.target.race.DRAGON and\
+        if self.quest_value is not None and sequence.target.race.DRAGON and\
                 sequence.target.controller is self.controller and\
-                getattr(sequence.source, 'attack', 0) > 0:
-            sequence(self.buff, self.enchantment_dbfId)
+                self.quest_value < sequence.target.attack:
+            self.buff(self.enchantment_dbfId, sequence.target)
 BG21_013_G= BG21_013 # Contrebandier dragonnet premium
 
 

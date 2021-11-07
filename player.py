@@ -200,7 +200,7 @@ class Bob(Player):
         super().__init__(
             CardName.DEFAULT_PLAYER, 
             pseudo='Bob', 
-            champion=57110, 
+            champion=CardName.BOB, 
             **attr,
             nb_minion_by_refresh_list=NB_CARD_BY_LEVEL[:],
             )
@@ -254,7 +254,7 @@ class Bob(Player):
         bob = self.bob
         nb_card_in_bob = bob.nb_card_of_tier_max(tier_max=self.level)
         lst_proba = [
-            CARD_NB_COPY[bob.card_can_collect[card]["level"]]/nb_card_in_bob
+            CARD_NB_COPY[bob.minion_can_collect[card]["level"]]/nb_card_in_bob
             for card in lst_card
                 if card]
         return lst_proba

@@ -358,9 +358,11 @@ class TB_BaconShop_HP_028(Hero_power):
 
 class TB_BaconShop_HP_038(Hero_power):
     # Mukla
+    nb_strike = 2
+
+    @repeat_effect
     def use_power(self, sequence):
-        for _ in range(2):
-            self.owner.hand.create_card_in(random.choice([53215, 65230]))
+        self.owner.hand.create_card_in(random.choice([53215, 65230]))
 
     def turn_off(self, sequence):
         if not self.is_enabled:
@@ -464,42 +466,38 @@ class BG20_HERO_102p(Hero_power):
 class TB_BaconShop_HP_037a(Hero_power):
     # Cirène
     def use_power(self):
-        for minion in self.board.cards.one_minion_by_type():
+        for minion in self.board.cards.one_minion_by_race():
             self.buff(self.enchantment_dbfId, minion)
 
 
 class BG20_HERO_201p(Hero_power):
     # Vol'jin 1
+    # un dragon qui augmente son attaque grâce à ce pouvoir est buff par le contrebandier (pas l'autre)
     def use_power_start(self, sequence):
-        minion = self.choose_one_of_them(self.board.cards + self.board.opponent.cards)
-        if minion:
-            self.buff(self.enchantment_dbfId, minion)
+        minion1 = self.choose_one_of_them(self.board.cards + self.board.opponent.cards)
+        if minion1:
+            self.buff(self.enchantment_dbfId, minion1)
+            sequence.target = minion1
         else:
             sequence.is_valid = False
 
     def use_power(self, sequence):
-        self.change(71644)
+        self.change(71644, quest_value=sequence.target)
 
 
 class BG20_HERO_201p2(BG20_HERO_201p):
     # Vol'jin 2
-    # pouvoir utilisable sur la même cible ?
+    # pouvoir utilisable sur la même cible ? > non
     def use_power_start(self, sequence):
-        minion = self.choose_one_of_them(self.board.cards + self.board.opponent.cards)
-        if minion:
-            self.temp_counter = minion
+        minions = (self.board.cards + self.board.opponent.cards).exclude(self.quest_value)
+        minion2 = self.choose_one_of_them(minions)
+        if minion2:
+            self.temp_counter = minion2
         else:
             sequence.is_valid = False
 
     def use_power(self, sequence):
-        minion1 = None
-        for minion in self.board.cards + self.board.opponent.cards:
-            for entity in minion.entities:
-                if entity.dbfId == 71653:
-                    minion1 = minion
-                    entity.remove()
-                    break
-
+        minion1 = self.quest_value
         minion2 = self.temp_counter
 
         if minion2 and minion1:
@@ -513,7 +511,8 @@ class BG20_HERO_201p2(BG20_HERO_201p):
                 attack=minion2.attack,
                 max_health=minion2.health)
 
-    def turn_on(self, sequence):
+    # le pouvoir est reset à la fin du tour si celui-ci n'est pas utilisé
+    def turn_off(self, sequence):
         self.change(71464)
 
 

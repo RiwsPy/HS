@@ -8738,6 +8738,7 @@
   "max_health": 40,
   "cant_collect": 1,
   "power_id": -1,
+  "ban": 1,
   "dbfId": 57110,
   "cardClass": "NEUTRAL",
   "health": 60,

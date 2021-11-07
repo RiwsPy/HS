@@ -47,7 +47,7 @@ TB_BaconUps_163= BGS_124 # Lieutenant Garr premium
 class BGS_202(Minion):
     # Mythrax
     def turn_off(self, sequence):
-        nb = len(self.my_zone.cards.one_minion_by_type())
+        nb = len(self.my_zone.cards.one_minion_by_race())
         for _ in range(nb):
             self.buff(self.enchantment_dbfId, self)
 TB_BaconUps_258= BGS_202 # Mythrax premium

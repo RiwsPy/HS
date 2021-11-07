@@ -8,24 +8,20 @@ from sequence import Sequence
 class Player_hand(Entity):
     default_attr = {
     }
+    MAX_SIZE = HAND_SIZE
 
     def __init__(self, **kwargs) -> None:
         super().__init__(CardName.DEFAULT_HAND, **kwargs)
         self.cards = Card_list()
 
-    def append(self, *entities, position=None) -> None:
+    def append(self, entity: Entity, **kwargs) -> None:
         """
             Try to add card to player's hand, remove it from the current owner (if any)
-            position parameter is inconsistent,
-            *param card: card_id to append
-            *type card: card.Card
         """
-        #if entities:
-        for entity in entities[::-1]:
-            if not self.is_full and entity.type.can_be_add_in_hand:
-                Sequence('ADD_CARD_IN_HAND', entity).start_and_close()
-                super().append(entity)
-                self.cards.append(entity)
+        if not self.is_full and entity.type.can_be_add_in_hand:
+            Sequence('ADD_CARD_IN_HAND', entity).start_and_close()
+            super().append(entity)
+            self.cards.append(entity)
 
     @property
     def size(self):
@@ -44,7 +40,7 @@ class Player_hand(Entity):
         """
             Returns a boolean indicating if it is possible to add a card to player's hand
         """
-        return self.size >= HAND_SIZE
+        return self.size >= self.MAX_SIZE
 
     def auto_play(self) -> None:
         self.cards.sort(key=lambda x:(
@@ -70,6 +66,8 @@ class Bob_hand(Entity):
     default_attr = {
 
     }
+    MAX_SIZE = 9999
+
     def __init__(self, **kwargs) -> None:
         super().__init__(CardName.DEFAULT_HAND, entities=[
             Card_list(),
@@ -81,23 +79,19 @@ class Bob_hand(Entity):
             Card_list(),],
             **kwargs)
 
-    def append(self, *entities, position=None):
+    def append(self, entity: Entity, **kwargs) -> None:
         """
             Try to add card to bob's hand, remove it from the current owner (if any)
-            position parameter is inconsistent,
             in order to be the same to Player_hand ``append`` method
-            Card is reset before being added to Bob hand
+            A new card is added to Bob hand
             *param entities: card_ids to append
             *type entities: entity.Card
-            *return: True if the card is added, False otherwise
-            *rtype: bool
         """
-        for crd in entities[::-1]:
-            crd.owner.remove(crd)
-            self.append(*crd.entities)
-            if crd.from_bob:
-                self.create_card_in(crd.dbfId)
-        return True
+        entity.owner.remove(entity)
+        for ent in entity.entities[::-1]:
+            self.append(ent)
+        if entity.from_bob:
+            self.create_card_in(entity.dbfId)
 
     def remove(self, *cards) -> None:
         """
@@ -152,21 +146,17 @@ class Bob_hand(Entity):
     def cards(self) -> Card_list:
         return self.cards_of_tier_max()
 
-    def create_card_in(self, *args, **kwargs) -> Entity:
+    def create_card_in(self, dbfId: int, position=None, **kwargs) -> Entity:
         """
             Create a copy of each card in ``entities_id`` parameter to bob's hand
-            *return: last card_id created
-            *rtype: entity.Card
         """
-        card_id = None
-        for id in args:
-            card_id = self.create_card(id, **kwargs, from_bob=True)
-            card_id.owner = self
-            self.entities[card_id.level].append(card_id)
+        card_id = self.create_card(dbfId, **kwargs, from_bob=True)
+        card_id.owner = self
+        self.entities[card_id.level].append(card_id)
         return card_id
 
     def search(self, id: str) -> Entity:
-        if id in self.game.card_can_collect:
+        if id in self.game.minion_can_collect:
             card_lvl = self.card_db[id]['level']
             for entity in self.entities[card_lvl]:
                 if entity.dbfId == id:

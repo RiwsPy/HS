@@ -32,7 +32,6 @@ def khadgar_aura(function):
                         sequence.position += 1
                         #TODO: activation de SUMMON
                         clone_card.summon(position=sequence.position)
-                        #self.controller.board.append(clone_card, position=sequence.position)
         return card_id
     return double_invoc
 
@@ -44,7 +43,7 @@ class Entity:
         'attack': 0,
         'owner': Void,
         'from_bob': False,
-        'ban': 0, # utile ? techniquement une carte ban n'a pas à être créée ?
+        'ban': False,
         'cost': 0,
         'id': 'no_method',
         'zone_type': Zone.NONE,
@@ -118,8 +117,8 @@ class Entity:
     def level(self):
         return self.techLevel
 
-    def reset(self, id=None) -> None:
-        self.__init__(id or self.dbfId)
+    def reset(self, dbfId=None) -> None:
+        self.__init__(dbfId or self.dbfId)
 
     def append_action(self, method, *args, order=None, **kwargs):
         if self.game:
@@ -139,11 +138,10 @@ class Entity:
                 action, args, kwargs = method
                 action(*args, **kwargs)
 
-    def append(self, *entities):
-        for entity in entities[::-1]:
-            entity.owner.remove(entity)
-            entity.owner = self
-        self.entities.extend(entities)
+    def append(self, entity: 'Entity', **kwargs) -> None:
+        entity.owner.remove(entity)
+        entity.owner = self
+        self.entities.append(entity)
 
     def remove(self, *entities):
         for entity in entities:
@@ -156,19 +154,12 @@ class Entity:
                     pass
                     #print(f'{entity} not in owner.entities')
 
-    def remove_attr(self, *args, **kwargs):
-        for state in args:
-            if state in state_list:
-                setattr(self, state, False)
-
-    def create_card_in(self, *args, position=FIELD_SIZE, **kwargs) -> 'Entity':
+    def create_card_in(self, dbfId: int, position=None, **kwargs) -> 'Entity':
         """
             Create card and append it in self
         """
-        card_id = None
-        for id in args:
-            card_id = self.create_card(id, **kwargs)
-            self.append(card_id)
+        card_id = self.create_card(dbfId, **kwargs)
+        self.append(card_id)
         return card_id
 
     def create_card(self, dbfId, **kwargs) -> 'Entity':
@@ -250,10 +241,11 @@ class Entity:
 
     @property
     def nb_turn(self) -> int:
-        return self.game.nb_turn
+        return self.game._turn
 
     def all_in_bob(self):
-        self.game.hand.append(*self.entities)
+        for entity in self.entities[::-1]:
+            self.game.hand.append(entity)
 
     def adjacent_neighbors(self) -> Card_list:
         position = self.position
@@ -615,7 +607,7 @@ class Minion(Entity):
     @khadgar_aura
     def reborn(self, sequence) -> Entity:
         minion = self.create_card(self.dbfId)
-        minion.remove_attr('REBORN')
+        minion.REBORN = False
         minion.health = 1
         if self.controller.board.can_add_card(minion):
             minion.summon(position=sequence.position)
@@ -739,9 +731,9 @@ class Hero_power(Entity):
     def board(self) -> Entity:
         return self.owner.board
 
-    def change(self, dbfId) -> None:
+    def change(self, dbfId, **kwargs) -> None:
         #TODO: test
-        new_power_id = self.create_card(dbfId)
+        new_power_id = self.create_card(dbfId, **kwargs)
         if new_power_id.type == Type.HERO_POWER:
             self = new_power_id
 
