@@ -2,6 +2,7 @@ from enums import Race, LEVEL_MAX, Zone, Type, CARD_NB_COPY, state_list
 from json import load
 from types import GeneratorType
 from typing import List, Any
+from utils import Card_list
 
 class Card_data(int):
     def __new__(cls, **kwargs):
@@ -40,16 +41,10 @@ class Card_data(int):
         return self.data.items()
 
     def get(self, attr, default=None):
-        return self.data.get(attr,  default)
+        return self.data.get(attr, default)
 
 
-class Meta_card_data(List[Card_data]):
-    def __init__(self, *args):
-        if len(args) == 1 and isinstance(args[0], GeneratorType):
-            list.__setitem__(self, slice(None), *args)
-        else:
-            list.__setitem__(self, slice(None), args)
-
+class Meta_card_data(Card_list):
     def sort(self, attr='', reverse=False) -> None:
         """
             sort IN place.
@@ -59,99 +54,13 @@ class Meta_card_data(List[Card_data]):
     def __getitem__(self, value) -> Any:
         # problème avec random.shuffle si dbfId <= len(self) ??
         if not isinstance(value, int):
-            print(value)
             return super().__getitem__(value)
         try:
             return super().__getitem__(self.index(value))
         except ValueError:
-            print('Warning', value, 'not in Meta_card_data')
+            print('Warning', value, 'not in Meta_card_data ret:', super().__getitem__(value))
             return super().__getitem__(value)
 
-    """
-    def filter(self, **kwargs):
-        return self.__class__(card
-            for k, v in kwargs.items()
-                for card in self
-                    if card[k] == v)
-
-    def filter_hex(self, **kwargs) -> 'Meta_card_data':
-        return self.__class__(card
-            for k, v in kwargs.items()
-                for card in self
-                    if card[k] & v)
-    """
-
-    def filter(self, **kwargs) -> 'Meta_card_data':
-        cards = self.__class__(*self)
-        for k, v in kwargs.items():
-            for card in cards[::-1]:
-                if getattr(card, k) != v:
-                    cards.remove(card)
-
-        return cards
-
-    def filter_hex(self, **kwargs) -> 'Meta_card_data':
-        cards = self.__class__(*self)
-        for k, v in kwargs.items():
-            for card in cards[::-1]:
-                if not getattr(card, k) & v:
-                    cards.remove(card)
-
-        return cards
-
-    def exclude(self, *args, **kwargs) -> 'Meta_card_data':
-        # kwargs : OR relation
-        cards = self.__class__(card
-            for card in self
-                if card not in args)
-
-        for k, v in kwargs.items():
-            for card in cards[::-1]:
-                if getattr(card, k) == v:
-                    cards.remove(card)
-
-        return cards
-
-    def exclude_hex(self, *args, **kwargs) -> 'Meta_card_data':
-        cards = self.__class__(card
-            for card in self
-                if card not in args)
-
-        for k, v in kwargs.items():
-            for card in cards[::-1]:
-                if getattr(card, k) & v:
-                    cards.remove(card)
-
-        return cards
-
-    """
-    def exclude(self, *args, **kwargs) -> 'Meta_card_data':
-        copy = self.__class__(card
-            for card in self
-                if card not in args)
-        if kwargs:
-            return self.__class__(card
-                for k, v in kwargs.items()
-                    for card in copy
-                        if card[k] != v)
-        return copy
-
-    def exclude_hex(self, *args, **kwargs) -> 'Meta_card_data':
-        copy = self.__class__(card
-            for card in self
-                if card not in args)
-        if kwargs:
-            return self.__class__(card
-                for k, v in kwargs.items()
-                    for card in copy
-                        if not card[k] & v)
-        return copy
-    """
-
-    def filter_maxmin_level(self, level_max=LEVEL_MAX, level_min=1) -> 'Meta_card_data':
-        return self.__class__(card
-            for card in self
-                if level_min <= card.level <= level_max)
 
 def charge_all_cards(db_filename='db/HStat.json') -> Meta_card_data:
     db = Meta_card_data()

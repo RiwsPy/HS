@@ -446,8 +446,9 @@ class TB_BaconShop_HP_024(Hero_power):
 
 class BG20_HERO_103p(Hero_power):
     # Nécrorateur
+    nb_strike = 2
     def levelup_off(self, sequence):
-        self.owner.hand.create_card_in(CardName.BLOOD_GEM, CardName.BLOOD_GEM)
+        self.owner.hand.create_card_in(CardName.BLOOD_GEM)
 
 
 class BG20_HERO_102p(Hero_power):
@@ -488,6 +489,9 @@ class BG20_HERO_201p(Hero_power):
 class BG20_HERO_201p2(BG20_HERO_201p):
     # Vol'jin 2
     # pouvoir utilisable sur la même cible ? > non
+    # le pouvoir est reset à la fin du tour si celui-ci n'est pas utilisé
+    # le pouvoir est reset si le minion1 est vendu
+    # ou si plus généralement quitte le board ? > aura ? > que se passe-t-il si le minion est dévoré ?
     def use_power_start(self, sequence):
         minions = (self.board.cards + self.board.opponent.cards).exclude(self.quest_value)
         minion2 = self.choose_one_of_them(minions)
@@ -511,7 +515,10 @@ class BG20_HERO_201p2(BG20_HERO_201p):
                 attack=minion2.attack,
                 max_health=minion2.health)
 
-    # le pouvoir est reset à la fin du tour si celui-ci n'est pas utilisé
+    def sell_off(self, sequence):
+        if sequence.source is self.quest_value:
+            self.turn_off(sequence)
+
     def turn_off(self, sequence):
         self.change(71464)
 
