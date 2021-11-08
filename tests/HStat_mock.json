@@ -1,0 +1,178 @@
+[
+    {
+        "type": "GAME",
+        "id": "Game",
+        "dbfId": -12
+       },
+       {
+        "type": "ZONE",
+        "synergy": "ALL",
+        "zone_type": "HAND",
+        "phase": [],
+        "dbfId": -13
+       },
+       {
+        "type": "ZONE",
+        "synergy": "ALL",
+        "zone_type": "PLAY",
+        "id": "Player_board",
+        "phase": [
+         "ALL"
+        ],
+        "dbfId": -14
+       },
+       {
+        "type": "ZONE",
+        "synergy": "ALL",
+        "zone_type": "PLAY",
+        "id": "Bob_board",
+        "phase": [],
+        "dbfId": -15
+       },
+       {
+        "type": "PLAYER",
+        "id": "player",
+        "dbfId": -16
+       },
+       {
+        "type": "ZONE",
+        "synergy": "ALL",
+        "zone_type": "PLAY",
+        "id": "Secret_board",
+        "phase": [
+         "ALL"
+        ],
+        "dbfId": -17
+       },
+       {
+        "type": "ZONE",
+        "synergy": "ALL",
+        "zone_type": "GRAVEYARD",
+        "id": "Graveyard",
+        "phase": [],
+        "dbfId": -18
+       },
+       {
+        "type": "ZONE",
+        "synergy": "ALL",
+        "id": "Field",
+        "phase": [
+         "ALL"
+        ],
+        "dbfId": -19
+       },
+       {
+        "name": "Bob le barman",
+        "synergy": "ALL",
+        "max_health": 40,
+        "cant_collect": 1,
+        "power_id": -1,
+        "ban": true,
+        "dbfId": 57110,
+        "cardClass": "NEUTRAL",
+        "health": 60,
+        "hideStats": true,
+        "id": "TB_BaconShopBob",
+        "set": "BATTLEGROUNDS",
+        "type": "HERO"
+       },
+       {
+        "name": "Héros tout nul",
+        "synergy": "ALL",
+        "max_health": 40,
+        "type": "HERO",
+        "power_id": 0,
+        "dbfId": -10
+       },
+       {
+        "name": "Chasse-marée murloc",
+        "synergy": "MURLOC",
+        "phase": [
+         "BATTLECRY"
+        ],
+        "repop_dbfId": 68469,
+        "dbfId": 976,
+        "artist": "Dan Scott",
+        "attack": 2,
+        "battlegroundsPremiumDbfId": 57338,
+        "cardClass": "NEUTRAL",
+        "collectible": true,
+        "cost": 2,
+        "flavor": "« La mort monte avec la marée ! »",
+        "health": 1,
+        "id": "EX1_506",
+        "mechanics": [
+         "BATTLECRY"
+        ],
+        "race": "MURLOC",
+        "rarity": "FREE",
+        "set": "LEGACY",
+        "techLevel": 1,
+        "text": "<b>Cri de guerre :</b> invoque un éclaireur murloc 1/1.",
+        "type": "MINION"
+       },
+       {
+        "name": "Mande-flots murloc",
+        "synergy": "MURLOC",
+        "phase": [
+         "SUMMON"
+        ],
+        "enchantment_dbfId": 1719,
+        "ban": true,
+        "dbfId": 475,
+        "artist": "Jaemin Kim",
+        "attack": 1,
+        "battlegroundsPremiumDbfId": 58138,
+        "cardClass": "NEUTRAL",
+        "collectible": true,
+        "cost": 1,
+        "flavor": "Il devient super fort pendant les réunions de famille !",
+        "health": 2,
+        "id": "EX1_509",
+        "mechanics": [
+         "TRIGGER_VISUAL"
+        ],
+        "race": "MURLOC",
+        "rarity": "RARE",
+        "set": "EXPERT1",
+        "text": "Gagne +1 ATQ chaque fois que vous invoquez un Murloc.",
+        "type": "MINION"
+       },
+       {
+        "name": "Chat de gouttière",
+        "synergy": "BEAST",
+        "phase": [
+         "BATTLECRY"
+        ],
+        "repop_dbfId": 40425,
+        "dbfId": 40426,
+        "artist": "Anton Zemskov",
+        "attack": 1,
+        "battlegroundsPremiumDbfId": 60053,
+        "cardClass": "HUNTER",
+        "collectible": true,
+        "cost": 1,
+        "flavor": "Non, je ne ronronne pas, je suis trop violent et féroce_!",
+        "health": 1,
+        "id": "CFM_315",
+        "mechanics": [
+         "BATTLECRY"
+        ],
+        "race": "BEAST",
+        "rarity": "COMMON",
+        "set": "GANGS",
+        "techLevel": 1,
+        "text": "<b>Cri de guerre :</b> invoque un chat 1/1.",
+        "type": "MINION"
+       },
+       {
+        "name": "Inconnu",
+        "cost": 0,
+        "hero_script": "Default_script",
+        "type": "HERO_POWER",
+        "ban": true,
+        "id": "Inconnu",
+        "dbfId": 0
+       }
+      
+    ]
