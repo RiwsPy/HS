@@ -1,4 +1,3 @@
-from utils import my_zone, controller, game
 from game import Game
 from enums import *
 from entity import Entity
@@ -7,10 +6,8 @@ import pytest
 from sequence import Sequence
 from db_card import Meta_card_data, Card_data
 
-# pytest --cov=../HS tests/test_v2.py
-# 25% avec beaucoup de fichiers obsolètes
 
-player_name = 'rivvers'
+player_name = 'p1_name'
 hero_name = CARD_DB[CardName.DEFAULT_HERO]
 g = Game()
 
@@ -26,7 +23,7 @@ def reinit_game(monkeypatch):
         return hero_name
     monkeypatch.setattr(Entity, 'choose_one_of_them', mock_choose_one_of_them)
 
-    g.party_begin(player_name, 'notoum')
+    g.party_begin(player_name, 'p2_name')
 
 """
 def test_game(monkeypatch):

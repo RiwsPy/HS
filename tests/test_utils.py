@@ -7,7 +7,7 @@ from db_card import CARD_DB
 from sequence import Sequence
 
 
-player_name = 'rivvers'
+player_name = 'p1_name'
 hero_name = CARD_DB[CardName.DEFAULT_HERO]
 g = Game()
 
@@ -18,7 +18,7 @@ def reinit_game(monkeypatch):
         return hero_name
     monkeypatch.setattr(Entity, 'choose_one_of_them', mock_choose_one_of_them)
 
-    g.party_begin(player_name, 'notoum')
+    g.party_begin(player_name, 'p2_name')
 
 
 def test_utils(reinit_game):
