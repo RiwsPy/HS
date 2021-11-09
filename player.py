@@ -259,53 +259,6 @@ class Bob(Player):
                 if card]
         return lst_proba
 
-    def minion_choice(self, target, *exception, restr=0):
-        #TODO: delete
-        return self.choose_one_of_them([minion
-            for minion in target
-                if (not restr or minion.type & restr) and minion not in exception])
-
-    def discover(self, origin, nb=3, typ=0, lvl_max=LEVEL_MAX, lvl_min=1):
-            Découvre nb cartes de type typ, de niveau maximum lvl_max et de niveau minimum lvl_min
-            Le joueur choisit ensuite l'une d'entre elle et l'ajoute dans sa main
-            *param typ: (cf enums.Race.XXX)
-            *return: liste des cartes à choisir
-        if nb < 1:
-            return None
-
-        lst_key_ban = []
-        if origin:
-            lst_key_ban = [origin.dbfId]
-        if type(origin) is Card and origin.general == General.MINION:
-            lvl_max = min(lvl_max, self.level)
-
-        lvl_min = min(lvl_min, lvl_max)
-        copy_bob = self.bob.hand.cards_type_of_tier_max(typ, lvl_max, lvl_min)
-        random.shuffle(copy_bob)
-
-        lst_id = []
-        for crd in copy_bob:
-            if crd.dbfId not in lst_key_ban:
-                if crd.owner:
-                    crd.owner.remove(crd)
-                crd.owner = None
-                lst_id.append(crd)
-                if len(lst_id) >= nb:
-                    break
-                lst_key_ban.append(crd.dbfId)
-
-        self.discover_choice(lst_id)
-
-    def discover_choice(self, lst):
-        choice = self.choose_one_of_them(lst)
-
-        if choice:
-            if self.hand.append(choice):
-                lst.remove(choice)
-
-            for card in lst:
-                self.bob.hand.append(card)
-
     def best_card_T1(self, *players, nb_turn=2):
         # renvoie la "meilleure" carte que peut choisir un héros qui rencontre un héros précis au tour n°2
         # puis un héros "classique" au tour n°3

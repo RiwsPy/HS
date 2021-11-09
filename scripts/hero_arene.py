@@ -1,5 +1,3 @@
-from enums import Event
-from sequence import Sequence
 
 class Default_script:
     def turn_1(self, *args, **kwargs):
@@ -53,7 +51,9 @@ class Special_arene_base_T2_to_T3:
 
         worst_rating_minion = self.board.cards[-1]
         worst_rating_minion_rating = self.card_db[worst_rating_minion.dbfId].T1_to_T3_rating
-        if worst_rating_minion_rating < card_2.rating-0.5 or worst_rating_minion.event & Event.SELL:
+        if worst_rating_minion_rating < card_2.rating-0.5 or\
+                hasattr(worst_rating_minion, 'sell_on') or\
+                hasattr(worst_rating_minion, 'sell_off'):
             worst_rating_minion.sell()
             crd = self.bob.board.create_card_in(card_2)
             crd.buy()

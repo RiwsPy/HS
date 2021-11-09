@@ -1,6 +1,5 @@
-from enums import Race, LEVEL_MAX, Zone, Type, CARD_NB_COPY, state_list
+from enums import Race, Zone, Type, CARD_NB_COPY, state_list
 from json import load
-from types import GeneratorType
 from typing import List, Any
 from utils import Card_list
 

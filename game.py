@@ -1,6 +1,6 @@
 from db_card import CARD_DB
 from utils import Card_list, db_arene
-from enums import Race, Type, NB_PRESENT_TYPE, VERSION, CardName, ADAPT_ENCHANTMENT
+from enums import Race, Type, NB_PRESENT_TYPE, VERSION, CardName
 import random
 import player
 from entity import Entity, Card
@@ -10,7 +10,6 @@ from stats import *
 import entity
 from collections import deque
 from combat import Combat
-import db_card
 
 
 class Game(Entity):
@@ -147,7 +146,7 @@ class Game(Entity):
 
 if __name__ == "__main__":
     g = Card(CardName.DEFAULT_GAME)
-    g.party_begin('rivvers', 'notoum', hero_p1=58021)
+    g.party_begin('p1_name', 'p2_name', hero_p1=58021)
     p1, p2 = g.players
 
 

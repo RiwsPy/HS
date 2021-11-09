@@ -264,7 +264,10 @@ class BG20_HERO_101pe2(Enchantment):
 class TB_BaconShop_HP_101e(Enchantment):
     # Ticket de Sombrelune
     pass
-BG20_HERO_201p3e= TB_BaconShop_HP_101e # Marqué pour échange (Vol'Jin)
+
+class BG20_HERO_201p3e(Enchantment):
+    # Marqué pour échange (Vol'Jin)
+    pass
 
 
 class BGS_045e(add_stat):
@@ -301,6 +304,15 @@ class BGS_104pe(Enchantment):
 BG21_020pe= BGS_104pe # Ench. de joueur Rejeton de Lumière éclatant
 
 
+class TB_BaconShop_HP_068(add_stat):
+    # Emprisonné
+    def remove(self):
+        super().remove()
+        self.buff(self.enchantment_dbfId, self)
+        self.controller.opponent.hand.append(self)
+
+
+
 # Unofficial enchantment
 IMMUNE_000= add_stat # Bloc de glace, Étreinte de Mal’Ganis, Emprise de Kathra’natir
 
@@ -310,3 +322,4 @@ class POISSON(Enchantment):
     def apply(self):
         self.owner.DEATHRATTLE = True
         setattr(self, 'deathrattle', self.deathrattle_met)
+

@@ -5,6 +5,7 @@ def damage_resolve(self, *targets):
             target.die(killer=self)
 
 def attack(sequence):
-    for target in sequence.targets.filter(is_alive=True):
+    target = sequence.target
+    if sequence.target.is_alive:
         sequence.source.damage(target, sequence.source.attack, overkill=True)
         target.damage(sequence.source, target.attack, overkill=False)

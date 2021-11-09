@@ -1037,34 +1037,6 @@
      "1281_Hyène charognarde": -6.0,
      "70147_Bronze-couenne": -8.3
     }
-   },
-   "2021-11-04 14:51:28.249949": {
-    "method": "base_T1",
-    "type_ban": 0,
-    "retro": 0,
-    "p1": "Héros tout nul",
-    "p2": "Héros tout nul",
-    "espérance": -2.8123,
-    "rating": {
-     "976_Chasse-marée murloc": 2.68,
-     "40426_Chat de gouttière": 2.58,
-     "63614_Acolyte de C’Thun": -0.01,
-     "53445_Micromomie": -0.32,
-     "64042_Anomalie actualisante": -0.77,
-     "74910_Diablotin dégoûtant": -0.84,
-     "61061_Forban": -0.85,
-     "59968_Dragonnet rouge": -3.16,
-     "59670_Tisse-colère": -3.75,
-     "74659_Chromaile évolutive": -4.3,
-     "41245_Chasseur rochecave": -4.74,
-     "70143_Géomancien de Tranchebauge": -4.81,
-     "72059_Entourloupeur impétueux": -5.08,
-     "72387_Robo-toutou": -5.33,
-     "61055_Mousse du pont": -5.34,
-     "64038_Élémenplus": -5.38,
-     "1281_Hyène charognarde": -5.45,
-     "70147_Bronze-couenne": -5.76
-    }
    }
   }
  }

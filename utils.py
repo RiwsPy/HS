@@ -110,8 +110,7 @@ class Card_list(list):
         # les race 'ALL' sont pris par défaut (en cas de non représentation d'un serviteur d'une race)
         # A suivre
 
-        shuffle_copy = self[:]
-        random.shuffle(shuffle_copy)
+        shuffle_copy = self.shuffle()
         tri = defaultdict(list)
         for minion in shuffle_copy:
             tri[minion.race].append(minion)
@@ -139,6 +138,10 @@ class Card_list(list):
         return (result + minion_with_all_race)[:len(Race.battleground_race())]
         """
 
+    def shuffle(self) -> 'Card_list':
+        shuffle_copy = self[:]
+        random.shuffle(shuffle_copy)
+        return shuffle_copy
 
 
 class Board_Card_list(Card_list):

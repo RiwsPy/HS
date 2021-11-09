@@ -96,7 +96,7 @@ class arene:
         return cards_test
 
     def base_T1(self, cards_test, p1, p2):
-        cards_test = cards_test or self.g.card_can_collect.filter(level=1)
+        cards_test = cards_test or self.g.minion_can_collect.filter(level=1)
         self.fight_base_T1(cards_test, p1, p2)
 
         return cards_test, 1
@@ -114,7 +114,7 @@ class arene:
             for card_p2, proba_apparition_p2 in generator_p2:
                 print(card_p1.name, card_p2.name, proba_apparition_p2)
                 for _ in range(NB_FIGHT):
-                    g.party_begin('rivvers', 'notoum', hero_p1=hero_p1, hero_p2=hero_p2)
+                    g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
                     j1, j2 = g.players
                     for _ in range(2):
                         with Sequence('TURN', g):
@@ -129,7 +129,7 @@ class arene:
 
     """
     def base_T3(self, cards_test, p1, p2):
-        cards_test = cards_test or self.g.card_can_collect.filter_maxmin_level(level_max=2)
+        cards_test = cards_test or self.g.minion_can_collect.filter_maxmin_level(level_max=2)
         self.fight_base_T3(cards_test, p1, p2)
 
         return cards_test, 2
@@ -150,7 +150,7 @@ class arene:
             for card_p1_2, proba_c2 in generator_p2_2:
                 for compo in compo_turn_3.values():
                     for _ in range(NB_FIGHT):
-                        g.party_begin('rivvers', 'notoum', hero_p1=hero_p1, hero_p2=hero_p2)
+                        g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
                         j1, j2 = g.players
                         g.begin_turn()
                         g.end_turn()
@@ -170,7 +170,7 @@ class arene:
 
 
     def base_T1_to_T3_no_refound(self, cards_test, p1, p2):
-        cards_test = cards_test or self.g.card_can_collect.filter(level=1)
+        cards_test = cards_test or self.g.minion_can_collect.filter(level=1)
         self.fight_base_T1_to_T3_no_refound(cards_test, p1, p2)
 
         return cards_test, 1
@@ -182,7 +182,7 @@ class arene:
         for synergy in compo_turn_3.copy():
             if not synergy & self.g.type_present:
                 del compo_turn_3[synergy]
-        #cards_T2 = self.g.card_can_collect.filter_maxmin_level(level_max=2)
+        #cards_T2 = self.g.minion_can_collect.filter_maxmin_level(level_max=2)
         cards_T2 = self.load_card_rating(
                         {"method": "base_T3",
                         "type_ban": self.type_ban,
@@ -201,7 +201,7 @@ class arene:
             for card_p1_2, proba_c2 in generator_p2:
                 for compo in compo_turn_3.values():
                     for _ in range(NB_FIGHT):
-                        g.party_begin('rivvers', 'notoum', hero_p1=hero_p1, hero_p2=hero_p2)
+                        g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
                         j1, j2 = g.players
                         g.begin_turn()
                         j1.power.active_script_arene(card_p1)
@@ -225,7 +225,7 @@ class arene:
                         card_p1.value += calc_damage(j1, j2)*proba_c2
 
     def base_T2_to_T3(self, cards_test, p1, p2):
-        cards_test = cards_test or self.g.card_can_collect.filter(level=1)
+        cards_test = cards_test or self.g.minion_can_collect.filter(level=1)
         self.fight_base_T2_to_T3(cards_test, p1, p2)
 
         cards_list = self.load_card_rating(
@@ -256,7 +256,7 @@ class arene:
         for synergy in compo_turn_3.copy():
             if not synergy & self.g.type_present:
                 del compo_turn_3[synergy]
-        #cards_T2 = self.g.card_can_collect.filter_maxmin_level(level_max=2)
+        #cards_T2 = self.g.minion_can_collect.filter_maxmin_level(level_max=2)
 
         cards_T1_to_T3 = self.load_card_rating(
                         {"method": "base_T1_to_T3_no_refound",
@@ -292,7 +292,7 @@ class arene:
                 for card_p1_3, proba_c3 in generator_p2_2:
                     for compo in compo_turn_3.values():
                         for _ in range(NB_FIGHT):
-                            g.party_begin('rivvers', 'notoum', hero_p1=hero_p1, hero_p2=hero_p2)
+                            g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
                             j1, j2 = g.players
                             j1.power.hero_script = 'Special_arene_base_T2_to_T3'
                             g.begin_turn()

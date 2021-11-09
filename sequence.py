@@ -15,7 +15,7 @@ class Sequence:
         self.phase_name = name
         self.source = source
         self.is_valid = True
-        self._targets = Card_list()
+        self.target = None
         self._repops = Card_list()
 
         for k, v in kwargs.items():
@@ -23,16 +23,10 @@ class Sequence:
 
         self.purge_methods()
 
-    @property
-    def targets(self):
-        return self._targets or self.source
-
-    @targets.setter
-    def targets(self, args):
-        self._targets = Card_list(*args)
-
-    def add_target(self, *args):
-        self._targets.extend(list(args))
+    def add_target(self, target):
+        if self.target:
+            print('target is not None:', self.target)
+        self.target = target
 
     @property
     def method_name(self) -> str:
@@ -106,3 +100,5 @@ class Sequence:
             if method:
                 method(self)
 
+    def is_ally(self, target) -> bool:
+        return self.source.controller is target.controller
