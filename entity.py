@@ -211,12 +211,13 @@ class Entity:
             return 2
         return 1
 
-    def choose_one_of_them(self, choice_list: list, pr: str = '') -> Any:
+    def choose_one_of_them(self, choice_list: Card_list, pr: str = '') -> Any:
         """
             player chooses one card among ``choice_list`` list
             *return: chosen card id or None
             *rtype: list content
         """
+        choice_list = choice_list.exclude(DORMANT=True)
         if not choice_list or not self.controller:
             return None
         elif len(choice_list) == 1:
@@ -297,7 +298,7 @@ class Entity:
         if self.type == Type.HERO_POWER:
             met = getattr(hero_arene, self.hero_script)
             if met:
-                met_turn = getattr(met, f'turn_{self.game.nb_turn}', None)
+                met_turn = getattr(met, f'turn_{self.nb_turn}', None)
                 if met_turn:
                     met_turn(self.owner, *args, **kwargs)
         elif self.type == Type.MINION:
@@ -305,7 +306,7 @@ class Entity:
             if met:
                 getattr(
                     getattr(met, strat),
-                    f'turn_{self.game.nb_turn}'
+                    f'turn_{self.nb_turn}'
                 )(self, *args, **kwargs)
 
     @khadgar_aura
@@ -358,19 +359,20 @@ class Minion(Entity):
                         Sequence(
                             'BATTLECRY',
                             self,
-                            targets=seq.targets,
+                            target=seq.target,
                             position=self.position
                         ).start_and_close()
 
     def die(self, sequence=None, **kwargs):
         if sequence is None:
             kwargs['position'] = self.position
+            # le avenge/reborn s'active avant le die_off ?
             with Sequence('DIE', self, **kwargs) as seq:
                 if seq.is_valid:
                     Sequence('DEATHRATTLE', self, **kwargs).start_and_close()
-                    # TODO: vérifier le sens d'exécution
-                    Sequence('REBORN', self, **kwargs).start_and_close()
+                    # vérifier le sens d'exécution: confirmé ig
                     Sequence('AVENGE', self, **kwargs).start_and_close()
+                    Sequence('REBORN', self, **kwargs).start_and_close()
 
     def play_start(self, sequence):
         if self.my_zone.zone_type != Zone.HAND and\
@@ -433,17 +435,20 @@ class Minion(Entity):
     def discover(self, card_list: Card_list, nb: int = 3) -> Entity:
         # TODO: Warning, problem if the card is moving during the discover
         # toutes les découvertes sont retirées du pool
-        card_list = card_list.copy()
-        random.shuffle(card_list)
+        if nb <= 0:
+            return None
+
+        card_list = card_list.shuffle()
         list_card_choice = Card_list()
-        exclude_dbfid = {self.dbfId}
+        exclude_dbfId = {self.dbfId}
 
         for card in card_list:
-            if card.dbfId not in exclude_dbfid:
+            if card.dbfId not in exclude_dbfId:
                 list_card_choice.append(card)
-                if len(list_card_choice) >= nb:
+                if nb <= 1:
                     break
-                exclude_dbfid.add(card.dbfId)
+                nb -= 1
+                exclude_dbfId.add(card.dbfId)
 
         return self.choose_one_of_them(list_card_choice)
 
@@ -515,7 +520,7 @@ class Minion(Entity):
             seq = Sequence('PRE_COMBAT', self)
             seq.start_and_close()
             if seq.is_valid:
-                Sequence('COMBAT', self, targets=seq.targets).start_and_close()
+                Sequence('COMBAT', self, target=seq.target).start_and_close()
 
     def pre_combat_start(self, sequence: Sequence) -> None:
         if not self.can_attack or not self.is_alive\
@@ -531,23 +536,23 @@ class Minion(Entity):
 
     def combat_start(self, sequence):
         if self.CLEAVE:
-            for target in sequence.targets:
-                position = target.position
-                if target.owner.cards[position-1]:
-                    sequence(
-                        self.damage,
-                        target.owner.cards[position-1],
-                        self.attack,
-                        overkill=True
-                    )
-                sequence(attack, sequence)
-                if target.owner.cards[position+1]:
-                    sequence(
-                        self.damage,
-                        target.owner.cards[position+1],
-                        self.attack,
-                        overkill=True
-                    )
+            target = sequence.target
+            position = target.position
+            if target.owner.cards[position-1]:
+                sequence(
+                    self.damage,
+                    target.owner.cards[position-1],
+                    self.attack,
+                    overkill=True
+                )
+            sequence(attack, sequence)
+            if target.owner.cards[position+1]:
+                sequence(
+                    self.damage,
+                    target.owner.cards[position+1],
+                    self.attack,
+                    overkill=True
+                )
         else:
             sequence(attack, sequence)
 
@@ -647,13 +652,13 @@ class Enchantment(Entity):
 
         if not hasattr(self, 'duration'):
             if self.source.in_fight_sequence:
-                self.duration = self.source.game.nb_turn + 1
+                self.duration = self.source.nb_turn + 1
             else:
                 self.duration = MAX_TURN
         elif self.duration == -1:
             self.duration = MAX_TURN
         else:
-            self.duration += self.source.game.nb_turn
+            self.duration += self.source.nb_turn
 
     @property
     def is_over(self) -> bool:

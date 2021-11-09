@@ -48,19 +48,17 @@ class Board(Entity):
     def cumulative_level(self) -> int:
         return sum(entity.level for entity in self.cards)
 
-    def remove(self, *cards) -> None:
-        super().remove(*cards)
-        for card in cards:
-            #if card in self.cards:
-            try:
-                self.cards.remove(card)
-            except ValueError:
-                print(f'{card} remove but not in {self}')
-                return
+    def remove(self, entity: Entity) -> None:
+        super().remove(entity)
+        try:
+            self.cards.remove(entity)
+        except ValueError:
+            print(f'{entity} remove but not in {self}')
+            return
 
-            for enchantment in card.entities:
-                if getattr(enchantment, 'aura', False):
-                    enchantment.remove()
+        for enchantment in entity.entities:
+            if getattr(enchantment, 'aura', False):
+                enchantment.remove()
 
     def append(self, entity: Entity, position=None) -> None:
         # TODO : problème de positionnement en cas de repop multiple
@@ -119,22 +117,26 @@ class Player_board(Board):
             Sort all cards in the board based on low intelligence algorithm
             self.cards is altered by the method
         """
-        if len(self.cards) < 2:
-            return None
+        # Warning: Une carte comme Casseur Oméga se retrouvera à la fin
+        if self.size >= 2:
+            self.cards.sort(key=lambda x: (
+                        hasattr(x, 'combat_start'),
+                        hasattr(x, 'combat_end'),
+                        x.DEATHRATTLE and not hasattr(x, 'repop_dbfId'),
+                        x.CLEAVE,
+                        x.OVERKILL,
 
-        # placement initial de la plus forte attaque à la moins
-        self.cards.sort(key=lambda x: (
-                        not x.CLEAVE,
-                        not x.OVERKILL,
-                        #not x.event & Event.ATK_ALLY,
-                        #x.event & Event.DIE,
-                        #x.event & Event.INVOC,
-                        x.AURA,
-                        #x.event & Event.HIT_BY,
-                        not x.DEATHRATTLE,
-                        x.TAUNT,
-                        -x.attack,
-                        x.health))
+                        not x.TAUNT,
+                        not hasattr(x, 'avenge'),
+                        not hasattr(x, 'combat_on'),
+                        not hasattr(x, 'die_off') or not hasattr(x, 'loss_shield_off'),
+                        not hasattr(x, 'summon_off'),
+                        not x.AURA,
+                        not hasattr(x, 'hit'),
+                        x.DEATHRATTLE,
+                        x.attack,
+                        -x.health),
+                        reverse=True)
 
 
 

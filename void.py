@@ -1,30 +1,26 @@
-from enums import Event, Type, Zone, Race
+from enums import Type, Zone, Race
 
 class Void:
     def __init__(self) -> None:
         self.temp_list = []
 
     @property
-    def type(self):
+    def type(self) -> int:
         return Type.ZONE
 
     @property
-    def zone(self):
+    def zone(self) -> int:
         return Zone.NONE
 
     @property
-    def event(self):
-        return Event.NONE
-
-    @property
-    def race(self):
+    def race(self) -> int:
         return Race('NONE')
     synergy = race
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr) -> None:
         return None
 
-    def remove(self, *args, **kwargs):
+    def remove(self, *args, **kwargs) -> None:
         pass
     #append = remove
 

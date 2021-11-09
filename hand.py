@@ -1,4 +1,4 @@
-from enums import Type, Event, LEVEL_MAX, HAND_SIZE, CardName
+from enums import Type, LEVEL_MAX, HAND_SIZE, CardName
 from entity import Entity
 from typing import Generator
 from itertools import chain
@@ -22,18 +22,19 @@ class Player_hand(Entity):
             Sequence('ADD_CARD_IN_HAND', entity).start_and_close()
             super().append(entity)
             self.cards.append(entity)
+        # + entity.die() if can't be added ?
+        # voir commentaire si une carte ne peut être ajoutée dans la main avec le pouvoir de Maiev
 
     @property
-    def size(self):
+    def size(self) -> int:
         return len(self.cards)
 
-    def remove(self, *entities) -> None:
-        super().remove(*entities)
-        for entity in entities:
-            try:
-                self.cards.remove(entity)
-            except ValueError:
-                pass
+    def remove(self, entity: Entity) -> None:
+        super().remove(entity)
+        try:
+            self.cards.remove(entity)
+        except ValueError:
+            pass
 
     @property
     def is_full(self) -> bool:
@@ -45,20 +46,17 @@ class Player_hand(Entity):
     def auto_play(self) -> None:
         self.cards.sort(key=lambda x:(
                         x.type != Type.MINION,
-                        #not x.event & Event.INVOC,
-                        #not x.event & Event.PLAY,
+                        not hasattr(x, 'summon_off'),
+                        not hasattr(x, 'play_on'),
+                        not hasattr(x, 'play_off'),
                         not x.AURA,
                         x.MODULAR,
                         x.BATTLECRY,
+                        not hasattr(x, 'battlecry_on'),
                         x.level,
                 ), reverse=True)
         for card in self.cards[::-1]:
-            if card.type == Type.SPELL:
-                card.play()
-                #getattr(script_event, card.id).play(card)
-                self.remove(card)
-            else:
-                card.play()
+            card.play()
         if self.cards:
             self.auto_play()
 
@@ -93,27 +91,22 @@ class Bob_hand(Entity):
         if entity.from_bob:
             self.create_card_in(entity.dbfId)
 
-    def remove(self, *cards) -> None:
+    def remove(self, entity: Entity) -> None:
         """
             Remove one card from bob's hand
-            *param card: card_id to remove
-            *type card: entity.Card
-            *return: None
         """
-        for card in cards:
-            #self.game.owner.append(card)
-            self.entities[card.level].remove(card)
+        self.entities[entity.level].remove(entity)
 
-    def discard(self, id) -> Entity:
+    def discard(self, dbfId: int) -> Entity:
         """
-            Take out one card with ``id`` of bob's hand
+            Take out one card with ``dbfId`` of bob's hand
             Only used by statistical algorithms
             *param key: card_key_number to remove
             *type key: str
             *return: card_id (or None if ``key`` doesn't exist)
             *rtype: entity.Card
         """
-        entity = self.search(id)
+        entity = self.search(dbfId)
         if entity:
             self.remove(entity)
         return entity

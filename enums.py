@@ -119,92 +119,10 @@ state_list= [
 
     'IS_POISONED',
     'MEGA_WINDFURY',
-    'ATTACK_IMMEDIATLY',
     'CLEAVE',
     'DORMANT',
 ]
 
-# obsolete
-class Event(int):
-    NONE = 0x0
-    BEGIN_TURN = 0x1 # début de tour chez bob
-    END_TURN = 0x2 # temps écoulé chez bob
-    FIRST_STRIKE = 0x4 # début du combat
-    SELL = 0x8 # le joueur vend une carte
-    BUY = 0x10 # le joueur achète une carte
-    LEVELUP = 0x20 # le joueur levelup
-    ROLL = 0x40 # roll manuel
-    PLAY = 0x80 # une carte est jouée
-    CREATION = 0x100 # début de partie
-
-    INVOC = 0x200 # invocation alliée (chef de meute, mande-flots murloc...)
-    BATTLECRY = 0x400 # cri de guerre
-    DEATHRATTLE = 0x800 # râle d'agonie
-    OVERKILL = 0x1000 # brutalité
-
-    DIE = 0x2000 # un allié meure (charognard, poisson)
-    ATK_ALLY = 0x4000 # un allié attaque
-    DEFEND_ALLY = 0x8000 # un allié est attaqué
-
-    AFTER_PLAY = 0x10000
-
-    BOB_PLAY = 0x20000 # Millificent, Nomi ?
-    ADD_ENCHANTMENT_ON = 0x40000 # Aggem, tremble-terre...
-    HIT_BY = 0x80000 # Chef du gang des diablotins, Rover de sécurité, Maman des diablotins
-    WAKE_UP = 0x100000 # Maeiv
-    AFTER_ATK_MYSELF = 0x200000 # Ara monstrueux, Cogneur
-
-    PLAY_AURA = 0x400000 # Capitaine des mers du sud, Mal Ganis
-    LOSS_HP = 0x800000 # Guetteur flottant, plus utilisé
-    LOSS_SHIELD = 0x1000000 # Massacreur drakonide, Bolvar
-
-    USE_POWER = 0x2000000
-    AFTER_ATK_BY = 0x4000000 # Yo-oh
-    DIE_PLAYER = 0x8000000 # Bloc de glace, Biggleworth
-
-    KILL_MYSELF = 0x10000000 # Nat Pagle, unused (EVENT_KILLER_ALLY)
-
-    END_FIGHT = 0x20000000
-
-    ALL = 0xFFFFFFFF
-    DEFAULT = NONE
-
-    method_str = {
-        BEGIN_TURN: 'turn_on',
-        END_TURN: 'end_turn',
-        FIRST_STRIKE: 'first_strike',
-        SELL: 'sell',
-        BUY: 'buy',
-        LEVELUP: 'levelup',
-        ROLL: 'roll',
-        PLAY: 'play',
-        CREATION: 'creation',
-        INVOC: 'summon',
-        BATTLECRY: 'battlecry',
-        DEATHRATTLE: 'deathrattle',
-        OVERKILL: 'overkill',
-        DIE: 'kill',
-        ATK_ALLY: 'atk_ally',
-        DEFEND_ALLY: 'defend_ally',
-        AFTER_PLAY: 'after_play',
-        BOB_PLAY: 'bob_play',
-        ADD_ENCHANTMENT_ON: 'add_enchantment_on',
-        HIT_BY: 'hit_by',
-        WAKE_UP:'wake_up',
-        AFTER_ATK_MYSELF: 'after_atk_myself',
-        PLAY_AURA: 'play_aura',
-        LOSS_HP: 'loss_hp',
-        LOSS_SHIELD: 'loss_shield',
-        USE_POWER: 'use_power',
-        AFTER_ATK_BY: 'after_atk_by',
-        DIE_PLAYER: 'die_player',
-        KILL_MYSELF: 'kill_myself',
-        END_FIGHT: 'end_fight',
-    }
-
-    @property
-    def method(self):
-        return self.method_str[self]
 
 class Type(int):
     NONE = 0
