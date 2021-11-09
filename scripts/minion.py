@@ -46,7 +46,8 @@ class battlecry_select_all_and_buff_them(Minion):
     @repeat_effect
     def battlecry(self, sequence: Sequence):
         minions = self.controller.board.cards.filter(race=self.synergy).exclude(self)
-        self.buff(self.enchantment_dbfId, *minions)
+        for minion in minions:
+            self.buff(self.enchantment_dbfId, minion)
 
 
 class aura_buff_race(Minion):
@@ -307,10 +308,13 @@ TB_BaconUps_130= BGS_066 # Raflelor premium
 class ULD_217(Minion):
     # Micromomie
     def turn_off(self, sequence: Sequence):
-        minions = self.owner.cards.exclude(self)
-        if minions:
-            self.buff(self.enchantment_dbfId, random.choice(minions))
+        self.buff(
+            self.enchantment_dbfId,
+            self.owner.cards.exclude(self).choice()
+        )
 TB_BaconUps_250= ULD_217 # Micromomie premium
+ICC_029= ULD_217 # Plaiedécailles cobalt
+TB_BaconUps_120= ICC_029 # Plaiedécailles cobalt premium
 
 
 class BGS_105(Minion):
@@ -331,15 +335,6 @@ class BGS_105(Minion):
 class TB_BaconUps_207(BGS_105):
     # Chambellan Executus premium
     bonus_value = 2
-
-
-class ICC_029(Minion):
-    # Plaiedécailles cobalt
-    def turn_off(self, sequence: Sequence):
-        lst = self.my_zone.cards.exclude(self)
-        if lst:
-            self.buff(self.enchantment_dbfId, random.choice(lst))
-TB_BaconUps_120= ICC_029 # Plaiedécailles cobalt premium
 
 
 class BGS_009(Minion):
@@ -442,7 +437,7 @@ class BGS_100(Minion):
     def play_off(self, sequence: Sequence):
         if sequence.source.race.ELEMENTAL:
             self.buff(self.enchantment_dbfId,
-                random.choice(self.my_zone.cards),
+                self.my_zone.cards.choice(),
                 attack=sequence.source.level,
                 max_health=sequence.source.level)
 
@@ -492,9 +487,10 @@ class BGS_120(Minion):
     @repeat_effect
     def play_off(self, sequence: Sequence):
         if sequence.source.race.ELEMENTAL and sequence.is_ally(self):
-            minions = self.my_zone.cards.filter(race='ELEMENTAL').exclude(self)
-            if minions:
-                self.buff(self.enchantment_dbfId, random.choice(minions))
+            self.buff(
+                self.enchantment_dbfId,
+                self.my_zone.cards.filter(race='ELEMENTAL').exclude(self).choice()
+            )
 
 
 class TB_BaconUps_160(Minion):
@@ -538,7 +534,7 @@ class BGS_019(Minion):
         nb_dragon_in_board = len(self.my_zone.cards.filter(race='DRAGON'))
         sequence(
             self.damage,
-            random.choice(self.my_zone.opponent.cards),
+            self.my_zone.opponent.cards.choice(),
             nb_dragon_in_board,
             overkill=False)
 
@@ -554,7 +550,7 @@ class BGS_078(Minion):
 
     @repeat_effect
     def combat_end(self, sequence: Sequence):
-        minions_with_deathrattle = []
+        minions_with_deathrattle = Card_list()
         for minion in self.my_zone.cards.filter(is_alive=True).exclude(self):
             for entity in [minion] + minion.entities:
                 if entity.DEATHRATTLE:
@@ -593,7 +589,7 @@ class BGS_002(Minion):
         if sequence.source.race.DEMON and sequence.is_ally(self):
             sequence(
                 self.damage,
-                random.choice(self.my_zone.opponent.cards),
+                self.my_zone.opponent.cards.choice(),
                 3,
                 overkill=False)
 
@@ -810,7 +806,8 @@ class EX1_093(Minion):
 
     @repeat_effect
     def battlecry(self, sequence: Sequence):
-        self.buff(self.enchantment_dbfId, *self.adjacent_neighbors())
+        for minion in self.adjacent_neighbors():
+            self.buff(self.enchantment_dbfId, minion)
 TB_BaconUps_009= EX1_093 # Défenseur d'Argus premium
 
 
@@ -863,10 +860,9 @@ class BGS_082(Minion):
 
     @repeat_effect
     def battlecry(self, sequence: Sequence):
-        minion_list = self.my_zone.cards.one_minion_by_race()
-        if minion_list:
-            random.shuffle(minion_list)
-            self.buff(self.enchantment_dbfId, *minion_list[:3])
+        minions = self.my_zone.cards.one_minion_by_race().shuffle()
+        for minion in minions[:3]:
+            self.buff(self.enchantment_dbfId, minion)
 TB_BaconUps_144= BGS_082 # Tasse de la ménagerie premium
 BGS_083= BGS_082 # Théière de la ménagerie
 TB_BaconUps_145= BGS_082 # Théière de la ménagerie premium
@@ -963,9 +959,9 @@ class TRLA_149(deathrattle_repop):
     nb_repop = 2
 
     @property
-    def repop_dbfId(self):
-        cards = self.game.minion_can_collect.filter(DEATHRATTLE=True).exlude(self.dbfId)
-        return random.choice(cards)
+    def repop_dbfId(self) -> int:
+        # TODO: test, minion_can_collect + DEATHRATTLE non configuré
+        return self.game.minion_can_collect.filter(DEATHRATTLE=True).exlude(self.dbfId).choice()
 
 
 class TB_BaconUps_057(TRLA_149):
@@ -978,9 +974,8 @@ class BGS_079(deathrattle_repop):
     nb_repop = 3
 
     @property
-    def repop_dbfId(self):
-        cards = self.game.minion_can_collect.filter(race='PIRATE').exlude(self.dbfId)
-        return random.choice(cards)
+    def repop_dbfId(self) -> int:
+        return self.game.minion_can_collect.filter(race='PIRATE').exlude(self.dbfId).choice()
 
 
 class TB_BaconUps_137(BGS_079):
@@ -1008,9 +1003,8 @@ class BGS_126(Minion):
     def combat_end(self, sequence: Sequence):
         target = sequence.target
         damage_left = -target.health
-        new_targets = target.adjacent_neighbors()
-        if new_targets and damage_left > 0:
-            new_target = random.choice(new_targets)
+        new_target = target.adjacent_neighbors().choice()
+        if new_target and damage_left > 0:
             self.damage(new_target, damage_left)
 
 
@@ -1053,8 +1047,8 @@ class BGS_044(hit_by_repop):
                 self.buff(self.enchantment_dbfId, minion)
 
     @property
-    def repop_dbfId(self):
-        return random.choice(self.game.minion_can_collect.filter(race='DEMON').exclude(self.dbfId))
+    def repop_dbfId(self) -> int:
+        return self.game.minion_can_collect.filter(race='DEMON').exclude(self.dbfId).choice()
 
 
 class TB_BaconUps_116(BGS_044):
@@ -1092,7 +1086,8 @@ class OG_256(Minion):
     # Rejeton de N'Zoth
     @repeat_effect
     def deathrattle(self, sequence: Sequence):
-        self.buff(self.enchantment_dbfId, *sequence.controller.board.cards)
+        for minion in self.controller.board.cards:
+            self.buff(self.enchantment_dbfId, minion)
 TB_BaconUps_025= OG_256
 
 
@@ -1145,9 +1140,9 @@ class OG_221(Minion):
 
     @repeat_effect
     def deathrattle(self, sequence: Sequence):
-        minions = self.controller.board.cards.exclude(DIVINE_SHIELD=True, is_alive=False)
-        if minions:
-            random.choice(minions).DIVINE_SHIELD = True
+        minion = self.controller.board.cards.exclude(DIVINE_SHIELD=True, is_alive=False).choice()
+        if minion:
+            minion.DIVINE_SHIELD = True
 
 
 class TB_BaconUps_014(OG_221):
@@ -1464,11 +1459,10 @@ class BG21_006(Minion):
 
     @repeat_effect
     def deathrattle(self, sequence: Sequence):
-        minions = self.controller.board.cards.filter(is_alive=True).exclude(self)
-        if minions:
-            self.buff(self.enchantment_dbfId,
-                random.choice(minions),
-                max_health=self.max_health)
+        self.buff(
+            self.enchantment_dbfId,
+            self.controller.board.cards.filter(is_alive=True).exclude(self).choice(),
+            max_health=self.max_health)
 
 
 class BG21_006_G(BG21_006):
@@ -1805,9 +1799,10 @@ class BG21_000(Minion):
     # Saute-mouton
     @repeat_effect
     def deathrattle(self, sequence: Sequence):
-        targets = self.owner.cards.filter(race='BEAST', is_alive=True)
-        if targets:
-            self.buff(self.enchantment_dbfId, random.choice(targets))
+        self.buff(
+            self.enchantment_dbfId,
+            self.controller.board.cards.filter(race='BEAST', is_alive=True).choice()
+        )
 BG21_000_G= BG21_000 # Saute-mouton premium
 
 
@@ -1963,8 +1958,9 @@ class BG21_038(Minion):
     @repeat_effect
     def avenge(self, sequence: Sequence):
         # TODO: à tester, probablement non fonctionnel
-        minion = random.choice(self.controller.bob.local_hand.filter(battlecry=True))
-        self.controller.hand.append(minion)
+        self.controller.hand.append(
+            self.controller.bob.local_hand.filter(BATTLECRY=True).choice()
+        )
 
 
 class BG21_038_G(BG21_038):
@@ -2073,9 +2069,10 @@ class BG21_040_G(BG21_040):
 class BG21_001(Minion):
     # Crocilisque claires-écailles
     def avenge(self, sequence: Sequence):
-        targets = self.my_zone.cards.filter(race='BEAST').exclude(self)
-        if targets:
-            self.buff(self.enchantment_dbfId, random.choice(targets))
+        self.buff(
+            self.enchantment_dbfId,
+            self.my_zone.cards.filter(race='BEAST').exclude(self).choice()
+        )
     deathrattle = avenge
 
 
@@ -2158,10 +2155,9 @@ class BG21_004(Minion):
     # Ur'Zul insatiable
     bonus_mult = 1
     def play_off(self, sequence: Sequence):
-        if sequence.source.owner and self.owner and sequence.source.race.DEMON:
-            targets = self.my_zone.opponent
-            if targets:
-                target = random.choice(targets)
+        if sequence.is_ally(self) and sequence.source.race.DEMON:
+            target = self.my_zone.opponent.cards.exclude(DORMANT=True).choice()
+            if target:
                 self.buff(self.enchantment_dbfId,
                     self,
                     attack=target.attack*self.bonus_mult,
@@ -2188,12 +2184,11 @@ BG21_025_G= BG21_025 # Casseur Oméga premium
 
 class BG21_005(Minion):
     # Gangroptère affamé
-    # TODO: entity.DORMANT can't be targeted
     bonus_mult = 1
     def turn_off(self, sequence: Sequence):
         for demon, target in zip(
                 self.my_zone.cards.filter(race='DEMON').shuffle(),
-                self.my_zone.opponent.cards.shuffle()):
+                self.my_zone.opponent.cards.exclude(DORMANT=True).shuffle()):
             self.buff(
                 self.enchantment_dbfId,
                 demon,
@@ -2233,12 +2228,12 @@ class BG21_019(Minion):
         si carte enlevée, carte enlevée en 3 exemplaires ?
     """
     mod_quest_value = 2
-    def turn_on_off(self, sequence: Sequence):
+    def turn_on(self, sequence: Sequence):
         self.quest_value += 1
         if self.quest_value % self.mod_quest_value == 0:
-            minion = random.choice(self.controller.bob.hand.cards)
+            minion = self.controller.bob.hand.cards.choice()
             self.controller.hand.append(minion)
-            #TODO: SET GOLD
+            #TODO: SET PREMIUM
 
 
 class BG21_019_G(BG21_019):

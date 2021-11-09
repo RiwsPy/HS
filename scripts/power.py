@@ -43,7 +43,7 @@ class TB_BaconShop_HP_074(Hero_power):
     def use_power(self, sequence: Sequence):
         self.quest_value += 1
         if self.quest_value % 5 == 0:
-            card = random.choice(self.owner.bob.local_hand)
+            card = self.owner.bob.local_hand.choice()
             g_card = self.create_card(card.battlegroundsPremiumDbfId)
             g_card.append(card)
             card_remain = 2
@@ -123,8 +123,10 @@ class TB_BaconShop_HP_040(Hero_power):
         sequence.is_valid = self.board.size > 0
 
     def use_power(self, sequence: Sequence):
-        if self.board.size > 0:
-            self.buff(self.enchantment_dbfId, random.choice(self.board.cards))
+        self.buff(
+            self.enchantment_dbfId,
+            self.board.cards.choice()
+        )
 
 
 class TB_BaconShop_HP_085(Hero_power):
@@ -206,11 +208,10 @@ class TB_BaconShop_HP_087t(Hero_power):
 class TB_BaconShop_HP_039(Hero_power):
     # Yogg
     def use_power(self):
-        op = self.owner.bob.board
-        if op.size > 0:
-            random_card = random.choice(op.cards)
-            self.owner.hand.append(random_card)
-            self.buff(self.enchantment_dbfId, random_card)
+        minion = self.controller.bob.board.cards.choice()
+        if minion:
+            self.controller.hand.append(minion)
+            self.buff(self.enchantment_dbfId, minion)
 
 
 class TB_BaconShop_HP_041(Hero_power):
@@ -332,9 +333,9 @@ class TB_BaconShop_HP_107(Hero_power):
 class TB_BaconShop_HP_062(Hero_power):
     # Ysera
     def turn_on(self, sequence: Sequence):
-        dragon_lst = self.controller.bob.local_hand.filter(race='DRAGON')
-        if dragon_lst:
-            self.controller.bob.board.append(random.choice(dragon_lst))
+        self.controller.bob.board.append(
+            self.controller.bob.local_hand.filter(race='DRAGON').choice()
+        )
     roll_off = turn_on
 
 
@@ -375,9 +376,9 @@ class TB_BaconShop_HP_042(Hero_power):
 
     @repeat_effect
     def sell_off(self, sequence: Sequence):
-        brd = self.owner.opponent.board.cards
-        if brd:
-            self.buff(self.enchantment_dbfId, random.choice(brd))
+        self.buff(
+            self.enchantment_dbfId,
+            self.controller.opponent.board.cards.choice())
 
 
 class TB_BaconShop_HP_061(Hero_power):
@@ -564,14 +565,14 @@ class TB_BaconShop_HP_103(Hero_power):
         self.temp_counter = 1
 
     def fight_on(self, sequence: Sequence):
+        # TODO: carte retirée de la main de Bob ?
         if self.temp_counter:
-            card_lst = self.game.hand.cards_of_tier_max(
+            card = self.game.hand.cards_of_tier_max(
                     tier_max=self.owner.level,
-                    tier_min=self.owner.level)
-            crd = random.choice(card_lst)
-            minion = self.board.create_card_in(crd.entity_id)
+                    tier_min=self.owner.level).choice()
+            minion = self.board.create_card_in(card.dbfId)
             if minion in self.board.cards:
-                self.owner.hand.append(crd)
+                self.owner.hand.append(card)
 
 
 class TB_BaconShop_HP_065t2(Hero_power):

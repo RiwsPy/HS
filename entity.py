@@ -159,16 +159,18 @@ class Entity:
         self.append(card_id)
         return card_id
 
-    def create_card(self, dbfId, **kwargs) -> 'Entity':
+    def create_card(self, dbfId: int, **kwargs) -> 'Entity':
         card_id = Card(dbfId, **kwargs)
         card_id.owner = self.controller
         return card_id
 
-    def buff(self, enchantment_dbfId, *args, **kwargs) -> None:
-        for target in args:
-            if target:
-                enchant = Card(enchantment_dbfId, source=self, **kwargs)
-                Sequence('ENHANCE', enchant, target=target).start_and_close()
+    def buff(self, enchantment_dbfId: int, target: 'Entity', **kwargs) -> None:
+        if target:
+            Sequence(
+                'ENHANCE',
+                Card(enchantment_dbfId, source=self, **kwargs),
+                target=target
+            ).start_and_close()
 
     @property
     def controller(self) -> 'Entity':
@@ -256,7 +258,8 @@ class Entity:
             else:
                 return Card_list(
                     minion
-                    for minion in zone[position-1:position+2:2] if minion)
+                    for minion in zone[position-1:position+2:2]
+                        if minion)
 
         return Card_list()
 
@@ -560,10 +563,7 @@ class Minion(Entity):
         opponent_board = self.my_zone.opponent.cards.\
             exclude(is_alive=False, DORMANT=True)
 
-        targets = opponent_board.filter(TAUNT=True) or opponent_board
-        if targets:
-            return random.choice(targets)
-        return None
+        return (opponent_board.filter(TAUNT=True) or opponent_board).choice()
 
     def loss_shield_start(self, sequence: Sequence) -> None:
         sequence.is_valid = self.DIVINE_SHIELD
@@ -724,7 +724,7 @@ class Hero_power(Entity):
 
     @property
     def board(self) -> Entity:
-        return self.owner.board
+        return self.controller.board
 
     def change(self, dbfId, **kwargs) -> None:
         # TODO: test

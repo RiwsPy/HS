@@ -82,7 +82,8 @@ class BGS_201(Minion):
     # Ritualiste tourmenté
     def combat_on(self, sequence: Sequence):
         if self is sequence.target:
-            self.buff(self.enchantment_dbfId, *self.adjacent_neighbors())
+            for minion in self.adjacent_neighbors():
+                self.buff(self.enchantment_dbfId, minion)
 TB_BaconUps_257= BGS_201
 
 
@@ -94,9 +95,9 @@ class BGS_046(Minion):
     def attack_end(self, sequence: Sequence):
         # n'est pas une découverte à 1 car peut se découvrir lui-même
         if not sequence.target.is_alive:
-            lst = self.controller.bob.local_hand
-            if lst:
-                self.controller.hand.append(random.choice(lst))
+            minion = self.controller.bob.local_hand.choice()
+            if minion:
+                self.controller.hand.append(minion)
 
 
 class TB_BaconUps_132(BGS_046):
@@ -107,9 +108,10 @@ class TB_BaconUps_132(BGS_046):
 class GVG_027(Minion):
     # Sensei de fer
     def turn_off(self, sequence: Sequence):
-        lst = self.my_zone.cards.filter(race='MECHANICAL').exclude(self)
-        if lst:
-            self.buff(self.enchantment_dbfId, random.choice(lst))
+        self.buff(
+            self.enchantment_dbfId,
+            self.my_zone.cards.filter(race='MECHANICAL').exclude(self).choice()
+        )
 TB_BaconUps_044= GVG_027 # Sensei de fer premium
 
 

@@ -125,23 +125,15 @@ class Card_list(list):
                     ret.append(tri[all_race].pop(0))
         return ret
 
-        """
-        tri = {minion_race: self.filter(race=minion_race)
-            for minion_race in Race.battleground_race()}
-
-        result = Card_list(random.choice(minions)
-                for minions in tri.values()
-                    if minions)
-        minion_with_all_race = self.filter(race='ALL')
-        random.shuffle(minion_with_all_race)
-
-        return (result + minion_with_all_race)[:len(Race.battleground_race())]
-        """
-
     def shuffle(self) -> 'Card_list':
         shuffle_copy = self[:]
         random.shuffle(shuffle_copy)
         return shuffle_copy
+
+    def choice(self):
+        if self:
+            return random.choice(self)
+        return None
 
 
 class Board_Card_list(Card_list):

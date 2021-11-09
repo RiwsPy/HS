@@ -1,4 +1,3 @@
-import random
 from entity import Spell
 from sequence import Sequence
 
@@ -22,16 +21,19 @@ TB_BaconShop_Triples_01= TB_BaconShop_HP_047t # Récompense de triple
 class TB_Bacon_Secrets_08(Spell):
     # Vengeance
     def die_off(self, sequence: Sequence):
-        if sequence.source.controller is self.controller and self.controller.board.size > 0:
-            self.buff(self.enchantment_dbfId, random.choice(self.controller.board.cards))
+        if sequence.is_ally(self) and self.controller.board.size > 0:
+            self.buff(
+                self.enchantment_dbfId,
+                self.controller.board.cards.choice()
+            )
             self.die()
 
 
 class TB_Bacon_Secrets_07(Spell):
     # Matrice d'autodéfense
     def combat_on(self, sequence: Sequence):
-        if sequence.source.controller is self.controller and not sequence.source.DIVINE_SHIELD:
-            sequence.source.DIVINE_SHIELD = True
+        if sequence.target.controller is self.controller and not sequence.target.DIVINE_SHIELD:
+            sequence.target.DIVINE_SHIELD = True
             self.die()
 
 
@@ -93,7 +95,7 @@ class TB_Bacon_Secrets_10(Spell):
     # Resurrecting effects such as Redemption don't move the dead minion. They summon a new copy of it.
     # Positionnement du repop ? A la place du mort ou à la fin du board ?
     def die_off(self, sequence: Sequence):
-        if self.controller is sequence.source.controller and not self.controller.board.is_full:
+        if sequence.is_ally and not self.controller.board.is_full:
             new_minion = self.create_card(sequence.source.dbfId)
             new_minion.health = 1
             self.controller.board.append(new_minion)

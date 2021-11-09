@@ -1,7 +1,7 @@
 from utils import Board_Card_list
 from enums import CardName, Type, Zone, FIELD_SIZE, SECRET_SIZE, LEVEL_MAX
 import random
-from entity import Entity, card_db
+from entity import Entity
 from typing import List, Generator
 from sequence import Sequence
 
@@ -191,9 +191,9 @@ class Bob_board(Board):
             self.owner.nb_card_by_refresh - self.size_without_dormant - 1)
 
         lvl = min(LEVEL_MAX, bob.level+1)
-        entity_list = bob.hand.cards_of_tier_max(tier_max=lvl, tier_min=lvl)
-        if entity_list:
-            self.append(random.choice(entity_list))
+        entity = bob.hand.cards_of_tier_max(tier_max=lvl, tier_min=lvl).choice()
+        if entity:
+            self.append(entity)
 
 class Graveyard(Board):
     MAX_SIZE = 9999
