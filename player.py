@@ -1,6 +1,6 @@
 from collections import defaultdict
 from enums import LEVELUP_COST, NB_CARD_BY_LEVEL, MAX_GOLD, \
-    GOLD_BY_TURN, LEVEL_MAX, CardName, Type, FIELD_SIZE
+    GOLD_BY_TURN, LEVEL_MAX, CardName, Type, BOARD_SIZE
 import hand
 from entity import Entity
 from utils import Card_list
@@ -181,7 +181,7 @@ class Player(Entity):
 
     @property
     def nb_card_by_roll(self) -> int:
-        return min(FIELD_SIZE, 
+        return min(BOARD_SIZE, 
             NB_CARD_BY_LEVEL[self.level] +
             self.card_by_roll_mod +
             self.power.card_by_roll_mod)
@@ -229,7 +229,7 @@ class Bob(Player):
 
     @property
     def nb_card_by_refresh(self) -> int:
-        return min(FIELD_SIZE, self.nb_minion_by_refresh_list[self.level])
+        return min(BOARD_SIZE, self.nb_minion_by_refresh_list[self.level])
 
     @property
     def gold(self) -> int:

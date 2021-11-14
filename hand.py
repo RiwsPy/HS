@@ -124,6 +124,10 @@ class Bob_hand(Entity):
         """
         return False
 
+    @property
+    def size(self) -> int:
+        return len(self.cards)
+
     def cards_of_tier_max(self, tier_max=LEVEL_MAX, tier_min=1) -> Card_list:
         """
             Return all cards in bob's hand with ``tier_min`` <= tier_card <= ``tier_max``

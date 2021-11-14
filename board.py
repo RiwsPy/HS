@@ -1,5 +1,5 @@
-from utils import Board_Card_list
-from enums import CardName, Type, Zone, FIELD_SIZE, SECRET_SIZE, LEVEL_MAX
+from utils import Board_Card_list, Card_list
+from enums import CardName, Type, Zone, BOARD_SIZE, SECRET_SIZE, LEVEL_MAX
 import random
 from entity import Entity
 from typing import List, Generator
@@ -13,7 +13,7 @@ class Board(Entity):
         'next_opponent': None, # adversaire rencontré après un end_turn
         'last_opponent': None,
     }
-    MAX_SIZE = FIELD_SIZE
+    MAX_SIZE = BOARD_SIZE
 
     def __init__(self, dbfId, **kwargs):
         super().__init__(dbfId, **kwargs)
@@ -169,31 +169,29 @@ class Bob_board(Board):
         for minion in self.cards.exclude(DORMANT=True):
             self.owner.hand.append(minion)
 
-    def fill_minion(self, nb_card_to_play=0, entity_list=[]) -> None:
+    def fill_minion(self, nb_card_to_play=0, entity_list=Card_list()) -> None:
         #TODO? Sequence REFRESH ??
-        nb_card_to_play = nb_card_to_play or (self.owner.opponent.nb_card_by_roll - self.size_without_dormant)
-        if nb_card_to_play >= 1:
-            entity_list = entity_list or self.owner.local_hand
-            random.shuffle(entity_list)
-            for card_id in entity_list[:nb_card_to_play]:
-                card_id.owner = self.controller
-                self.game.hand.remove(card_id)
-                card_id.summon()
-
-    def fill_minion_battlecry(self) -> None:
-        entity_list = self.owner.local_hand.filter(BATTLECRY=True)
-        self.fill_minion(entity_list=entity_list)
+        nb_card_to_play = (nb_card_to_play or \
+            self.owner.opponent.nb_card_by_roll) - self.size_without_dormant
+        entity_list = (entity_list or self.owner.local_hand).shuffle()
+        while nb_card_to_play >= 1 and not self.is_full:
+            nb_card_to_play -= 1
+            card_id = entity_list[nb_card_to_play]
+            card_id.owner = self.controller
+            self.game.hand.remove(card_id)
+            card_id.summon()
 
     def fill_minion_temporal(self) -> None:
         bob = self.owner
         self.fill_minion(
-            nb_card_to_play = \
-            self.owner.nb_card_by_refresh - self.size_without_dormant - 1)
+            nb_card_to_play = self.owner.nb_card_by_refresh - 1)
 
         lvl = min(LEVEL_MAX, bob.level+1)
-        entity = bob.hand.cards_of_tier_max(tier_max=lvl, tier_min=lvl).choice()
+        entity = bob.hand.cards_of_tier_max(tier_max=lvl, tier_min=lvl).random_choice()
         if entity:
-            self.append(entity)
+            entity.owner = self.controller
+            self.game.hand.remove(entity)
+            entity.summon()
 
 class Graveyard(Board):
     MAX_SIZE = 9999

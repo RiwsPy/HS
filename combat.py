@@ -1,5 +1,5 @@
 import random
-from enums import FIELD_SIZE
+from enums import BOARD_SIZE
 from utils import *
 from action import *
 from typing import Tuple
@@ -52,8 +52,7 @@ class Combat:
 
         while not self.fight_is_over():
             self.next_round()
-            damage_resolve(self, 
-                *(self.combattants[0].cards + self.combattants[1].cards))
+            damage_resolve(self, *self.owner.cards)
 
             self.owner.active_action()
             self.attacker = self.attacker.opponent
@@ -81,8 +80,8 @@ class Combat:
 
     def next_round(self) -> None:
         # search first attacker
-        for i in range(FIELD_SIZE):
-            attacker_minion_position = (self.attacker.attack_case + i) % FIELD_SIZE
+        for i in range(BOARD_SIZE):
+            attacker_minion_position = (self.attacker.attack_case + i) % BOARD_SIZE
             minion = self.attacker.cards[attacker_minion_position]
             if minion and minion.can_attack:
                 self.minion_attack(minion)

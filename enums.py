@@ -1,8 +1,7 @@
-from os import X_OK
 from typing import List
 
 VERSION = '21.4'
-FIELD_SIZE = 7
+BOARD_SIZE = 7
 NB_PLAYER = 8
 HAND_SIZE = 10
 SECRET_SIZE = 5
@@ -52,7 +51,7 @@ CARD_NB_COPY = [0, 16, 15, 13, 11, 9, 7]
 LEVELUP_COST = [0, 6, 7, 8, 9, 10, 10]
 GOLD_BY_TURN = [0, 3, 4, 5, 6, 7, 8, 9, 10]
 NB_CARD_BY_LEVEL = [0, 3, 4, 4, 5, 5, 6]
-NB_CARD_BY_LEVEL_ARANNA = FIELD_SIZE
+NB_CARD_BY_LEVEL_ARANNA = BOARD_SIZE
 
 class Race(str):
     data = {

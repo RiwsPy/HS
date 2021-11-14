@@ -1,4 +1,5 @@
 from entity import Entity
+from utils import Card_list
 
 class Field(Entity):
     default_attr = {}
@@ -12,6 +13,10 @@ class Field(Entity):
         self.p1.field = self
         self.p2.field = self
         self.combat = None
+
+    @property
+    def cards(self) -> Card_list:
+        return Card_list(*(self.p1.board.cards + self.p2.board.cards))
 
     def fight_off(self, sequence):
         #TODO: détermination du prochain adversaire ?

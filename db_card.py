@@ -55,10 +55,14 @@ class Meta_card_data(Card_list):
         if not isinstance(value, int):
             return super().__getitem__(value)
         try:
-            return super().__getitem__(self.index(value))
+            value = super().__getitem__(self.index(value))
         except ValueError:
-            print('Warning', value, 'not in Meta_card_data ret:', super().__getitem__(value))
+            #print('Warning', value, 'not in Meta_card_data ret:', super().__getitem__(value))
             return super().__getitem__(value)
+        else:
+            pass
+            #print('pas warning', value)
+        return value
 
 
 def charge_all_cards(db_filename='db/HStat.json') -> Meta_card_data:
