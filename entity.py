@@ -355,7 +355,6 @@ class Minion(Entity):
                 if seq.is_valid:
                     # TODO: la position du reborn est erronée si repop sur le deathrattle
                     Sequence('DEATHRATTLE', self, **kwargs).start_and_close()
-                    # vérifier le sens d'exécution: confirmé ig
                     Sequence('AVENGE', self, **kwargs).start_and_close()
                     Sequence('REBORN', self, **kwargs).start_and_close()
 

@@ -1,6 +1,5 @@
 from typing import List
 
-
 VERSION = '21.4'
 BOARD_SIZE = 7
 NB_PLAYER = 8
