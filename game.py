@@ -5,11 +5,12 @@ import random
 import player
 from entity import Entity, Card
 from hand import Bob_hand
-from itertools import chain
 from stats import *
 import entity
 from collections import deque
 from combat import Combat
+from typing import Any
+from sequence import Sequence
 
 
 class Game(Entity):
@@ -20,6 +21,7 @@ class Game(Entity):
         'version': VERSION,
         'current_sequence': '',
         'is_bot': True,
+        'is_test': False,
     }
 
     def __init__(self, *args, **attr):
@@ -89,7 +91,7 @@ class Game(Entity):
             elif nb == 0 and hero_p1:
                 hero_chosen = CARD_DB[hero_p1]
             else:
-                hero_chosen = self.choose_one_of_them(self.craftable_hero[nb*4:nb*4+4],
+                hero_chosen = self.choose_champion(self.craftable_hero[nb*4:nb*4+4],
                     pr=f'Choix du héros pour {player_name} :')
 
             plyr = Card(
@@ -119,6 +121,27 @@ class Game(Entity):
         for entity in self:
             entity.temp_counter = 0
 
+    def choose_champion(self, choice_list: Card_list, pr: str = '') -> Any:
+        """
+            player chooses one card among ``choice_list`` list
+            *return: chosen card id or None
+            *rtype: list content
+        """
+        if self.is_arene or self.is_test:
+            return random.choice(choice_list)
+
+        if pr:
+            print(pr)
+        for nb, entity in enumerate(choice_list):
+            print(f'{nb}- {entity}')
+        while True:
+            try:
+                return choice_list[int(input())]
+            except IndexError:
+                print('Valeur incorrecte.')
+            except ValueError:
+                print('Saississez une valeur.')
+
     def turn_end(self, sequence):
         self.entities = Card_list()
         players = self.players
@@ -127,7 +150,7 @@ class Game(Entity):
 
     def fight_start(self, sequence):
         for field in self.entities:
-            field.combat = Combat(self, field.p1.board, field.p2.board)
+            field.combat = Combat(field, field.p1.board, field.p2.board)
 
     def fight(self, sequence):
         for field in self.entities:
@@ -145,8 +168,29 @@ class Game(Entity):
 
 
 if __name__ == "__main__":
-    g = Card(CardName.DEFAULT_GAME)
-    g.party_begin('p1_name', 'p2_name', hero_p1=58021)
+    g = Card(CardName.DEFAULT_GAME, is_test=True)
+    g.party_begin('p1_name', 'p2_name', hero_p1=61490)
     p1, p2 = g.players
 
+    with Sequence('TURN', g):
+        crd = p1.hand.create_card_in(53445) # Micromomie
+        crd.play()
+        enn = p1.hand.create_card_in(48993) # Ennuy-o-module
+        enn.play(position=0)
+        assert p1.board.size == 1
+        assert crd.cards == [enn]
+        assert crd.attack + crd.dbfId.attack + enn.dbfId.attack
+        assert crd.max_health + crd.dbfId.health + enn.dbfId.health
+        assert crd.DIVINE_SHIELD
+        assert crd.TAUNT
 
+        men = p1.hand.create_card_in(48536) # Menace répliquante
+        men.play(position=0)
+        assert crd.cards == [enn, men]
+
+    with Sequence('FIGHT', g):
+        crd.die()
+        assert p1.board.size == 4
+        assert p1.board.cards[0].dbfId == 48842
+        assert p1.board.cards[-1].dbfId == 53445
+        old_size = p1.game.hand.size

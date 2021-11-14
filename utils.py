@@ -3,6 +3,7 @@ from enums import Type, LEVEL_MAX, VERSION, Race
 import json
 from types import GeneratorType
 import random
+from typing import Any
 
 def repeat_effect(function):
     def decorator(self, sequence):
@@ -130,10 +131,32 @@ class Card_list(list):
         random.shuffle(shuffle_copy)
         return shuffle_copy
 
-    def choice(self):
+    def random_choice(self):
         if self:
             return random.choice(self)
         return None
+
+    def choice(self, player, pr: str = '') -> Any:
+        choice_list = self.exclude(DORMANT=True)
+        if not choice_list or not player:
+            return None
+        elif len(choice_list) == 1:
+            return choice_list[0]
+        elif player.is_bot or self.game.is_arene:
+            return choice_list.random_choice()
+        else:
+            if pr:
+                print(pr)
+            for nb, entity in enumerate(choice_list):
+                print(f'{nb}- {entity}')
+            while True:
+                try:
+                    return choice_list[int(input())]
+                except IndexError:
+                    print('Valeur incorrecte.')
+                except ValueError:
+                    print('Saississez une valeur.')
+
 
 
 class Board_Card_list(Card_list):

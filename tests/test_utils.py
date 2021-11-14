@@ -1,22 +1,22 @@
 from utils import *
-from game import Game
 from enums import CardName
 import pytest
-from entity import Entity
+from entity import Card
 from db_card import CARD_DB
 from sequence import Sequence
+from game import Game
 
 
 player_name = 'p1_name'
 hero_name = CARD_DB[CardName.DEFAULT_HERO]
-g = Game()
+g = Card(CardName.DEFAULT_GAME, is_test=True)
 
 
 @pytest.fixture()
 def reinit_game(monkeypatch):
-    def mock_choose_one_of_them(self, lst, pr):
+    def mock_choose_champion(self, lst, pr):
         return hero_name
-    monkeypatch.setattr(Entity, 'choose_one_of_them', mock_choose_one_of_them)
+    monkeypatch.setattr(Game, 'choose_champion', mock_choose_champion)
 
     g.party_begin(player_name, 'p2_name')
 
@@ -37,14 +37,8 @@ def test_card_list_filter(reinit_game):
     crd2 = g.create_card(1281) # hyène charognarde
     db.append(crd2)
     assert db.filter(level=1, race='MURLOC') == [crd1]
-
-def test_card_list_filter(reinit_game):
-    db = Card_list()
-    crd1 = g.create_card(41245) # chasseur rochecave
-    db.append(crd1)
-    crd2 = g.create_card(1281) # hyène charognarde
-    db.append(crd2)
     assert db.filter(BATTLECRY=True) == [crd1]
+    assert db.filter(level=2) == []
 
 def test_card_list_exclude(reinit_game):
     db = Card_list()
