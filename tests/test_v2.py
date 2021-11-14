@@ -1,15 +1,15 @@
-from game import Game
 from enums import *
-from entity import Entity
+from entity import Card, Entity
 from db_card import CARD_DB
 import pytest
 from sequence import Sequence
 from db_card import Meta_card_data, Card_data
+from game import Game
 
 
 player_name = 'p1_name'
 hero_name = CARD_DB[CardName.DEFAULT_HERO]
-g = Game()
+g = Card(CardName.DEFAULT_GAME, is_test=True)
 
 
 def test_enums():
@@ -19,9 +19,9 @@ def test_enums():
 
 @pytest.fixture()
 def reinit_game(monkeypatch):
-    def mock_choose_one_of_them(self, lst, pr):
+    def mock_choose_champion(self, lst, pr):
         return hero_name
-    monkeypatch.setattr(Entity, 'choose_one_of_them', mock_choose_one_of_them)
+    monkeypatch.setattr(Game, 'choose_champion', mock_choose_champion)
 
     g.party_begin(player_name, 'p2_name')
 
@@ -123,15 +123,11 @@ def test_board_bob(reinit_game):
         bob_board.drain_minion()
         assert len(bob_board.cards) == 0
         assert len(g.hand.cards) == old_len_bob_hand + NB_CARD_BY_LEVEL[player.level]
-        bob_board.fill_minion_battlecry()
-        assert len(bob_board.cards) == NB_CARD_BY_LEVEL[player.level]
-        for minion in bob_board.cards:
-            assert minion.BATTLECRY
+        bob_board.fill_minion()
         old_bob_board = bob_board.cards[:]
         bob_board.freeze()
         for minion in bob_board.cards:
             assert minion.FREEZE
-        bob_board.drain_minion()
         assert len(bob_board.cards) == NB_CARD_BY_LEVEL[player.level]
         assert old_bob_board == bob_board.cards
         player.level = 2

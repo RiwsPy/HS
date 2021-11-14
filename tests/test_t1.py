@@ -1,5 +1,6 @@
 import pytest
-from entity import Entity, Card
+from entity import Card
+from game import Game
 from enums import CardName
 from db_card import CARD_DB
 from sequence import Sequence
@@ -7,14 +8,14 @@ from sequence import Sequence
 
 player_name = 'p1_name'
 hero_name = CARD_DB[CardName.DEFAULT_HERO]
-g = Card(CardName.DEFAULT_GAME)
+g = Card(CardName.DEFAULT_GAME, is_test=True)
 
 @pytest.fixture()
 def reinit_game(monkeypatch):
     #TODO: génère bug dès qu'une carte utilise cette méthode... ! (battlecry ciblé..)
-    def mock_choose_one_of_them(*args, **kwargs):
+    def mock_choose_champion(*args, **kwargs):
         return hero_name
-    monkeypatch.setattr(Entity, 'choose_one_of_them', mock_choose_one_of_them)
+    monkeypatch.setattr(Game, 'choose_champion', mock_choose_champion)
 
     g.party_begin(player_name, 'p2_name')
 
@@ -96,7 +97,6 @@ def test_chromaile(reinit_game):
         assert chro.attack == 2
 
 
-"""
 def test_chasseur_rochecave(reinit_game):
     mur1 = g.players[0].hand.create_card_in(41245)
     mur2 = g.players[0].hand.create_card_in(41245)
@@ -105,7 +105,6 @@ def test_chasseur_rochecave(reinit_game):
     assert mur2.attack == mur2.dbfId.attack
     assert mur1.attack == mur1.dbfId.attack +1
     assert mur1.max_health == mur1.dbfId.health +1
-"""
 
 #TODO test dragonnet ? anomalie... ?
 
