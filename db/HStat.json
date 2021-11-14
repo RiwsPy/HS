@@ -3004,6 +3004,7 @@
   "name": "Menace répliquante",
   "synergy": "MECHANICAL",
   "repop_dbfId": 48842,
+  "enchantment_dbfId": 48546,
   "dbfId": 48536,
   "artist": "Vladimir Kafanov",
   "attack": 3,
@@ -3029,6 +3030,7 @@
   "name": "Menace répliquante",
   "synergy": "MECHANICAL",
   "repop_dbfId": 58377,
+  "enchantment_dbfId": 60294,
   "cant_collect": 1,
   "dbfId": 58376,
   "attack": 6,
@@ -4652,6 +4654,7 @@
  {
   "name": "Ennuy-o-module",
   "synergy": "MECHANICAL",
+  "enchantment_dbfId": 49003,
   "dbfId": 48993,
   "artist": "Matt Dixon",
   "attack": 2,
@@ -4677,6 +4680,7 @@
  {
   "name": "Ennuy-o-module",
   "synergy": "MECHANICAL",
+  "enchantment_dbfId": 60328,
   "cant_collect": 1,
   "dbfId": 60327,
   "attack": 4,
@@ -11941,6 +11945,7 @@
    "DEATHRATTLE"
   ],
   "name": "Menace répliquante",
+  "repop_dbfId": 48842,
   "dbfId": 48546,
   "cardClass": "NEUTRAL",
   "id": "BOT_312e",
@@ -11954,6 +11959,7 @@
    "DEATHRATTLE"
   ],
   "name": "Menace répliquante",
+  "repop_dbfId": 58377,
   "dbfId": 60294,
   "cardClass": "NEUTRAL",
   "id": "TB_BaconUps_032e",
