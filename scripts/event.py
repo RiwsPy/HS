@@ -19,7 +19,8 @@ class player(Player):
         self.gold = self.nb_gold_by_turn()
         self.power.enable()
 
-        for entity in self.board.cards + self.bob.board.cards:
+        for entity in self.field.cards:
+            print(self.field.cards)
             entity.calc_stat_from_scratch(heal=True)
 
 BG20_HERO_101= player

@@ -24,7 +24,7 @@ class TB_Bacon_Secrets_08(Spell):
         if sequence.is_ally(self) and self.controller.board.size > 0:
             self.buff(
                 self.enchantment_dbfId,
-                self.controller.board.cards.choice()
+                self.controller.board.cards.random_choice()
             )
             self.die()
 
@@ -105,8 +105,7 @@ class TB_Bacon_Secrets_10(Spell):
 class TRL_509t(Spell):
     # Banane
     def cast_start(self, sequence: Sequence):
-        player = self.controller
-        minion = player.choose_one_of_them(player.board.cards)
+        minion = self.controller.board.cards.choice(self.controller)
         if minion:
             sequence.add_target(minion)
         else:
@@ -128,7 +127,7 @@ class BG20_GEM(TRL_509t):
         if player.is_bot:
             minion = self.bot_play()
         else:
-            minion = player.choose_one_of_them(player.board.cards)
+            minion = player.board.cards.choice(player)
 
         if minion:
             sequence.add_target(minion)
@@ -144,7 +143,7 @@ class BG20_GEM(TRL_509t):
         # ciblage 'adapté' au tour ou attaque la plus élevée : 1.67
         # ciblage 'adapté' au tour ou attaque la plus faible : 1.85
 
-        # protéger les Mecanics.aura du Zapp ?
+        # protéger les Mechanics.aura du Zapp ?
         # prise en compte de l'influence du Contrebandier dragonnet ou Maître des réalités ?
         board = self.controller.board
         if board.size == 0:

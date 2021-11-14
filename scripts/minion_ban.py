@@ -95,7 +95,7 @@ class BGS_046(Minion):
     def attack_end(self, sequence: Sequence):
         # n'est pas une découverte à 1 car peut se découvrir lui-même
         if not sequence.target.is_alive:
-            minion = self.controller.bob.local_hand.choice()
+            minion = self.controller.bob.local_hand.random_choice()
             if minion:
                 self.controller.hand.append(minion)
 
@@ -110,7 +110,7 @@ class GVG_027(Minion):
     def turn_off(self, sequence: Sequence):
         self.buff(
             self.enchantment_dbfId,
-            self.my_zone.cards.filter(race='MECHANICAL').exclude(self).choice()
+            self.my_zone.cards.filter(race='MECHANICAL').exclude(self).random_choice()
         )
 TB_BaconUps_044= GVG_027 # Sensei de fer premium
 

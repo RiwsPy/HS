@@ -1,19 +1,6 @@
 from entity import Enchantment
+from .base import *
 
-buff_attr_add = {
-    'attack', # : int
-    'max_health', # : int
-    'health', # int
-    #'mechanics', # list
-}
-
-class add_stat(Enchantment):
-    def apply(self):
-        target = self.owner
-        for attr in buff_attr_add & set(dir(self)) & set(dir(target)):
-            target[attr] += self[attr]
-        for mechanic in self.mechanics:
-            setattr(target, mechanic, True)
 
 BGS_066e= add_stat # Or raflé
 TB_BaconUps_130e= add_stat # Or raflé
@@ -217,8 +204,6 @@ BG20_HERO_280p3e2= add_stat # Portail fermé
 BG20_HERO_242pe= add_stat # Effet bœuf de Guff
 BG20_HERO_301pe= add_stat # Crachat reçu
 TB_BaconShop_HP_069e= add_stat # Fidèles lieutenants
-BOT_312e= add_stat # Menace répliquante
-TB_BaconUps_032e= add_stat # Menace répliquante
 BOT_911e= add_stat # Ennuy-o-module
 TB_BaconUps_099e= add_stat # Ennuy-o-module
 BG20_GEMe2= add_stat # Gemmes de sang
@@ -263,10 +248,16 @@ class BG20_HERO_101pe2(Enchantment):
 
 class TB_BaconShop_HP_101e(Enchantment):
     # Ticket de Sombrelune
-    pass
+    def buy_off(self, sequence: Sequence):
+        if sequence.source is self.owner:
+            self.remove()
+            if self.controller.power.dbfId == 64481:
+                self.controller.power.quest_value += 1
+
 
 class BG20_HERO_201p3e(Enchantment):
     # Marqué pour échange (Vol'Jin)
+    # TODO: aura ? reset power if the minion is removed from the field ?
     pass
 
 
