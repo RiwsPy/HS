@@ -1,7 +1,5 @@
-import random
 from enums import MAX_TURN, CardName, Rarity, Zone, Type, \
     DEFAULT_MINION_COST, state_list
-from typing import Any
 from utils import Card_list, controller, game, my_zone
 from action import attack
 from scripts import hero_arene, minion_arene
@@ -213,32 +211,6 @@ class Entity:
             return 2
         return 1
 
-    def choose_one_of_them(self, choice_list: Card_list, pr: str = '') -> Any:
-        """
-            player chooses one card among ``choice_list`` list
-            *return: chosen card id or None
-            *rtype: list content
-        """
-        choice_list = choice_list.exclude(DORMANT=True)
-        if not choice_list or not self.controller:
-            return None
-        elif len(choice_list) == 1:
-            return choice_list[0]
-        elif self.controller.is_bot or self.game.is_arene:
-            return random.choice(choice_list)
-        else:
-            if pr:
-                print(pr)
-            for nb, entity in enumerate(choice_list):
-                print(f'{nb}- {entity}')
-            while True:
-                try:
-                    return choice_list[int(input())]
-                except IndexError:
-                    print('Valeur incorrecte.')
-                except ValueError:
-                    print('Saississez une valeur.')
-
     @property
     def nb_turn(self) -> int:
         return self.game._turn
@@ -334,7 +306,7 @@ class Minion(Entity):
     }
 
     def __init__(self, dbfId, **kwargs):
-        super().__init__(dbfId, **kwargs)
+        super().__init__(dbfId, cards=Card_list(), **kwargs)
         self._max_health = self.health
 
     def __repr__(self) -> str:
@@ -352,6 +324,15 @@ class Minion(Entity):
             self.health += bonus
         else:
             self.health = min(self.health, value)
+
+    def all_in_bob(self) -> None:
+        super().all_in_bob()
+        for card in self.cards:
+            self.game.hand.append(card)
+
+    @property
+    def is_premium(self) -> bool:
+        return hasattr(self, 'battlegroundsNormalDbfId')
 
     def play(self, sequence=None, **kwargs):
         if sequence is None:
@@ -372,6 +353,7 @@ class Minion(Entity):
             # le avenge/reborn s'active avant le die_off ?
             with Sequence('DIE', self, **kwargs) as seq:
                 if seq.is_valid:
+                    # TODO: la position du reborn est erronée si repop sur le deathrattle
                     Sequence('DEATHRATTLE', self, **kwargs).start_and_close()
                     # vérifier le sens d'exécution: confirmé ig
                     Sequence('AVENGE', self, **kwargs).start_and_close()
@@ -393,11 +375,36 @@ class Minion(Entity):
         if self.controller.board.can_add_card(self):
             self.owner.remove(self)
             # + paid cost
+
+            # MODULAR > Sequence ??
+            if self.MODULAR and sequence.position is not None:
+                target = self.controller.board[sequence.position]
+                if target.race.MECHANICAL:
+                    sequence.modular_target = target
+            #
         else:
             sequence.is_valid = False
 
     def play_end(self, sequence):
         self.controller.played_cards[self.nb_turn] += self
+        self.modular(sequence)
+
+    def modular(self, sequence) -> None:
+        # copie des caractéristiques ou application des enchantements ?
+        # les enchantements non buff sont-ils conservés ?
+        modular_target = getattr(sequence, 'modular_target', None)
+        if modular_target is None:
+            return None
+
+        self.buff(
+            self.enchantment_dbfId,
+            modular_target,
+            attack=self.attack,
+            max_health=self.health,
+            mechanics=self.mechanics)
+        self.my_zone.cards.remove(self)
+        modular_target.cards.append(self)
+
 
     def overkill_start(self, sequence):
         sequence.is_valid = self.OVERKILL
@@ -435,17 +442,28 @@ class Minion(Entity):
                 self.append(enchant)
                 enchant.apply()
 
-    def discover(self, card_list: Card_list, nb: int = 3) -> Entity:
+    def discover(
+            self,
+            card_list: Card_list,
+            nb: int = 3,
+            player: 'Entity' = None
+        ) -> Entity:
         # TODO: Warning, problem if the card is moving during the discover
         # toutes les découvertes sont retirées du pool
+
+        """
+            Entité source, son dbfId est exclu de la découverte
+            Card_list sur laquelle effectuer les recherches
+            player qui choisit la carte
+            nombre de carte dans la découverte
+        """
         if nb <= 0:
             return None
 
-        card_list = card_list.shuffle()
         list_card_choice = Card_list()
         exclude_dbfId = {self.dbfId}
 
-        for card in card_list:
+        for card in card_list.shuffle():
             if card.dbfId not in exclude_dbfId:
                 list_card_choice.append(card)
                 if nb <= 1:
@@ -453,7 +471,16 @@ class Minion(Entity):
                 nb -= 1
                 exclude_dbfId.add(card.dbfId)
 
-        return self.choose_one_of_them(list_card_choice)
+        return list_card_choice.choice(player or self.controller)
+
+    def replace(self, substitute: 'Entity') -> None:
+        # TODO: un minion gelé puis remplacé doit pouvoir rester gelé
+        # TODO: activer les auras
+        position = self.position
+        old_zone = self.owner
+        self.all_in_bob()
+        self.game.hand.append(self)
+        old_zone.append(substitute, position=position)
 
     def sell_start(self, sequence) -> None:
         seller = self.controller
@@ -563,7 +590,7 @@ class Minion(Entity):
         opponent_board = self.my_zone.opponent.cards.\
             exclude(is_alive=False, DORMANT=True)
 
-        return (opponent_board.filter(TAUNT=True) or opponent_board).choice()
+        return (opponent_board.filter(TAUNT=True) or opponent_board).random_choice()
 
     def loss_shield_start(self, sequence: Sequence) -> None:
         sequence.is_valid = self.DIVINE_SHIELD
@@ -725,6 +752,10 @@ class Hero_power(Entity):
     @property
     def board(self) -> Entity:
         return self.controller.board
+
+    @property
+    def hand(self) -> Entity:
+        return self.controller.hand
 
     def change(self, dbfId, **kwargs) -> None:
         # TODO: test

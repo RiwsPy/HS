@@ -1,6 +1,6 @@
 from game import Game
 import pytest
-from entity import Entity, Card
+from entity import Card
 from enums import CardName, GOLD_BY_TURN
 from db_card import CARD_DB
 from sequence import Sequence
@@ -8,13 +8,13 @@ from sequence import Sequence
 
 player_name = 'p1_name'
 hero_name = CARD_DB[CardName.DEFAULT_HERO]
-g = Card(CardName.DEFAULT_GAME)
+g = Card(CardName.DEFAULT_GAME, is_test=True)
 
 @pytest.fixture()
 def reinit_game(monkeypatch):
-    def mock_choose_one_of_them(self, lst, pr):
+    def mock_choose_champion(self, lst, pr):
         return hero_name
-    monkeypatch.setattr(Entity, 'choose_one_of_them', mock_choose_one_of_them)
+    monkeypatch.setattr(Game, 'choose_champion', mock_choose_champion)
 
     g.party_begin(player_name, 'p2_name')
 
@@ -195,3 +195,29 @@ def test_roll(reinit_game):
         p1.roll()
         assert p1.gold == p1_gold-p1.power.roll_cost
         assert old_bob_board != p1.bob.board.cards
+
+def test_modular(reinit_game):
+    p1 = g.players[0]
+    with Sequence('TURN', g):
+        crd = p1.hand.create_card_in(53445) # Micromomie
+        crd.play()
+        enn = p1.hand.create_card_in(48993) # Ennuy-o-module
+        enn.play(position=0)
+        assert p1.board.size == 1
+        assert crd.cards == [enn]
+        assert crd.attack + crd.dbfId.attack + enn.dbfId.attack
+        assert crd.max_health + crd.dbfId.health + enn.dbfId.health
+        assert crd.DIVINE_SHIELD
+        assert crd.TAUNT
+
+        men = p1.hand.create_card_in(48536) # Menace répliquante
+        men.play(position=0)
+        assert crd.cards == [enn, men]
+
+    with Sequence('FIGHT', g):
+        crd.die()
+        assert p1.board.size == 4
+        assert p1.board.cards[0].dbfId == 48842
+        assert p1.board.cards[-1].dbfId == 53445
+        old_size = p1.game.hand.size
+
