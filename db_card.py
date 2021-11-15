@@ -28,6 +28,12 @@ class Card_data(int):
     def __getitem__(self, key):
         return getattr(self, str(key))
 
+    def __setitem__(self, key, value) -> None:
+        self.data[key] = value
+
+    def __iter__(self):
+        yield from (k for k in self.data)
+
     @property
     def level(self):
         return self.techLevel
@@ -42,6 +48,9 @@ class Card_data(int):
     def get(self, attr, default=None):
         return self.data.get(attr, default)
 
+    @property
+    def __dict__(self) -> dict:
+        return self.data
 
 class Meta_card_data(Card_list):
     def sort(self, attr='', reverse=False) -> None:
@@ -76,12 +85,20 @@ def charge_all_cards(db_filename='db/HStat.json') -> Meta_card_data:
             value['synergy'] = Race(value.get('synergy', 'ALL'))
             value['race'] = Race(value.get('race', 'DEFAULT'))
             value['type'] = Type(value.get('type', 'DEFAULT'))
-            if 'mechanics' not in value:
-                value['mechanics'] = []
+            value['mechanics'] = value.get('mechanics', [])
             for mechanic in state_list:
-                value[mechanic] = mechanic in value['mechanics']
+                value[mechanic] = False
+            for mechanic in value['mechanics']:
+                value[mechanic] = True
 
             db.append(Card_data(**value))
+
+        for card in db:
+            if getattr(card, 'enchantment_dbfId', False):
+                card['enchantment_dbfId'] = db[card.enchantment_dbfId]
+            if getattr(card, 'repop_dbfId', False):
+                card['repop_dbfId'] = db[card.repop_dbfId]
+
     return db
 
 CARD_DB = charge_all_cards()
