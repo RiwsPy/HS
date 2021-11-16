@@ -12416,6 +12416,7 @@
  },
  {
   "name": "Le temps des rois",
+  "synergy": "ALL",
   "enchantment_dbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 63127,
@@ -12429,6 +12430,7 @@
  },
  {
   "name": "Roi des Bêtes",
+  "synergy": "BEAST",
   "enchantment_dbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 59839,
@@ -12445,6 +12447,7 @@
  },
  {
   "name": "Roi des Méca",
+  "synergy": "MECHANICAL",
   "enchantment_dbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 59853,
@@ -12461,6 +12464,7 @@
  },
  {
   "name": "Roi des Murlocs",
+  "synergy": "MURLOC",
   "enchantment_dbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 59852,
@@ -12477,6 +12481,7 @@
  },
  {
   "name": "Roi des Démons",
+  "synergy": "DEMON",
   "enchantment_dbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 59854,
@@ -12493,6 +12498,7 @@
  },
  {
   "name": "Roi des Dragons",
+  "synergy": "DRAGON",
   "enchantment_dbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 60922,
@@ -12509,6 +12515,7 @@
  },
  {
   "name": "Roi des Pirates",
+  "synergy": "PIRATE",
   "enchantment_dbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 62277,
@@ -12525,6 +12532,7 @@
  },
  {
   "name": "Roi des Élémentaires",
+  "synergy": "ELEMENTAL",
   "enchantment_dbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 64220,
@@ -12541,6 +12549,7 @@
  },
  {
   "name": "Roi des Hurans",
+  "synergy": "QUILBOAR",
   "enchantment_dbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 71081,
