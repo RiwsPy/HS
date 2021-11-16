@@ -653,7 +653,7 @@
   "synergy": "PIRATE",
   "repop_dbfId": 62213,
   "dbfId": 61061,
-  "attack": 2,
+  "attack": 3,
   "battlegroundsPremiumDbfId": 62262,
   "cardClass": "NEUTRAL",
   "cost": 1,
@@ -674,7 +674,7 @@
   "repop_dbfId": 61055,
   "cant_collect": true,
   "dbfId": 62262,
-  "attack": 4,
+  "attack": 6,
   "battlegroundsNormalDbfId": 61061,
   "cardClass": "NEUTRAL",
   "cost": 1,
@@ -2274,11 +2274,11 @@
   "name": "Yo-oh-Ogre",
   "synergy": "PIRATE",
   "dbfId": 61060,
-  "attack": 2,
+  "attack": 3,
   "battlegroundsPremiumDbfId": 63782,
   "cardClass": "NEUTRAL",
   "cost": 6,
-  "health": 6,
+  "health": 5,
   "id": "BGS_060",
   "mechanics": [
    "TRIGGER_VISUAL"
@@ -2297,11 +2297,11 @@
   "synergy": "PIRATE",
   "cant_collect": true,
   "dbfId": 63782,
-  "attack": 4,
+  "attack": 6,
   "battlegroundsNormalDbfId": 61060,
   "cardClass": "NEUTRAL",
   "cost": 6,
-  "health": 12,
+  "health": 10,
   "id": "TB_BaconUps_150",
   "mechanics": [
    "TRIGGER_VISUAL"
@@ -2363,7 +2363,7 @@
   "synergy": "QUILBOAR",
   "enchantment_dbfId": 70167,
   "dbfId": 70162,
-  "attack": 4,
+  "attack": 5,
   "battlegroundsPremiumDbfId": 70168,
   "cardClass": "NEUTRAL",
   "cost": 3,
@@ -2387,7 +2387,7 @@
   "enchantment_dbfId": 70169,
   "cant_collect": true,
   "dbfId": 70168,
-  "attack": 8,
+  "attack": 10,
   "battlegroundsNormalDbfId": 70162,
   "cardClass": "NEUTRAL",
   "cost": 3,
@@ -3878,11 +3878,11 @@
   "name": "Brute dos-hirsute",
   "synergy": "QUILBOAR",
   "dbfId": 70171,
-  "attack": 4,
+  "attack": 3,
   "battlegroundsPremiumDbfId": 70172,
   "cardClass": "NEUTRAL",
-  "cost": 5,
-  "health": 4,
+  "cost": 3,
+  "health": 3,
   "id": "BG20_103",
   "mechanics": [
    "TRIGGER_VISUAL"
@@ -3890,7 +3890,7 @@
   "race": "QUILBOAR",
   "set": "BATTLEGROUNDS",
   "techLevel": 3,
-  "text": "Chaque tour, la première <b>gemme de sang</b> jouée\nsur ce serviteur lui donne +2/+2 supplémentaires.",
+  "text": "Chaque tour, la première <b>gemme de sang</b> jouée\nsur ce serviteur lui donne +3/+3 supplémentaires.",
   "type": "MINION"
  },
  {
@@ -3898,24 +3898,23 @@
   "synergy": "QUILBOAR",
   "cant_collect": true,
   "dbfId": 70172,
-  "attack": 8,
+  "attack": 6,
   "battlegroundsNormalDbfId": 70171,
   "cardClass": "NEUTRAL",
-  "cost": 5,
-  "health": 8,
+  "cost": 3,
+  "health": 6,
   "id": "BG20_103_G",
   "mechanics": [
    "TRIGGER_VISUAL"
   ],
   "race": "QUILBOAR",
   "set": "BATTLEGROUNDS",
-  "text": "Chaque tour, la première <b>gemme de sang</b> jouée\nsur ce serviteur lui donne +4/+4 supplémentaires.",
+  "text": "Chaque tour, la première <b>gemme de sang</b> jouée\nsur ce serviteur lui donne +6/+6 supplémentaires.",
   "type": "MINION"
  },
  {
   "name": "Mande-épines",
   "synergy": "QUILBOAR",
-  "ban": true,
   "dbfId": 70175,
   "attack": 4,
   "battlegroundsPremiumDbfId": 70181,
@@ -3929,13 +3928,13 @@
   ],
   "race": "QUILBOAR",
   "set": "BATTLEGROUNDS",
+  "techLevel": 3,
   "text": "<b>Cri de guerre</b> et <b>Râle d’agonie :</b> vous gagnez une <b>gemme de sang</b>.",
   "type": "MINION"
  },
  {
   "name": "Mande-épines",
   "synergy": "QUILBOAR",
-  "ban": true,
   "cant_collect": true,
   "dbfId": 70181,
   "attack": 8,
@@ -3968,9 +3967,9 @@
   ],
   "race": "QUILBOAR",
   "set": "BATTLEGROUNDS",
-  "targetingArrowText": "Vole toutes les <b>gemmes_de_sang</b> de ses voisins.",
-  "techLevel": 3,
-  "text": "<b>Cri de guerre :</b> choisit un serviteur allié. Il vole toutes les <b>gemmes de sang</b> de ses voisins.",
+  "targetingArrowText": "Joue 2_<b>gemmes_de_sang</b> et vole toutes celles de ses voisins.",
+  "techLevel": 4,
+  "text": "<b>Cri de guerre :</b> joue 2 <b>gemmes de sang</b> sur un serviteur allié. Il vole toutes les <b>gemmes de sang</b> de ses voisins.",
   "type": "MINION"
  },
  {
@@ -3989,8 +3988,8 @@
   ],
   "race": "QUILBOAR",
   "set": "BATTLEGROUNDS",
-  "targetingArrowText": "Vole toutes les <b>gemmes_de_sang</b> de ses voisins.",
-  "text": "<b>Cri de guerre :</b> choisit un serviteur allié. Il vole toutes les <b>gemmes de sang</b> de ses voisins.",
+  "targetingArrowText": "Joue 4_<b>gemmes_de_sang</b> et vole toutes celles de ses voisins.",
+  "text": "<b>Cri de guerre :</b> joue 4 <b>gemmes de sang</b> sur un serviteur allié. Il vole toutes les <b>gemmes de sang</b> de ses voisins.",
   "type": "MINION"
  },
  {
@@ -4093,9 +4092,9 @@
    "BATTLECRY"
   ],
   "set": "BATTLEGROUNDS",
-  "targetingArrowText": "Donne_+1/+1 pour chaque Pirate que vous avez acheté pendant ce tour.",
+  "targetingArrowText": "Donne_+1/+1. Recommence pour chaque Pirate que vous_avez acheté pendant ce tour.",
   "techLevel": 3,
-  "text": "<b>Cri de guerre :</b> donne +1/+1 à un Pirate allié pour chaque Pirate que vous avez acheté pendant ce tour.",
+  "text": "<b>Cri de guerre :</b> donne +1/+1 à un Pirate allié. Recommence pour chaque Pirate que vous avez acheté pendant ce tour.",
   "type": "MINION"
  },
  {
@@ -4115,8 +4114,8 @@
    "BATTLECRY"
   ],
   "set": "BATTLEGROUNDS",
-  "targetingArrowText": "Donne_+2/+2 pour chaque Pirate que vous avez acheté pendant ce tour.",
-  "text": "<b>Cri de guerre :</b> donne +2/+2 à un Pirate allié pour chaque Pirate que vous avez acheté pendant ce tour.",
+  "targetingArrowText": "Donne_+2/+2. Recommence pour chaque Pirate que vous_avez acheté pendant ce tour.",
+  "text": "<b>Cri de guerre :</b> donne +2/+2 à un Pirate allié. Recommence pour chaque Pirate que vous avez acheté pendant ce tour.",
   "type": "MINION"
  },
  {
@@ -5113,7 +5112,7 @@
   "battlegroundsPremiumDbfId": 62257,
   "cardClass": "NEUTRAL",
   "cost": 4,
-  "health": 5,
+  "health": 6,
   "id": "BGS_056",
   "mechanics": [
    "TRIGGER_VISUAL"
@@ -5134,7 +5133,7 @@
   "battlegroundsNormalDbfId": 61056,
   "cardClass": "NEUTRAL",
   "cost": 4,
-  "health": 10,
+  "health": 12,
   "id": "TB_BaconUps_139",
   "mechanics": [
    "TRIGGER_VISUAL"
@@ -5683,11 +5682,11 @@
   "synergy": "QUILBOAR",
   "enchantment_dbfId": 70185,
   "dbfId": 70184,
-  "attack": 4,
+  "attack": 5,
   "battlegroundsPremiumDbfId": 70191,
   "cardClass": "NEUTRAL",
   "cost": 4,
-  "health": 5,
+  "health": 6,
   "id": "BG20_207",
   "mechanics": [
    "TAUNT",
@@ -5705,11 +5704,11 @@
   "enchantment_dbfId": 70192,
   "cant_collect": true,
   "dbfId": 70191,
-  "attack": 8,
+  "attack": 10,
   "battlegroundsNormalDbfId": 70184,
   "cardClass": "NEUTRAL",
   "cost": 4,
-  "health": 10,
+  "health": 12,
   "id": "BG20_207_G",
   "mechanics": [
    "TAUNT",
@@ -5859,7 +5858,7 @@
   ],
   "set": "BATTLEGROUNDS",
   "techLevel": 4,
-  "text": "Une fois qu’un serviteur allié a perdu <b>Bouclier divin</b>, lui donne +2/+1 définitivement.",
+  "text": "Une fois qu’un serviteur allié a perdu <b>Bouclier divin</b>, lui donne +1/+1 définitivement.",
   "type": "MINION"
  },
  {
@@ -5882,7 +5881,7 @@
    "DIVINE_SHIELD"
   ],
   "set": "BATTLEGROUNDS",
-  "text": "Une fois qu’un serviteur allié a perdu <b>Bouclier divin</b>, lui donne +4/+2 définitivement.",
+  "text": "Une fois qu’un serviteur allié a perdu <b>Bouclier divin</b>, lui donne +2/+2 définitivement.",
   "type": "MINION"
  },
  {
@@ -5934,7 +5933,7 @@
   "synergy": "MECHANICAL",
   "avenge_counter": 2,
   "dbfId": 72388,
-  "attack": 6,
+  "attack": 5,
   "battlegroundsPremiumDbfId": 74906,
   "cardClass": "NEUTRAL",
   "cost": 4,
@@ -5946,7 +5945,7 @@
   "race": "MECHANICAL",
   "set": "BATTLEGROUNDS",
   "techLevel": 4,
-  "text": "<b>Vengeance (2) :</b> inflige 6 points de dégâts au serviteur adverse aux PV les plus élevés.",
+  "text": "<b>Vengeance (2) :</b> inflige 5 points de dégâts au serviteur adverse aux PV les plus élevés.",
   "type": "MINION"
  },
  {
@@ -5955,7 +5954,7 @@
   "avenge_counter": 2,
   "cant_collect": true,
   "dbfId": 74906,
-  "attack": 12,
+  "attack": 10,
   "battlegroundsNormalDbfId": 72388,
   "cardClass": "NEUTRAL",
   "cost": 4,
@@ -5966,7 +5965,7 @@
   ],
   "race": "MECHANICAL",
   "set": "BATTLEGROUNDS",
-  "text": "<b>Vengeance (2) :</b> inflige 6 points de dégâts au serviteur adverse aux PV les plus élevés deux fois.",
+  "text": "<b>Vengeance (2) :</b> inflige 5 points de dégâts au serviteur adverse aux PV les plus élevés deux fois.",
   "type": "MINION"
  },
  {
@@ -7113,7 +7112,6 @@
   "name": "Mythrax le Disloqueur",
   "synergy": "ALL",
   "enchantment_dbfId": 65669,
-  "ban": true,
   "dbfId": 65662,
   "attack": 4,
   "battlegroundsPremiumDbfId": 65671,
@@ -7126,6 +7124,7 @@
    "TRIGGER_VISUAL"
   ],
   "set": "BATTLEGROUNDS",
+  "techLevel": 5,
   "text": "À la fin de votre tour, gagne +1/+2 pour chaque type de serviteur que vous contrôlez.",
   "type": "MINION"
  },
@@ -7134,7 +7133,6 @@
   "synergy": "ALL",
   "enchantment_dbfId": 65672,
   "cant_collect": true,
-  "ban": true,
   "dbfId": 65671,
   "attack": 8,
   "battlegroundsNormalDbfId": 65662,
@@ -7195,6 +7193,7 @@
  {
   "name": "Chevalier dos-hirsute",
   "synergy": "QUILBOAR",
+  "ban": true,
   "dbfId": 70158,
   "attack": 4,
   "battlegroundsPremiumDbfId": 70159,
@@ -7209,7 +7208,6 @@
   ],
   "race": "QUILBOAR",
   "set": "BATTLEGROUNDS",
-  "techLevel": 5,
   "text": "<b>Furie des vents</b>\n<b>Bouclier divin</b>\n<b>Frénésie :</b> gagne <b>Bouclier divin</b>.",
   "type": "MINION"
  },
@@ -7217,6 +7215,7 @@
   "name": "Chevalier dos-hirsute",
   "synergy": "QUILBOAR",
   "cant_collect": true,
+  "ban": true,
   "dbfId": 70159,
   "attack": 8,
   "battlegroundsNormalDbfId": 70158,
@@ -7537,7 +7536,7 @@
  {
   "name": "Tony Deux-Défenses",
   "synergy": "PIRATE",
-  "avenge_counter": 5,
+  "avenge_counter": 4,
   "dbfId": 74933,
   "attack": 4,
   "battlegroundsPremiumDbfId": 74934,
@@ -7551,13 +7550,13 @@
   "race": "PIRATE",
   "set": "BATTLEGROUNDS",
   "techLevel": 5,
-  "text": "<b>Vengeance (5) :</b> transforme définitivement un autre Pirate allié en carte dorée.",
+  "text": "<b>Vengeance (4) :</b> transforme définitivement un autre Pirate allié en carte dorée.",
   "type": "MINION"
  },
  {
   "name": "Tony Deux-Défenses",
   "synergy": "PIRATE",
-  "avenge_counter": 5,
+  "avenge_counter": 4,
   "cant_collect": true,
   "dbfId": 74934,
   "attack": 8,
@@ -7571,7 +7570,7 @@
   ],
   "race": "PIRATE",
   "set": "BATTLEGROUNDS",
-  "text": "<b>Vengeance (5) :</b> transforme définitivement 2 autres Pirates alliés en cartes dorées.",
+  "text": "<b>Vengeance (4) :</b> transforme définitivement 2 autres Pirates alliés en cartes dorées.",
   "type": "MINION"
  },
  {
@@ -11412,7 +11411,7 @@
   "type": "ENCHANTMENT"
  },
  {
-  "attack": 2,
+  "attack": 1,
   "max_health": 1,
   "name": "Lubrifié",
   "duration": -1,
@@ -11420,11 +11419,11 @@
   "cardClass": "NEUTRAL",
   "id": "BG21_024e",
   "set": "BATTLEGROUNDS",
-  "text": "+2/+1.",
+  "text": "+1/+1.",
   "type": "ENCHANTMENT"
  },
  {
-  "attack": 4,
+  "attack": 2,
   "max_health": 2,
   "name": "Lubrifié",
   "duration": -1,
@@ -11432,7 +11431,7 @@
   "cardClass": "NEUTRAL",
   "id": "BG21_024_Ge",
   "set": "BATTLEGROUNDS",
-  "text": "+4/+2.",
+  "text": "+2/+2.",
   "type": "ENCHANTMENT"
  },
  {
@@ -12269,7 +12268,7 @@
   "cost": 1,
   "id": "TB_BaconShop_HP_001",
   "set": "BATTLEGROUNDS",
-  "text": "Donne +2/+1 à un serviteur pour chaque serviteur que vous avez recruté pendant ce tour.",
+  "text": "Donne +2/+1 à un serviteur allié pour chaque serviteur que vous avez recruté pendant ce tour.",
   "type": "HERO_POWER"
  },
  {
