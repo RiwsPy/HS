@@ -1,6 +1,7 @@
 # coding : utf-8
 
 import random
+from db_card import Card_data
 from enums import BOARD_SIZE, CardName, Zone, ADAPT_ENCHANTMENT
 from utils import *
 from action import *
@@ -605,8 +606,12 @@ class BGS_069(battlecry_buff_myself):
         return len(self.my_zone.cards.exclude(self).one_minion_by_race())
 
     @property
-    def enchantment_dbfId(self) -> int:
-        return random.choice(ADAPT_ENCHANTMENT)
+    def enchantment_dbfId(self) -> Card_data:
+        return self.card_db[random.choice(ADAPT_ENCHANTMENT)]
+
+    @enchantment_dbfId.setter
+    def enchantment_dbfId(self, value) -> None:
+        self._enchantment_dbfId = value
 
 
 class TB_BaconUps_121(BGS_069):
@@ -677,13 +682,11 @@ class BGS_048(battlecry_select_one_minion_and_buff_it):
     def battlecry(self, sequence: Sequence):
         self.buff(
             self.enchantment_dbfId,
-            sequence.target,
-            attack=self.bonus_value,
-            max_health=self.bonus_value)
+            sequence.target)
 
     @property
-    def bonus_value(self) -> int:
-        return len(self.controller.bought_minions[self.nb_turn].filter(race='PIRATE'))
+    def nb_strike(self) -> int:
+        return len(self.controller.bought_minions[self.nb_turn].filter(race='PIRATE')) +1
 TB_BaconUps_140= BGS_048 # Gaillarde des mers du Sud premium
 
 
@@ -1172,7 +1175,7 @@ BG20_102_G= BG20_102 # Défense robuste premium
 
 class BG20_103(Minion):
     # Brute dos-hirsute
-    bonus_value = 2
+    bonus_value = 3
 
     def enhance_on(self, sequence: Sequence):
         if sequence.target is self and\
@@ -1214,6 +1217,8 @@ class BG20_202(Minion):
 
     @repeat_effect
     def battlecry(self, sequence: Sequence):
+        self.buff(CardName.BLOOD_GEM_ENCHANTMENT, sequence.target)
+        self.buff(CardName.BLOOD_GEM_ENCHANTMENT, sequence.target)
         for neighbour in sequence.target.adjacent_neighbors():
             change = False
             for enchantment in neighbour.entities[::-1]:
@@ -1344,12 +1349,6 @@ class BG20_206_G(BG20_206):
             if self.quest_value % self.mod_quest_value == 0:
                 self.controller.hand.create_card_in(CardName.BLOOD_GEM)
                 self.controller.hand.create_card_in(CardName.BLOOD_GEM)
-
-
-def wake_up(self):
-    # Maeiv effect
-    self.create_and_apply_enchantment(62265)
-    self.owner.opponent.owner.hand.append(self)
 
 
 class BG20_203(Minion):
@@ -1752,10 +1751,12 @@ class BG21_000(Minion):
     # Saute-mouton
     @repeat_effect
     def deathrattle(self, sequence: Sequence):
+        target = self.controller.board.cards.filter(race='BEAST', is_alive=True).random_choice()
         self.buff(
             self.enchantment_dbfId,
-            self.controller.board.cards.filter(race='BEAST', is_alive=True).random_choice()
+            target
         )
+        print('saute', target, target.entities)
 BG21_000_G= BG21_000 # Saute-mouton premium
 
 
@@ -1931,7 +1932,7 @@ class BG21_023(Minion):
         random.shuffle(opponent_board)
         opponent_board.sort(key=lambda x: x.health)
         target = opponent_board[-1]
-        self.damage(target, 6)
+        self.damage(target, 5)
 
 
 class BG21_023_G(BG21_023):
