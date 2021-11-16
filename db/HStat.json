@@ -12428,6 +12428,134 @@
   "type": "HERO_POWER"
  },
  {
+  "name": "Roi des Bêtes",
+  "enchantment_dbfId": 59842,
+  "hero_script": "Default_script",
+  "dbfId": 59839,
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "hideCost": true,
+  "id": "TB_BaconShop_HP_041a",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nChaque fois que vous recrutez une <b>Bête</b>, lui donne +2/+2. Change de type à chaque tour.",
+  "type": "HERO_POWER"
+ },
+ {
+  "name": "Roi des Méca",
+  "enchantment_dbfId": 59842,
+  "hero_script": "Default_script",
+  "dbfId": 59853,
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "hideCost": true,
+  "id": "TB_BaconShop_HP_041b",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nChaque fois que vous recrutez un <b>Méca</b>, lui donne +2/+2. Change de type à chaque tour.",
+  "type": "HERO_POWER"
+ },
+ {
+  "name": "Roi des Murlocs",
+  "enchantment_dbfId": 59842,
+  "hero_script": "Default_script",
+  "dbfId": 59852,
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "hideCost": true,
+  "id": "TB_BaconShop_HP_041c",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nChaque fois que vous recrutez un <b>Murloc</b>, lui donne +2/+2. Change de type à chaque tour.",
+  "type": "HERO_POWER"
+ },
+ {
+  "name": "Roi des Démons",
+  "enchantment_dbfId": 59842,
+  "hero_script": "Default_script",
+  "dbfId": 59854,
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "hideCost": true,
+  "id": "TB_BaconShop_HP_041d",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nChaque fois que vous recrutez un <b>Démon</b>, lui donne +2/+2. Change de type à chaque tour.",
+  "type": "HERO_POWER"
+ },
+ {
+  "name": "Roi des Dragons",
+  "enchantment_dbfId": 59842,
+  "hero_script": "Default_script",
+  "dbfId": 60922,
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "hideCost": true,
+  "id": "TB_BaconShop_HP_041f",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nChaque fois que vous recrutez un <b>Dragon</b>, lui donne +2/+2. Change de type à chaque tour.",
+  "type": "HERO_POWER"
+ },
+ {
+  "name": "Roi des Pirates",
+  "enchantment_dbfId": 59842,
+  "hero_script": "Default_script",
+  "dbfId": 62277,
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "hideCost": true,
+  "id": "TB_BaconShop_HP_041g",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nChaque fois que vous recrutez un <b>Pirate</b>, lui donne +2/+2. Change de type à chaque tour.",
+  "type": "HERO_POWER"
+ },
+ {
+  "name": "Roi des Élémentaires",
+  "enchantment_dbfId": 59842,
+  "hero_script": "Default_script",
+  "dbfId": 64220,
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "hideCost": true,
+  "id": "TB_BaconShop_HP_041h",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nChaque fois que vous recrutez un <b>Élémentaire</b>, lui donne +2/+2. Change de type à chaque tour.",
+  "type": "HERO_POWER"
+ },
+ {
+  "name": "Roi des Hurans",
+  "enchantment_dbfId": 59842,
+  "hero_script": "Default_script",
+  "dbfId": 71081,
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "hideCost": true,
+  "id": "TB_BaconShop_HP_041i",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nChaque fois que vous recrutez un <b>Huran</b>, lui donne +2/+2. Change de type à chaque tour.",
+  "type": "HERO_POWER"
+ },
+ {
   "name": "Rites de réincarnation",
   "enchantment_dbfId": 58043,
   "hero_script": "Roi_liche",

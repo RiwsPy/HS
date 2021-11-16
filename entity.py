@@ -59,7 +59,7 @@ class Entity:
         db = {
             **Entity.default_attr,
             **getattr(self.__class__, 'default_attr', {}),
-            **CARD_DB[dbfId].data,
+            **CARD_DB[dbfId].__dict__,
             **kwargs}
 
         for key, data in db.items():
@@ -358,7 +358,7 @@ class Minion(Entity):
                     Sequence('AVENGE', self, **kwargs).start_and_close()
                     Sequence('REBORN', self, **kwargs).start_and_close()
 
-    def play_start(self, sequence):
+    def play_start(self, sequence: Sequence):
         if self.my_zone.zone_type != Zone.HAND and\
                 self.controller.type != Type.BOB:
             sequence.is_valid = False
@@ -384,11 +384,11 @@ class Minion(Entity):
         else:
             sequence.is_valid = False
 
-    def play_end(self, sequence):
+    def play_end(self, sequence: Sequence):
         self.controller.played_cards[self.nb_turn] += self
         self.modular(sequence)
 
-    def modular(self, sequence) -> None:
+    def modular(self, sequence: Sequence) -> None:
         # copie des caractéristiques ou application des enchantements ?
         # les enchantements non buff sont-ils conservés ?
         modular_target = getattr(sequence, 'modular_target', None)
@@ -760,7 +760,10 @@ class Hero_power(Entity):
         # TODO: test
         new_power_id = self.create_card(dbfId, **kwargs)
         if new_power_id.type == Type.HERO_POWER:
-            self = new_power_id
+            self.owner.remove(self)
+            self.owner.append(new_power_id)
+            self.owner.power = new_power_id
+            #self = new_power_id
 
 
 class Spell(Entity):

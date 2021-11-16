@@ -212,23 +212,59 @@ class TB_BaconShop_HP_039(Hero_power):
 
 
 class TB_BaconShop_HP_041(Hero_power):
+    # Le roi des Rats
     # TODO
     # 1 pouvoir pour chaque type: 59839, 59853, 59852, 59854, 62277, 64220, 71081, 60922
 
-    # Le roi des Rats
     # will not change into the same Hero Power twice in a row
-    def buy_off(self, card):
-        if card.type & self.quest_value:
-            self.buff(self.enchantment_dbfId, card)
-
+    quest_value = Race('NONE').hex
+    race_to_power_dbfId = {
+        Race('BEAST').hex: 59839,
+        Race('MECHANICAL').hex: 59853,
+        Race('MURLOC').hex: 59852,
+        Race('DEMON').hex: 59854,
+        Race('DRAGON').hex: 60922,
+        Race('PIRATE').hex: 62277,
+        Race('ELEMENTAL').hex: 64220,
+        Race('QUILBOAR').hex: 71081,
+    }
     def turn_on(self, sequence: Sequence):
-        possible_types = self.game.type_present & (0xFF - self.quest_value)
+        possible_types = self.game.type_present & (Race('ALL').hex - self.__class__.quest_value)
         random_type = list(range(0, 8))
         random.shuffle(random_type)
         for typ in random_type:
             if 2**typ & possible_types:
-                self.quest_value = 2**typ
+                self.change(self.race_to_power_dbfId[2**typ])
                 break
+
+    def buy_off(self, sequence: Sequence):
+        if sequence.source.type & self.__class__.quest_value and sequence.is_ally(self):
+            self.buff(self.enchantment_dbfId, sequence.source)
+
+class TB_BaconShop_HP_041a(TB_BaconShop_HP_041):
+    quest_value = Race('BEAST').hex
+
+class TB_BaconShop_HP_041b(TB_BaconShop_HP_041):
+    quest_value = Race('MECHANICAL').hex
+
+class TB_BaconShop_HP_041c(TB_BaconShop_HP_041):
+    quest_value = Race('MURLOC').hex
+
+class TB_BaconShop_HP_041d(TB_BaconShop_HP_041):
+    quest_value = Race('DEMON').hex
+
+class TB_BaconShop_HP_041f(TB_BaconShop_HP_041):
+    quest_value = Race('DRAGON').hex
+
+class TB_BaconShop_HP_041g(TB_BaconShop_HP_041):
+    quest_value = Race('PIRATE').hex
+
+class TB_BaconShop_HP_041h(TB_BaconShop_HP_041):
+    quest_value = Race('ELEMENTAL').hex
+
+class TB_BaconShop_HP_041i(TB_BaconShop_HP_041):
+    quest_value = Race('QUILBOAR').hex
+
 
 
 class TB_BaconShop_HP_065(Hero_power):

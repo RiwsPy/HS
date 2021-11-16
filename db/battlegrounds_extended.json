@@ -774,7 +774,17 @@
 "59399": {"name": "Tout recousu", "hero_script": "Default_script"},
 "59201": {"name": "Gardien de ménagerie", "hero_script": "Default_script"},
 "58022": {"name": "Prestidigitation", "hero_script": "Default_script"},
+
 "63127": {"name": "Le temps des rois", "enchantment_dbfId":59842, "hero_script": "Default_script"},
+"59839": {"name": "Roi des bêtes", "enchantment_dbfId":59842, "hero_script": "Default_script"},
+"59853": {"name": "Roi des mécas", "enchantment_dbfId":59842, "hero_script": "Default_script"},
+"59852": {"name": "Roi des murlocs", "enchantment_dbfId":59842, "hero_script": "Default_script"},
+"59854": {"name": "Roi des démons", "enchantment_dbfId":59842, "hero_script": "Default_script"},
+"60922": {"name": "Roi des dragons", "enchantment_dbfId":59842, "hero_script": "Default_script"},
+"62277": {"name": "Roi des pirates", "enchantment_dbfId":59842, "hero_script": "Default_script"},
+"64220": {"name": "Roi des élémentaires", "enchantment_dbfId":59842, "hero_script": "Default_script"},
+"71081": {"name": "Roi des hurans", "enchantment_dbfId":59842, "hero_script": "Default_script"},
+
 "58040": {"name": "Rites de réincarnation", "enchantment_dbfId":58043, "hero_script": "Roi_liche"},
 "63320": {"name": "Chaton de Kel’Thuzad", "hero_script": "Default_script"},
 "61919": {"name": "Emprisonnement", "enchantment_dbfId":61936, "hero_script": "Default_script"},
