@@ -79,7 +79,6 @@ UNG_999t6e= add_stat # Énorme
 UNG_999t13e= add_stat # Crachat de poison
 UNG_999t8e= add_stat # Bouclier crépitant
 UNG_999t7e= add_stat # Vitesse de l’éclair
-UNG_999t2e= add_stat # Spores vivantes
 BGS_030e= add_stat # Bagargouillé
 TB_BaconUps_100e= add_stat # Bagargouillé
 EX1_093e= add_stat # Main d’Argus
@@ -155,8 +154,6 @@ BG21_006e= add_stat # Impétueux
 BG21_008e= add_stat # Salin
 BG21_008_Ge= add_stat # Super salin
 BG21_013e= add_stat # Puissance des dragons
-BG21_000e= add_stat # Bond en avant
-BG21_000_Ge= add_stat # Bond en avant
 BG21_021e= add_stat # Enfumé
 BG21_010e= add_stat # Gonflé
 BG21_010_Ge= add_stat # Super gonflé
@@ -193,7 +190,6 @@ TB_BaconShop_HP_001e= add_stat # Lames affûtées
 TB_BaconShop_HP_107e= add_stat # Pousse-toi de là !
 TB_BaconShop_HP_042e= add_stat # Chapeau
 TB_BaconShop_HP_061e= add_stat # Vous brûlerez tous !
-TB_BaconShop_HP_068e= add_stat # Emprisonné
 TB_BaconShop_HP_068e2= add_stat # Éveillé
 TB_BaconShop_HP_024e2= add_stat # Rite de réincarnation
 BG20_HERO_102pe2= add_stat # Pour la Horde !
@@ -295,12 +291,31 @@ class BGS_104pe(Enchantment):
 BG21_020pe= BGS_104pe # Ench. de joueur Rejeton de Lumière éclatant
 
 
-class TB_BaconShop_HP_068(add_stat):
+class TB_BaconShop_HP_068e(add_stat):
     # Emprisonné
     def remove(self):
         super().remove()
         self.buff(self.enchantment_dbfId, self)
         self.controller.opponent.hand.append(self)
+
+
+class UNG_999t2e(add_stat):
+    # Spores vivantes
+    nb_repop = 2
+    deathrattle = deathrattle_repop.deathrattle
+
+
+class BG21_000e(add_stat):
+    # Bond en avant
+    @repeat_effect
+    def deathrattle(self, sequence: Sequence):
+        print('mort de enchant')
+        target = self.controller.board.cards.filter(race='BEAST', is_alive=True).random_choice()
+        if target:
+            target.append(self)
+            self.apply()
+BG21_000_Ge= BG21_000e # Bond en avant premium
+
 
 
 
