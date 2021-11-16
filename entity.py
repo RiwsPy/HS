@@ -42,6 +42,7 @@ class Entity:
         'quest_value': 0,
         'type': Type.DEFAULT,
         'attack': 0,
+        'armor': 0,
         'owner': Void,
         'from_bob': False,
         'ban': False,
@@ -631,8 +632,11 @@ class Minion(Entity):
                             seq.damage_value = 0
 
                 if seq.damage_value > 0:
-                    target.health -= seq.damage_value
-                    target.IS_POISONED &= self.POISONOUS
+                    real_damage = seq.damage_value - target.armor 
+                    target.armor = max(0, -real_damage)
+                    target.health -= real_damage
+                    if target.type == Type.MINION: # TODO: delete IS_POISONED
+                        target.IS_POISONED &= self.POISONOUS
                     if not target.is_alive:
                         if target.health < 0 and overkill:
                             Sequence('OVERKILL', self).start_and_close()
@@ -776,7 +780,7 @@ class Spell(Entity):
                     self.cost <= self.controller.gold:
                 self.controller.gold -= self.cost
                 with Sequence('PLAY', self) as seq:
-                    # TODO: conterspell effect ?
+                    # TODO: counterspell effect ?
                     if seq.is_valid:
                         if self.SECRET is False:
                             self.owner.remove(self)
