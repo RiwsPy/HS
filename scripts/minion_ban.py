@@ -45,15 +45,6 @@ class BGS_124(Minion):
 TB_BaconUps_163= BGS_124 # Lieutenant Garr premium
 
 
-class BGS_202(Minion):
-    # Mythrax
-    def turn_off(self, sequence: Sequence):
-        nb = len(self.my_zone.cards.one_minion_by_race())
-        for _ in range(nb):
-            self.buff(self.enchantment_dbfId, self)
-TB_BaconUps_258= BGS_202 # Mythrax premium
-
-
 class BGS_112(Minion):
     # Héraut qiraji
     def die_on(self, sequence: Sequence):
@@ -163,3 +154,18 @@ class EX1_509(Minion):
             self.buff(self.enchantment_dbfId, self)
 TB_BaconUps_011= EX1_509 # Mande-flots murloc premium
 
+
+class YOD_026(Minion):
+    # Serviteur diabolique
+    nb_strike = 1
+
+    @repeat_effect
+    def deathrattle(self, sequence: Sequence):
+        minions = self.controller.board.cards.filter(is_alive=True)
+        if minions:
+            self.buff(self.enchantment_dbfId, random.choice(minions), attack=self.attack)
+
+
+class TB_BaconUps_112(YOD_026):
+    # Serviteur diabolique premium
+    nb_strike = 2

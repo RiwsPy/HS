@@ -309,7 +309,6 @@ class BG21_000e(add_stat):
     # Bond en avant
     @repeat_effect
     def deathrattle(self, sequence: Sequence):
-        print('mort de enchant')
         target = self.controller.board.cards.filter(race='BEAST', is_alive=True).random_choice()
         if target:
             target.append(self)

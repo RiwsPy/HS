@@ -43,7 +43,7 @@ class TB_Bacon_Secrets_13(Spell):
         if self.controller.board.size > 0:
             for minion in self.controller.board.cards:
                 self.buff(self.enchantment_dbfId, minion)
-                self.die()
+            self.die()
 
 
 class TB_Bacon_Secrets_04(Spell):

@@ -1014,11 +1014,12 @@ class BOT_606(Minion):
 
     @repeat_effect
     def deathrattle(self, sequence: Sequence):
-        self.append_action(
-            self.damage,
-            random.choice(self.controller.opponent.board.cards),
-            4,
-            overkill=False)
+        if self.controller.opponent.board.cards:
+            self.append_action(
+                self.damage,
+                random.choice(self.controller.opponent.board.cards),
+                4,
+                overkill=False)
 
 
 class TB_BaconUps_028(BOT_606):
@@ -1108,20 +1109,13 @@ class TB_BaconUps_014(OG_221):
     nb_strike = 2
 
 
-class YOD_026(Minion):
-    # Serviteur diabolique
-    nb_strike = 1
-
-    @repeat_effect
-    def deathrattle(self, sequence: Sequence):
-        minions = self.controller.board.cards.filter(is_alive=True)
-        if minions:
-            self.buff(self.enchantment_dbfId, random.choice(minions), attack=self.attack)
-
-
-class TB_BaconUps_112(YOD_026):
-    # Serviteur diabolique premium
-    nb_strike = 2
+class BGS_202(Minion):
+    # Mythrax
+    def turn_off(self, sequence: Sequence):
+        nb = len(self.my_zone.cards.one_minion_by_race())
+        for _ in range(nb):
+            self.buff(self.enchantment_dbfId, self)
+TB_BaconUps_258= BGS_202 # Mythrax premium
 
 
 class FP1_024(Minion):
@@ -1756,7 +1750,6 @@ class BG21_000(Minion):
             self.enchantment_dbfId,
             target
         )
-        print('saute', target, target.entities)
 BG21_000_G= BG21_000 # Saute-mouton premium
 
 
@@ -2162,7 +2155,7 @@ class BG21_011(Minion):
         super().play_start(sequence)
         if sequence.is_valid:
             sequence.add_target(
-                self.controller.field.cards.filter(race=self.synergy).\
+                self.controller.field.cards.filter_hex(race=self.synergy).\
                     exclude(is_premium=True).choice(self.controller)
             )
 

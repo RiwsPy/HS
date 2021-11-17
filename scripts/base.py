@@ -5,6 +5,7 @@ from utils import repeat_effect
 
 class battlecry_select_one_minion_and_buff_it(Minion):
     # buff battlecry, only minions of the same synergy can be targeted
+    requirements = {}
     def play_start(self, sequence: Sequence):
         super().play_start(sequence)
         if sequence.is_valid:
@@ -41,7 +42,7 @@ class battlecry_select_all_and_buff_them(Minion):
 
     @repeat_effect
     def battlecry(self, sequence: Sequence):
-        minions = self.controller.board.cards.filter(race=self.synergy).exclude(self)
+        minions = self.controller.board.cards.filter_hex(race=self.synergy).exclude(self)
         for minion in minions:
             self.buff(self.enchantment_dbfId, minion)
 

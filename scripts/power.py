@@ -227,13 +227,14 @@ class TB_BaconShop_HP_041(Hero_power):
     def turn_on(self, sequence: Sequence):
         types = Race.battleground_race()
         random.shuffle(types)
+        race_power_exclude = self.game.type_ban | self.synergy.hex
         for typ in types:
-            if typ & self.game.type_present and self.synergy.hex != typ:
+            if typ & race_power_exclude == 0:
                 self.change(self.race_to_power_dbfId[typ])
                 break
 
     def buy_off(self, sequence: Sequence):
-        if sequence.source.type & self.synergy.hex and sequence.is_ally(self):
+        if sequence.source.race & self.synergy.hex and sequence.is_ally(self):
             self.buff(self.enchantment_dbfId, sequence.source)
 TB_BaconShop_HP_041a= TB_BaconShop_HP_041
 TB_BaconShop_HP_041b= TB_BaconShop_HP_041
