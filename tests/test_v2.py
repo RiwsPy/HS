@@ -25,33 +25,6 @@ def reinit_game(monkeypatch):
 
     g.party_begin(player_name, 'p2_name')
 
-"""
-def test_game(monkeypatch):
-    db = {
-    "":{"general":General.NONE, 'synergy': Type.ALL},
-    "GAME":{"general":General.GAME, 'synergy': Type.ALL},
-    "HAND":{"general":General.ZONE, "synergy":Type.ALL, "zone_type":Zone.HAND},
-    '100': {'level': 1, 'synergy': Type.ALL, 'name': 'minion_level1', 'general': General.MINION},
-    '201': {'level': 2, 'synergy': Type.ALL, 'name': 'minion_level2', 'general': General.MINION},
-    '402': {'level': 3, 'synergy': Type.ALL, 'name': 'minion_level3', 'general': General.MINION},
-    '403': {'level': 4, 'synergy': Type.ALL, 'name': 'minion_level4', 'general': General.MINION},
-    '504': {'level': 5, 'synergy': Type.ALL, 'name': 'minion_level5', 'general': General.MINION},
-    '605': {'level': 6, 'synergy': Type.ALL, 'name': 'minion_level6', 'general': General.MINION},
-    '106': {'level': 1, 'synergy': Type.ALL, 'name': 'minion_level1', 'general': General.MINION, 'ban':1},
-    }
-    def mock_card_db(*args, **kwargs):
-        return Meta_card_data(Card_data(k, **v)
-            for k, v in db.items())
-    monkeypatch.setattr('entity.card_db', mock_card_db)
-
-    g = Game()
-    assert g.nb_turn == 0
-    assert g.type_present != Type.NONE
-    assert len(g.hand.entities) == LEVEL_MAX+1
-    for nb, minions in enumerate(g.hand.entities[1:]):
-        assert len(minions) == CARD_NB_COPY[nb+1]
-
-"""
 
 def test_all_in_bob(reinit_game, monkeypatch):
     player = g.players[0]
@@ -82,7 +55,7 @@ def test_game_hand(reinit_game):
     id = entity.dbfId
     assert entity.type == Type.MINION
     assert entity.level == entity_level
-    assert entity.synergy & g.type_present != 0
+    assert entity.synergy & g.type_ban == 0
     assert isinstance(entity, Entity)
     assert len(g.hand.cards.filter(dbfId=id)) == CARD_NB_COPY[entity_level]
     nb = 0

@@ -16,5 +16,5 @@ def charge_init_db_card(monkeypatch):
 
 def test_game_type_ban(charge_init_db_card):
     g = Card(CardName.DEFAULT_GAME, type_ban=Race('BEAST').hex)
-    assert g.type_present == Race('ALL').hex - Race('BEAST').hex
+    assert g.type_ban == Race('BEAST').hex
     assert len(g.craftable_card.exclude(synergy='BEAST')) == len(g.craftable_card)
