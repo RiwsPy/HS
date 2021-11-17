@@ -1,6 +1,6 @@
 from os import stat
 from db_card import Card_data
-from enums import VERSION, CardName
+from enums import VERSION, CardName, Race
 import time
 import json
 import stats
@@ -8,21 +8,19 @@ from entity import Entity, Card
 from datetime import datetime
 from typing import Dict
 from sequence import Sequence
-from db_card import Meta_card_data
+from db_card import Meta_card_data, CARD_DB
 
-"""
 compo_turn_3 = { # by synergy
-    Race.ALL: (38797, 65661, 64040), # rejeton, ritualiste tourmenté, goutte d'eau
-    Race.BEAST: (39481, 59940), # gentille grand mère, chef de meute
-    Race.DEMON: (59937, 59186), # emprisonneur, surveillant Nathrezim
-    Race.DRAGON: (61029, 60621), # gardien des glyphes, régisseur du temps
-    Race.ELEMENTAL: (64056, 64296, 64040), # élémentaire en fête, roche en fusion, goutte
-    Race.MECHANICAL: (49279, 778), # groboum, golem des moissons
-    Race.MURLOC: (1063, 736), # chef de guerre, vieux troubloeil
-    Race.PIRATE: (61060, 680), # yo-ho, capitaine des mers du sud
-    Race.QUILBOAR: (70153, 70162), # prophète du sanglier, défense robuste
+    Race('ALL'): (CARD_DB[38797], CARD_DB[38797], CARD_DB[64040]), # rejeton, rejeton, goutte d'eau
+    Race('BEAST'): (CARD_DB[70790], CARD_DB[59940]), # rat d'égoût, chef de meute
+    Race('DEMON'): (CARD_DB[59937], CARD_DB[59186]), # emprisonneur, surveillant Nathrezim
+    Race('DRAGON'): (CARD_DB[61029], CARD_DB[60621]), # gardien des glyphes, régisseur du temps
+    Race('ELEMENTAL'): (CARD_DB[64056], CARD_DB[64296], CARD_DB[64040]), # élémentaire en fête, roche en fusion, goutte
+    Race('MECHANICAL'): (CARD_DB[49279], CARD_DB[778]), # groboum, golem des moissons
+    Race('MURLOC'): (CARD_DB[1063], CARD_DB[736]), # chef de guerre, vieux troubloeil
+    Race('PIRATE'): (CARD_DB[61060], CARD_DB[680]), # yo-ho, capitaine des mers du sud
+    Race('QUILBOAR'): (CARD_DB[70153], CARD_DB[70162]), # prophète du sanglier, défense robuste
 }
-"""
 
 class arene:
     def __init__(self, **kwargs) -> None:
@@ -127,7 +125,6 @@ class arene:
                         calc_damage(j1, j2)*proba_apparition_p2
                     card_p1.counter += proba_apparition_p2
 
-    """
     def base_T3(self, cards_test, p1, p2):
         cards_test = cards_test or self.g.minion_can_collect.filter_maxmin_level(level_max=2)
         self.fight_base_T3(cards_test, p1, p2)
@@ -139,7 +136,7 @@ class arene:
         NB_FIGHT = 3
 
         for synergy in compo_turn_3.copy():
-            if not synergy & self.g.type_present:
+            if synergy & self.g.type_ban:
                 del compo_turn_3[synergy]
 
         for card_p1 in card_list:
@@ -149,26 +146,24 @@ class arene:
                             exclude_card=[card_p1])
             for card_p1_2, proba_c2 in generator_p2_2:
                 for compo in compo_turn_3.values():
+                    print(card_p1.name, card_p1_2.name)
                     for _ in range(NB_FIGHT):
                         g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
                         j1, j2 = g.players
-                        g.begin_turn()
-                        g.end_turn()
-                        g.begin_turn()
-                        j1.power.active_script_arene()
-                        j2.power.active_script_arene()
-                        g.end_turn()
-                        g.begin_turn()
-                        j1.power.active_script_arene(card_p1, card_p1_2, force=True)
-                        j2.power.active_script_arene(*compo, force=True)
-                        g.end_turn()
-                        g.fight_on()
-                        g.fight_off()
+                        Sequence('TURN', g).start_and_close()
+                        with Sequence('TURN', g):
+                            j1.power.active_script_arene()
+                            j2.power.active_script_arene()
+                        with Sequence('TURN', g):
+                            j1.power.active_script_arene(card_p1, card_p1_2, force=True)
+                            j2.power.active_script_arene(*compo, force=True)
+                        Sequence('FIGHT', g).start_and_close()
 
                         card_p1.counter += proba_c2
                         card_p1.value += calc_damage(j1, j2)*proba_c2
 
 
+    """
     def base_T1_to_T3_no_refound(self, cards_test, p1, p2):
         cards_test = cards_test or self.g.minion_can_collect.filter(level=1)
         self.fight_base_T1_to_T3_no_refound(cards_test, p1, p2)
@@ -180,7 +175,7 @@ class arene:
         NB_FIGHT = 3
 
         for synergy in compo_turn_3.copy():
-            if not synergy & self.g.type_present:
+            if synergy & self.g.type_ban:
                 del compo_turn_3[synergy]
         #cards_T2 = self.g.minion_can_collect.filter_maxmin_level(level_max=2)
         cards_T2 = self.load_card_rating(
@@ -254,7 +249,7 @@ class arene:
         NB_FIGHT = 1
 
         for synergy in compo_turn_3.copy():
-            if not synergy & self.g.type_present:
+            if synergy & self.g.type_ban:
                 del compo_turn_3[synergy]
         #cards_T2 = self.g.minion_can_collect.filter_maxmin_level(level_max=2)
 
@@ -439,6 +434,6 @@ if __name__ == '__main__':
      "p2": CardName.DEFAULT_HERO}))
     """
 
-    arene(method='base_T1', type_ban=0, retro=0,
+    arene(method='base_T3', type_ban=0, retro=2,
         p1=CardName.DEFAULT_HERO,
         p2=CardName.DEFAULT_HERO)

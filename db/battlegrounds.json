@@ -177,7 +177,7 @@
   "type": "MINION"
  },
  {
-  "attack": 4,
+  "attack": 5,
   "battlegroundsPremiumDbfId": 70168,
   "cardClass": "NEUTRAL",
   "cost": 3,
@@ -198,7 +198,7 @@
   "type": "MINION"
  },
  {
-  "attack": 8,
+  "attack": 10,
   "battlegroundsNormalDbfId": 70162,
   "cardClass": "NEUTRAL",
   "cost": 3,
@@ -236,12 +236,12 @@
   "type": "ENCHANTMENT"
  },
  {
-  "attack": 4,
+  "attack": 3,
   "battlegroundsPremiumDbfId": 70172,
   "cardClass": "NEUTRAL",
-  "cost": 5,
+  "cost": 3,
   "dbfId": 70171,
-  "health": 4,
+  "health": 3,
   "id": "BG20_103",
   "mechanics": [
    "TRIGGER_VISUAL"
@@ -250,16 +250,16 @@
   "race": "QUILBOAR",
   "set": "BATTLEGROUNDS",
   "techLevel": 3,
-  "text": "Chaque tour, la première <b>gemme de sang</b> jouée\nsur ce serviteur lui donne +2/+2 supplémentaires.",
+  "text": "Chaque tour, la première <b>gemme de sang</b> jouée\nsur ce serviteur lui donne +3/+3 supplémentaires.",
   "type": "MINION"
  },
  {
-  "attack": 8,
+  "attack": 6,
   "battlegroundsNormalDbfId": 70171,
   "cardClass": "NEUTRAL",
-  "cost": 5,
+  "cost": 3,
   "dbfId": 70172,
-  "health": 8,
+  "health": 6,
   "id": "BG20_103_G",
   "mechanics": [
    "TRIGGER_VISUAL"
@@ -267,7 +267,7 @@
   "name": "Brute dos-hirsute",
   "race": "QUILBOAR",
   "set": "BATTLEGROUNDS",
-  "text": "Chaque tour, la première <b>gemme de sang</b> jouée\nsur ce serviteur lui donne +4/+4 supplémentaires.",
+  "text": "Chaque tour, la première <b>gemme de sang</b> jouée\nsur ce serviteur lui donne +6/+6 supplémentaires.",
   "type": "MINION"
  },
  {
@@ -322,6 +322,7 @@
   "name": "Mande-épines",
   "race": "QUILBOAR",
   "set": "BATTLEGROUNDS",
+  "techLevel": 3,
   "text": "<b>Cri de guerre</b> et <b>Râle d’agonie :</b> vous gagnez une <b>gemme de sang</b>.",
   "type": "MINION"
  },
@@ -436,9 +437,9 @@
   "name": "Nécrolyte",
   "race": "QUILBOAR",
   "set": "BATTLEGROUNDS",
-  "targetingArrowText": "Vole toutes les <b>gemmes_de_sang</b> de ses voisins.",
-  "techLevel": 3,
-  "text": "<b>Cri de guerre :</b> choisit un serviteur allié. Il vole toutes les <b>gemmes de sang</b> de ses voisins.",
+  "targetingArrowText": "Joue 2_<b>gemmes_de_sang</b> et vole toutes celles de ses voisins.",
+  "techLevel": 4,
+  "text": "<b>Cri de guerre :</b> joue 2 <b>gemmes de sang</b> sur un serviteur allié. Il vole toutes les <b>gemmes de sang</b> de ses voisins.",
   "type": "MINION"
  },
  {
@@ -455,8 +456,8 @@
   "name": "Nécrolyte",
   "race": "QUILBOAR",
   "set": "BATTLEGROUNDS",
-  "targetingArrowText": "Vole toutes les <b>gemmes_de_sang</b> de ses voisins.",
-  "text": "<b>Cri de guerre :</b> choisit un serviteur allié. Il vole toutes les <b>gemmes de sang</b> de ses voisins.",
+  "targetingArrowText": "Joue 4_<b>gemmes_de_sang</b> et vole toutes celles de ses voisins.",
+  "text": "<b>Cri de guerre :</b> joue 4 <b>gemmes de sang</b> sur un serviteur allié. Il vole toutes les <b>gemmes de sang</b> de ses voisins.",
   "type": "MINION"
  },
  {
@@ -508,7 +509,6 @@
   "name": "Chevalier dos-hirsute",
   "race": "QUILBOAR",
   "set": "BATTLEGROUNDS",
-  "techLevel": 5,
   "text": "<b>Furie des vents</b>\n<b>Bouclier divin</b>\n<b>Frénésie :</b> gagne <b>Bouclier divin</b>.",
   "type": "MINION"
  },
@@ -606,12 +606,12 @@
   "type": "MINION"
  },
  {
-  "attack": 4,
+  "attack": 5,
   "battlegroundsPremiumDbfId": 70191,
   "cardClass": "NEUTRAL",
   "cost": 4,
   "dbfId": 70184,
-  "health": 5,
+  "health": 6,
   "id": "BG20_207",
   "mechanics": [
    "TAUNT",
@@ -625,12 +625,12 @@
   "type": "MINION"
  },
  {
-  "attack": 8,
+  "attack": 10,
   "battlegroundsNormalDbfId": 70184,
   "cardClass": "NEUTRAL",
   "cost": 4,
   "dbfId": 70191,
-  "health": 10,
+  "health": 12,
   "id": "BG20_207_G",
   "mechanics": [
    "TAUNT",
@@ -2171,7 +2171,7 @@
   "type": "MINION"
  },
  {
-  "attack": 6,
+  "attack": 5,
   "battlegroundsPremiumDbfId": 74906,
   "cardClass": "NEUTRAL",
   "cost": 4,
@@ -2185,11 +2185,11 @@
   "race": "MECHANICAL",
   "set": "BATTLEGROUNDS",
   "techLevel": 4,
-  "text": "<b>Vengeance (2) :</b> inflige 6 points de dégâts au serviteur adverse aux PV les plus élevés.",
+  "text": "<b>Vengeance (2) :</b> inflige 5 points de dégâts au serviteur adverse aux PV les plus élevés.",
   "type": "MINION"
  },
  {
-  "attack": 12,
+  "attack": 10,
   "battlegroundsNormalDbfId": 72388,
   "cardClass": "NEUTRAL",
   "cost": 4,
@@ -2202,7 +2202,7 @@
   "name": "Méca-tank",
   "race": "MECHANICAL",
   "set": "BATTLEGROUNDS",
-  "text": "<b>Vengeance (2) :</b> inflige 6 points de dégâts au serviteur adverse aux PV les plus élevés deux fois.",
+  "text": "<b>Vengeance (2) :</b> inflige 5 points de dégâts au serviteur adverse aux PV les plus élevés deux fois.",
   "type": "MINION"
  },
  {
@@ -2223,7 +2223,7 @@
   ],
   "set": "BATTLEGROUNDS",
   "techLevel": 4,
-  "text": "Une fois qu’un serviteur allié a perdu <b>Bouclier divin</b>, lui donne +2/+1 définitivement.",
+  "text": "Une fois qu’un serviteur allié a perdu <b>Bouclier divin</b>, lui donne +1/+1 définitivement.",
   "type": "MINION"
  },
  {
@@ -2243,7 +2243,7 @@
    "DIVINE_SHIELD"
   ],
   "set": "BATTLEGROUNDS",
-  "text": "Une fois qu’un serviteur allié a perdu <b>Bouclier divin</b>, lui donne +4/+2 définitivement.",
+  "text": "Une fois qu’un serviteur allié a perdu <b>Bouclier divin</b>, lui donne +2/+2 définitivement.",
   "type": "MINION"
  },
  {
@@ -2252,7 +2252,7 @@
   "id": "BG21_024_Ge",
   "name": "Lubrifié",
   "set": "BATTLEGROUNDS",
-  "text": "+4/+2.",
+  "text": "+2/+2.",
   "type": "ENCHANTMENT"
  },
  {
@@ -2261,7 +2261,7 @@
   "id": "BG21_024e",
   "name": "Lubrifié",
   "set": "BATTLEGROUNDS",
-  "text": "+2/+1.",
+  "text": "+1/+1.",
   "type": "ENCHANTMENT"
  },
  {
@@ -2471,7 +2471,7 @@
   "race": "PIRATE",
   "set": "BATTLEGROUNDS",
   "techLevel": 5,
-  "text": "<b>Vengeance (5) :</b> transforme définitivement un autre Pirate allié en carte dorée.",
+  "text": "<b>Vengeance (4) :</b> transforme définitivement un autre Pirate allié en carte dorée.",
   "type": "MINION"
  },
  {
@@ -2488,7 +2488,7 @@
   "name": "Tony Deux-Défenses",
   "race": "PIRATE",
   "set": "BATTLEGROUNDS",
-  "text": "<b>Vengeance (5) :</b> transforme définitivement 2 autres Pirates alliés en cartes dorées.",
+  "text": "<b>Vengeance (4) :</b> transforme définitivement 2 autres Pirates alliés en cartes dorées.",
   "type": "MINION"
  },
  {
@@ -3495,9 +3495,9 @@
    "BATTLECRY"
   ],
   "set": "BATTLEGROUNDS",
-  "targetingArrowText": "Donne_+1/+1 pour chaque Pirate que vous avez acheté pendant ce tour.",
+  "targetingArrowText": "Donne_+1/+1. Recommence pour chaque Pirate que vous_avez acheté pendant ce tour.",
   "techLevel": 3,
-  "text": "<b>Cri de guerre :</b> donne +1/+1 à un Pirate allié pour chaque Pirate que vous avez acheté pendant ce tour.",
+  "text": "<b>Cri de guerre :</b> donne +1/+1 à un Pirate allié. Recommence pour chaque Pirate que vous avez acheté pendant ce tour.",
   "type": "MINION"
  },
  {
@@ -3574,7 +3574,7 @@
   "cardClass": "NEUTRAL",
   "cost": 4,
   "dbfId": 61056,
-  "health": 5,
+  "health": 6,
   "id": "BGS_056",
   "mechanics": [
    "TRIGGER_VISUAL"
@@ -3623,12 +3623,12 @@
   "type": "ENCHANTMENT"
  },
  {
-  "attack": 2,
+  "attack": 3,
   "battlegroundsPremiumDbfId": 63782,
   "cardClass": "NEUTRAL",
   "cost": 6,
   "dbfId": 61060,
-  "health": 6,
+  "health": 5,
   "id": "BGS_060",
   "mechanics": [
    "TRIGGER_VISUAL"
@@ -3644,7 +3644,7 @@
   "type": "MINION"
  },
  {
-  "attack": 2,
+  "attack": 3,
   "battlegroundsPremiumDbfId": 62262,
   "cardClass": "NEUTRAL",
   "cost": 1,
@@ -4516,6 +4516,7 @@
   ],
   "name": "Mythrax le Disloqueur",
   "set": "BATTLEGROUNDS",
+  "techLevel": 5,
   "text": "À la fin de votre tour, gagne +1/+2 pour chaque type de serviteur que vous contrôlez.",
   "type": "MINION"
  },
@@ -6746,7 +6747,7 @@
   "id": "TB_BaconShop_HP_001",
   "name": "Affûtage de lames",
   "set": "BATTLEGROUNDS",
-  "text": "Donne +2/+1 à un serviteur pour chaque serviteur que vous avez recruté pendant ce tour.",
+  "text": "Donne +2/+1 à un serviteur allié pour chaque serviteur que vous avez recruté pendant ce tour.",
   "type": "HERO_POWER"
  },
  {
@@ -7016,12 +7017,124 @@
  },
  {
   "cardClass": "NEUTRAL",
+  "cost": 0,
+  "dbfId": 59839,
+  "hideCost": true,
+  "id": "TB_BaconShop_HP_041a",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "name": "Roi des Bêtes",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nChaque fois que vous recrutez une <b>Bête</b>, lui donne +2/+2. Change de type à chaque tour.",
+  "type": "HERO_POWER"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "dbfId": 59853,
+  "hideCost": true,
+  "id": "TB_BaconShop_HP_041b",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "name": "Roi des Méca",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nChaque fois que vous recrutez un <b>Méca</b>, lui donne +2/+2. Change de type à chaque tour.",
+  "type": "HERO_POWER"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "dbfId": 59852,
+  "hideCost": true,
+  "id": "TB_BaconShop_HP_041c",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "name": "Roi des Murlocs",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nChaque fois que vous recrutez un <b>Murloc</b>, lui donne +2/+2. Change de type à chaque tour.",
+  "type": "HERO_POWER"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "dbfId": 59854,
+  "hideCost": true,
+  "id": "TB_BaconShop_HP_041d",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "name": "Roi des Démons",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nChaque fois que vous recrutez un <b>Démon</b>, lui donne +2/+2. Change de type à chaque tour.",
+  "type": "HERO_POWER"
+ },
+ {
+  "cardClass": "NEUTRAL",
   "dbfId": 59842,
   "id": "TB_BaconShop_HP_041e",
   "name": "Rat fidèle",
   "set": "BATTLEGROUNDS",
   "text": "A +2/+2.",
   "type": "ENCHANTMENT"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "dbfId": 60922,
+  "hideCost": true,
+  "id": "TB_BaconShop_HP_041f",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "name": "Roi des Dragons",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nChaque fois que vous recrutez un <b>Dragon</b>, lui donne +2/+2. Change de type à chaque tour.",
+  "type": "HERO_POWER"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "dbfId": 62277,
+  "hideCost": true,
+  "id": "TB_BaconShop_HP_041g",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "name": "Roi des Pirates",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nChaque fois que vous recrutez un <b>Pirate</b>, lui donne +2/+2. Change de type à chaque tour.",
+  "type": "HERO_POWER"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "dbfId": 64220,
+  "hideCost": true,
+  "id": "TB_BaconShop_HP_041h",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "name": "Roi des Élémentaires",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nChaque fois que vous recrutez un <b>Élémentaire</b>, lui donne +2/+2. Change de type à chaque tour.",
+  "type": "HERO_POWER"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "dbfId": 71081,
+  "hideCost": true,
+  "id": "TB_BaconShop_HP_041i",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "name": "Roi des Hurans",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nChaque fois que vous recrutez un <b>Huran</b>, lui donne +2/+2. Change de type à chaque tour.",
+  "type": "HERO_POWER"
  },
  {
   "cardClass": "NEUTRAL",
@@ -9860,7 +9973,7 @@
   "cardClass": "NEUTRAL",
   "cost": 4,
   "dbfId": 62257,
-  "health": 10,
+  "health": 12,
   "id": "TB_BaconUps_139",
   "mechanics": [
    "TRIGGER_VISUAL"
@@ -9894,8 +10007,8 @@
    "BATTLECRY"
   ],
   "set": "BATTLEGROUNDS",
-  "targetingArrowText": "Donne_+2/+2 pour chaque Pirate que vous avez acheté pendant ce tour.",
-  "text": "<b>Cri de guerre :</b> donne +2/+2 à un Pirate allié pour chaque Pirate que vous avez acheté pendant ce tour.",
+  "targetingArrowText": "Donne_+2/+2. Recommence pour chaque Pirate que vous_avez acheté pendant ce tour.",
+  "text": "<b>Cri de guerre :</b> donne +2/+2 à un Pirate allié. Recommence pour chaque Pirate que vous avez acheté pendant ce tour.",
   "type": "MINION"
  },
  {
@@ -9908,7 +10021,7 @@
   "type": "ENCHANTMENT"
  },
  {
-  "attack": 4,
+  "attack": 6,
   "battlegroundsNormalDbfId": 61061,
   "cardClass": "NEUTRAL",
   "cost": 1,
@@ -10094,12 +10207,12 @@
   "type": "MINION"
  },
  {
-  "attack": 4,
+  "attack": 6,
   "battlegroundsNormalDbfId": 61060,
   "cardClass": "NEUTRAL",
   "cost": 6,
   "dbfId": 63782,
-  "health": 12,
+  "health": 10,
   "id": "TB_BaconUps_150",
   "mechanics": [
    "TRIGGER_VISUAL"

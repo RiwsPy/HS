@@ -29,15 +29,11 @@ class Game(Entity):
 
         self.reinit()
 
-        type_ban = attr.get('type_ban', self.determine_present_type())
-        self.type_present = Race('ALL').hex - type_ban
+        self.type_ban = attr.get('type_ban', self.determine_present_type())
 
-        all_cards = entity.card_db().filter(ban=None)
-        if self.type_present != 0:
-            self.craftable_card = all_cards.\
-                filter_hex(synergy=self.type_present)
-        else: # tous types ban
-            self.craftable_card = all_cards.filter(synergy='ALL')
+        all_cards = entity.card_db().exclude(ban=True)
+        self.craftable_card = all_cards.\
+            exclude_hex(synergy=self.type_ban)
 
         self.craftable_hero = self.craftable_card.\
             filter(type=Type.HERO) #.exclude(dbfId=CardName.BOB) # test avec BOB ban
@@ -77,8 +73,7 @@ class Game(Entity):
 
         for nb, player_name in enumerate(players):
             bob = player.Bob(
-                    minion_can_collect=self.minion_can_collect, 
-                    type_present=self.type_present)
+                    minion_can_collect=self.minion_can_collect)
 
             # de base, 4 héros sont disponibles lors de la sélection
             if self.is_arene:
@@ -159,7 +154,7 @@ class Game(Entity):
     def arene_on_creation(self):
         minion_rating = db_arene(
             version=self.version,
-            type_ban=Race('ALL').hex - self.type_present)
+            type_ban=self.type_ban)
         for card in self.minion_can_collect:
             try:
                 card.all_rating = minion_rating[card]['rating']
@@ -169,28 +164,11 @@ class Game(Entity):
 
 if __name__ == "__main__":
     g = Card(CardName.DEFAULT_GAME, is_test=True)
-    g.party_begin('p1_name', 'p2_name', hero_p1=61490)
+    g.party_begin('p1_name', 'p2_name', hero_p1=57893)
     p1, p2 = g.players
 
+    p1 = g.players[0]
     with Sequence('TURN', g):
-        crd = p1.hand.create_card_in(53445) # Micromomie
-        crd.play()
-        enn = p1.hand.create_card_in(48993) # Ennuy-o-module
-        enn.play(position=0)
-        assert p1.board.size == 1
-        assert crd.cards == [enn]
-        assert crd.attack + crd.dbfId.attack + enn.dbfId.attack
-        assert crd.max_health + crd.dbfId.health + enn.dbfId.health
-        assert crd.DIVINE_SHIELD
-        assert crd.TAUNT
-
-        men = p1.hand.create_card_in(48536) # Menace répliquante
-        men.play(position=0)
-        assert crd.cards == [enn, men]
-
-    with Sequence('FIGHT', g):
-        crd.die()
-        assert p1.board.size == 4
-        assert p1.board.cards[0].dbfId == 48842
-        assert p1.board.cards[-1].dbfId == 53445
-        old_size = p1.game.hand.size
+        print(p1.power.synergy)
+    with Sequence('TURN', g):
+        print(p1.power.synergy)

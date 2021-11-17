@@ -62,6 +62,10 @@ class Player(Entity):
             self.health = min(self.health, value)
 
     @property
+    def is_alive(self):
+        return self.health > 0
+
+    @property
     def minion_cost(self) -> int:
         return self.power.minion_cost
 
@@ -220,6 +224,10 @@ class Bob(Player):
         self._level = max(1, min(LEVEL_MAX, value))
 
     @property
+    def is_alive(self):
+        return True
+
+    @property
     def hand(self) -> hand:
         return self.game.hand
 
@@ -245,68 +253,3 @@ class Bob(Player):
     def die(self, *args, **kwargs) -> None:
         pass
     summon_on= die
-
-
-"""
-
-    def pick_random_card(self, lst_card):
-        # proba tirage aléatoire
-        bob = self.bob
-        nb_card_in_bob = bob.nb_card_of_tier_max(tier_max=self.level)
-        lst_proba = [
-            CARD_NB_COPY[bob.minion_can_collect[card]["level"]]/nb_card_in_bob
-            for card in lst_card
-                if card]
-        return lst_proba
-
-    def best_card_T1(self, *players, nb_turn=2):
-        # renvoie la "meilleure" carte que peut choisir un héros qui rencontre un héros précis au tour n°2
-        # puis un héros "classique" au tour n°3
-
-        bob = self.bob.__class__(Race.ALL - self.bob.type_present)
-        players = [self.__class__(bob, plyr.name, plyr.hero.dbfId)
-            for plyr in players]
-
-        j1, j2, j3, j4, j5 = players[:5]
-        bob.go_party(*players)
-
-        opponents = [j1, j2, j3, j4]
-
-        lst = bob.card_of_tier_max(tier_max=1).keys()
-        # crée une liste où chaque carte à une chance équiprobable d'être achetée
-        proba_lst = j1.pick_random_card(lst)
-
-        dict_lst = {}
-        # match 1, j2 contre j1 puis un joueur standard
-        result = compo.arene_pondere([j2, j1, j3, j4], [lst]*3, [proba_lst]*3, nb_turn=2, pr=False)
-        dict_lst[j2.power.id] = result
-
-        # joueur test
-        if j3.power.id != j2.power.id:
-            # match 2, j3 contre j4 puis j5
-            result = compo.arene_pondere([j3, j4, j5, j3], [lst]*3, [proba_lst]*3, nb_turn=2, pr=False)
-            dict_lst[j3.power.id] = result
-
-        proba_lst = [proba_lst] # proba non pondérée pour j1
-        lst = [lst]
-        for opponent in opponents[1:-1]:
-            # stocke le key des cartes listée et triée selon leur classement de l'étape 1
-            new_lst = [info[5][0]
-                for info in dict_lst[opponent.power.id]]
-            lst.append(new_lst)
-
-            opponent.initialize()
-            result = opponent.pick_best_card(new_lst) # crée une liste où chaque carte a % d'apparition dépendant de la puissance théorique de la carte  
-            proba_lst.append(result)
-
-        result = compo.arene_pondere(opponents, lst, proba_lst, nb_turn) # détermine la "meilleure" carte contre l'adversaire
-
-        new_dict = {info[5][0]: info[1]
-            for info in result}
-
-        j1.initialize()
-        proba_key = j1.pick_best_card(new_dict.keys())
-
-        return new_dict, esperance(proba_key, new_dict.values())
-
-"""

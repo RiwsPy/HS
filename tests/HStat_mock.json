@@ -65,7 +65,7 @@
         "name": "Bob le barman",
         "synergy": "ALL",
         "max_health": 40,
-        "cant_collect": 1,
+        "cant_collect": true,
         "power_id": -1,
         "ban": true,
         "dbfId": 57110,

@@ -768,7 +768,7 @@
  },
  {
   "name": "Acolyte de C’Thun",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "dbfId": 63614,
   "attack": 2,
   "battlegroundsPremiumDbfId": 65658,
@@ -787,7 +787,7 @@
  },
  {
   "name": "Acolyte de C’Thun",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 65658,
   "attack": 4,
@@ -987,7 +987,7 @@
  },
  {
   "name": "Amalgame",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "battlegroundsPremiumDbfId": -59202,
   "dbfId": 59202,
@@ -1003,7 +1003,7 @@
  },
  {
   "name": "Cobra empereur",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 1098,
   "artist": "Lars Grant-West",
@@ -1025,7 +1025,7 @@
  },
  {
   "name": "Serpent",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 204,
   "attack": 1,
@@ -1039,7 +1039,7 @@
  },
  {
   "name": "Poisson de N’Zoth",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "phase": [
    "DIE"
@@ -1065,7 +1065,7 @@
  },
  {
   "name": "Carpe de N’Zoth",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "phase": [
    "DIE"
@@ -1091,7 +1091,7 @@
  },
  {
   "name": "Poisson de N’Zoth",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "phase": [
    "DIE"
@@ -1566,7 +1566,7 @@
  },
  {
   "name": "Goule instable",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "dbfId": 1808,
   "artist": "Mike Nicholson",
   "attack": 1,
@@ -1591,7 +1591,7 @@
  },
  {
   "name": "Goule instable",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 61077,
   "attack": 2,
@@ -1654,7 +1654,7 @@
  },
  {
   "name": "Rejeton de N’Zoth",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 38796,
   "dbfId": 38797,
   "artist": "Peter Stapleton",
@@ -1677,7 +1677,7 @@
  },
  {
   "name": "Rejeton de N’Zoth",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 58169,
   "cant_collect": true,
   "dbfId": 58168,
@@ -2023,7 +2023,7 @@
  },
  {
   "name": "Tasse de la Ménagerie",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 63488,
   "dbfId": 63435,
   "attack": 2,
@@ -2042,7 +2042,7 @@
  },
  {
   "name": "Tasse de la Ménagerie",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 63490,
   "cant_collect": true,
   "dbfId": 63489,
@@ -2184,7 +2184,7 @@
  },
  {
   "name": "Héroïne altruiste",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "dbfId": 38740,
   "artist": "Rafael Zanchetin",
   "attack": 2,
@@ -2209,7 +2209,7 @@
  },
  {
   "name": "Héroïne altruiste",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 58143,
   "attack": 4,
@@ -2231,7 +2231,7 @@
  },
  {
   "name": "Ritualiste tourmenté",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 66838,
   "ban": true,
   "dbfId": 65661,
@@ -2251,7 +2251,7 @@
  },
  {
   "name": "Ritualiste tourmenté",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 66839,
   "cant_collect": true,
   "ban": true,
@@ -2760,7 +2760,7 @@
  },
  {
   "name": "Khadgar",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "dbfId": 52502,
   "artist": "Evgeniy Zagumennyy",
   "attack": 2,
@@ -2783,7 +2783,7 @@
  },
  {
   "name": "Khadgar",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 58380,
   "attack": 4,
@@ -3509,6 +3509,7 @@
  {
   "name": "Gardien de bronze",
   "synergy": "DRAGON",
+  "techLevel": 3,
   "dbfId": 63779,
   "attack": 4,
   "battlegroundsNormalDbfId": 60558,
@@ -3528,6 +3529,7 @@
  {
   "name": "Gardien de bronze",
   "synergy": "DRAGON",
+  "techLevel": 3,
   "cant_collect": true,
   "dbfId": 60558,
   "attack": 2,
@@ -3542,7 +3544,6 @@
   ],
   "race": "DRAGON",
   "set": "BATTLEGROUNDS",
-  "techLevel": 3,
   "text": "<b>Bouclier divin</b>\n<b>Réincarnation</b>",
   "type": "MINION"
  },
@@ -3710,7 +3711,7 @@
  },
  {
   "name": "Bras de l’Empire",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 65670,
   "dbfId": 63622,
   "attack": 4,
@@ -3732,7 +3733,7 @@
  },
  {
   "name": "Bras de l’Empire",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 65674,
   "cant_collect": true,
   "dbfId": 65673,
@@ -3794,7 +3795,7 @@
  },
  {
   "name": "Gardienne d’antan",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "ban": true,
   "dbfId": 65660,
   "attack": 3,
@@ -3812,7 +3813,7 @@
  },
  {
   "name": "Gardienne d’antan",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "ban": true,
   "dbfId": 65665,
@@ -3831,7 +3832,7 @@
  },
  {
   "name": "Forgeronne des Tarides",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 63241,
   "ban": true,
   "dbfId": 62582,
@@ -3854,7 +3855,7 @@
  },
  {
   "name": "Forgeronne des Tarides",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 71534,
   "cant_collect": true,
   "ban": true,
@@ -4503,7 +4504,7 @@
  },
  {
   "name": "Bolvar sang-de-feu",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 46580,
   "ban": true,
   "dbfId": 45392,
@@ -4528,7 +4529,7 @@
  },
  {
   "name": "Bolvar sang-de-feu",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 58406,
   "cant_collect": true,
   "ban": true,
@@ -4601,7 +4602,7 @@
  },
  {
   "name": "Défenseur d’Argus",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 1103,
   "dbfId": 763,
   "artist": "Alex Horley Orlandelli",
@@ -4628,7 +4629,7 @@
  },
  {
   "name": "Défenseur d’Argus",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 57407,
   "cant_collect": true,
   "dbfId": 57404,
@@ -5352,7 +5353,7 @@
  },
  {
   "name": "Théière de la Ménagerie",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 63491,
   "dbfId": 63487,
   "attack": 3,
@@ -5371,7 +5372,7 @@
  },
  {
   "name": "Théière de la Ménagerie",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 63493,
   "cant_collect": true,
   "dbfId": 63492,
@@ -5474,7 +5475,7 @@
  },
  {
   "name": "Champion d’Y’Shaarj",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 65659,
   "dbfId": 63623,
   "attack": 4,
@@ -5496,7 +5497,7 @@
  },
  {
   "name": "Champion d’Y’Shaarj",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 65667,
   "cant_collect": true,
   "dbfId": 65666,
@@ -5518,7 +5519,7 @@
  },
  {
   "name": "Héraut qiraji",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 68225,
   "ban": true,
   "dbfId": 63619,
@@ -5540,7 +5541,7 @@
  },
  {
   "name": "Héraut qiraji",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 68226,
   "cant_collect": true,
   "ban": true,
@@ -5886,7 +5887,7 @@
  },
  {
   "name": "Matrone ensorçaile",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "avenge_counter": 3,
   "dbfId": 76185,
   "attack": 3,
@@ -5908,7 +5909,7 @@
  },
  {
   "name": "Matrone ensorçaile",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "avenge_counter": 3,
   "cant_collect": true,
   "dbfId": 76187,
@@ -6170,7 +6171,7 @@
  },
  {
   "name": "Baron Vaillefendre",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "dbfId": 1915,
   "artist": "Ralph Horsley",
   "attack": 1,
@@ -6198,7 +6199,7 @@
  },
  {
   "name": "Baron Vaillefendre",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 58421,
   "attack": 2,
@@ -6221,7 +6222,7 @@
  },
  {
   "name": "Brann Barbe-de-Bronze",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "dbfId": 2949,
   "artist": "Sam Nielson",
   "attack": 2,
@@ -6249,7 +6250,7 @@
  },
  {
   "name": "Brann Barbe-de-Bronze",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 58400,
   "attack": 4,
@@ -6401,7 +6402,7 @@
  },
  {
   "name": "Pillard dure-écaille",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 43023,
   "dbfId": 43022,
   "artist": "James Ryman",
@@ -6427,7 +6428,7 @@
  },
  {
   "name": "Pillard dure-écaille",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 59509,
   "cant_collect": true,
   "dbfId": 59508,
@@ -6665,7 +6666,7 @@
  },
  {
   "name": "Massacreuse Croc-Radieux",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 59709,
   "dbfId": 59707,
   "attack": 2,
@@ -6685,7 +6686,7 @@
  },
  {
   "name": "Massacreuse Croc-Radieux",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 59712,
   "cant_collect": true,
   "dbfId": 59711,
@@ -7037,7 +7038,7 @@
  },
  {
   "name": "Spore mortelle",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "dbfId": 65031,
   "attack": 1,
   "battlegroundsPremiumDbfId": 65122,
@@ -7055,7 +7056,7 @@
  },
  {
   "name": "Spore mortelle",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 65122,
   "attack": 2,
@@ -7073,7 +7074,7 @@
  },
  {
   "name": "Habitué sans-visage",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "ban": true,
   "dbfId": 63627,
   "attack": 4,
@@ -7091,7 +7092,7 @@
  },
  {
   "name": "Habitué sans-visage",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "ban": true,
   "dbfId": 66597,
@@ -7110,7 +7111,7 @@
  },
  {
   "name": "Mythrax le Disloqueur",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 65669,
   "dbfId": 65662,
   "attack": 4,
@@ -7130,7 +7131,7 @@
  },
  {
   "name": "Mythrax le Disloqueur",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 65672,
   "cant_collect": true,
   "dbfId": 65671,
@@ -7703,7 +7704,7 @@
  },
  {
   "name": "Amalgadon",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "dbfId": 61444,
   "attack": 6,
   "battlegroundsPremiumDbfId": 61445,
@@ -7725,7 +7726,7 @@
  },
  {
   "name": "Amalgadon",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 61445,
   "attack": 12,
@@ -7747,7 +7748,7 @@
  },
  {
   "name": "Plante",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 41067,
   "artist": "Zoltan Boros",
@@ -7804,6 +7805,7 @@
  {
   "name": "Boagnarok",
   "synergy": "BEAST",
+  "techLevel": 6,
   "dbfId": 52041,
   "artist": "Jim Nelson",
   "attack": 7,
@@ -7823,6 +7825,7 @@
  {
   "name": "Boagnarok",
   "synergy": "BEAST",
+  "techLevel": 6,
   "cant_collect": true,
   "dbfId": 58424,
   "attack": 14,
@@ -8105,7 +8108,7 @@
  },
  {
   "name": "Zapp Mèche-Sournoise",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "dbfId": 60040,
   "attack": 7,
   "battlegroundsPremiumDbfId": 60041,
@@ -8124,7 +8127,7 @@
  },
  {
   "name": "Zapp Mèche-Sournoise",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 60041,
   "attack": 14,
@@ -8265,7 +8268,7 @@
  },
  {
   "name": "Archidruide Hamuul",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "dbfId": 72230,
   "attack": 4,
   "battlegroundsPremiumDbfId": 72231,
@@ -8284,7 +8287,7 @@
  },
  {
   "name": "Archidruide Hamuul",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 72231,
   "attack": 8,
@@ -8499,7 +8502,7 @@
  },
  {
   "name": "Pièce d’or",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 58596,
   "cardClass": "NEUTRAL",
@@ -8512,7 +8515,7 @@
  },
  {
   "name": "Carte de recrutement",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 60265,
   "cardClass": "NEUTRAL",
@@ -8524,7 +8527,7 @@
  },
  {
   "name": "Trophée",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 64484,
   "artist": "Eva Widermann",
@@ -8538,7 +8541,7 @@
  {
   "name": "Banane",
   "enchantment_dbfId": 53217,
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 53215,
   "cardClass": "NEUTRAL",
@@ -8551,7 +8554,7 @@
  {
   "name": "Grande banane",
   "enchantment_dbfId": 65231,
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 65230,
   "battlegroundsDarkmoonPrizeTurn": 1,
@@ -8564,7 +8567,7 @@
  },
  {
   "name": "Récompense de triple",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 59604,
   "cardClass": "NEUTRAL",
@@ -8577,7 +8580,7 @@
  {
   "name": "Gemme de sang",
   "enchantment_dbfId": 72191,
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 70136,
   "cardClass": "NEUTRAL",
@@ -8589,7 +8592,7 @@
  },
  {
   "name": "Matrice d’autodéfense",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 58505,
   "cardClass": "PALADIN",
@@ -8609,7 +8612,7 @@
  },
  {
   "name": "Rédemption",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 58509,
   "cardClass": "PALADIN",
@@ -8627,7 +8630,7 @@
  {
   "name": "Venger",
   "enchantment_dbfId": 1812,
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 58507,
   "cardClass": "PALADIN",
@@ -8645,7 +8648,7 @@
  {
   "name": "Piège à serpents",
   "repop_dbfId": 204,
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 58500,
   "cardClass": "HUNTER",
@@ -8662,7 +8665,7 @@
  {
   "name": "Piège frappe-venin",
   "repop_dbfId": 1098,
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 58499,
   "cardClass": "HUNTER",
@@ -8682,7 +8685,7 @@
  {
   "name": "Bloc de glace",
   "enchantment_dbfId": -58512,
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 58512,
   "battlegroundsDarkmoonPrizeTurn": 3,
@@ -8703,7 +8706,7 @@
  },
  {
   "name": "Portrait caché",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 58502,
   "cardClass": "MAGE",
@@ -8721,7 +8724,7 @@
  {
   "name": "Esprit combatif",
   "enchantment_dbfId": 70115,
-  "synergy": "ALL",
+  "synergy": "NONE",
   "cant_collect": true,
   "dbfId": 70114,
   "cardClass": "PALADIN",
@@ -8737,7 +8740,7 @@
  },
  {
   "name": "Bob le barman",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "cant_collect": true,
   "power_id": -1,
@@ -8752,7 +8755,7 @@
  },
  {
   "name": "A. F. Kah",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 59891,
   "dbfId": 57944,
@@ -8765,7 +8768,7 @@
  },
  {
   "name": "Aile de mort",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 61406,
   "dbfId": 60369,
@@ -8791,7 +8794,7 @@
  },
  {
   "name": "Al’Akir",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 64402,
   "dbfId": 64403,
@@ -8804,7 +8807,7 @@
  },
  {
   "name": "Aranna Cherchétoile",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 61915,
   "dbfId": 61910,
@@ -8817,7 +8820,7 @@
  },
  {
   "name": "Baz’hial la liche",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 60285,
   "dbfId": 58044,
@@ -8830,7 +8833,7 @@
  },
  {
   "name": "Capitaine Double-Crochet",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 62267,
   "dbfId": 62266,
@@ -8843,7 +8846,7 @@
  },
  {
   "name": "Capitaine Eudora",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 62250,
   "dbfId": 62242,
@@ -8856,7 +8859,7 @@
  },
  {
   "name": "Cap’taine céleste Kragg",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 62269,
   "dbfId": 62268,
@@ -8869,7 +8872,7 @@
  },
  {
   "name": "Carniflore",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 58028,
   "ban": true,
@@ -8896,7 +8899,7 @@
  },
  {
   "name": "C’Thun",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 66246,
   "dbfId": 58535,
@@ -8909,7 +8912,7 @@
  },
  {
   "name": "Daryl le Danseur",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 59860,
   "dbfId": 59806,
@@ -8922,7 +8925,7 @@
  },
  {
   "name": "Dinodompteur Brann",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 60218,
   "dbfId": 60214,
@@ -8935,7 +8938,7 @@
  },
  {
   "name": "Edwin VanCleef",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 57567,
   "dbfId": 57633,
@@ -8948,7 +8951,7 @@
  },
  {
   "name": "Élise Cherchétoile",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 60217,
   "dbfId": 60213,
@@ -8974,7 +8977,7 @@
  },
  {
   "name": "Gardienne de la forêt Omu",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 63605,
   "dbfId": 63604,
@@ -8987,7 +8990,7 @@
  },
  {
   "name": "George le Déchu",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 57562,
   "dbfId": 57929,
@@ -9000,7 +9003,7 @@
  },
  {
   "name": "Grisebranche",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 67554,
   "dbfId": 67553,
@@ -9013,7 +9016,7 @@
  },
  {
   "name": "Illidan Hurlorage",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 61851,
   "dbfId": 57634,
@@ -9026,7 +9029,7 @@
  },
  {
   "name": "Jandice Barov",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 63607,
   "dbfId": 63601,
@@ -9039,7 +9042,7 @@
  },
  {
   "name": "Kael’thas Haut-Soleil",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 61917,
   "dbfId": 61912,
@@ -9052,7 +9055,7 @@
  },
  {
   "name": "Le Recousu",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 55,
   "power_id": 59399,
   "dbfId": 59397,
@@ -9065,7 +9068,7 @@
  },
  {
   "name": "Le conservateur",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 59201,
   "dbfId": 59203,
@@ -9078,7 +9081,7 @@
  },
  {
   "name": "Le grand Akazamzarak",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 58022,
   "dbfId": 58021,
@@ -9091,7 +9094,7 @@
  },
  {
   "name": "Le roi des rats",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 63127,
   "dbfId": 57893,
@@ -9104,7 +9107,7 @@
  },
  {
   "name": "Le roi-liche",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 58040,
   "dbfId": 58024,
@@ -9117,7 +9120,7 @@
  },
  {
   "name": "M. Bigglesworth",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 63320,
   "dbfId": 63319,
@@ -9130,7 +9133,7 @@
  },
  {
   "name": "Maiev Chantelombre",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 61919,
   "dbfId": 61914,
@@ -9143,7 +9146,7 @@
  },
  {
   "name": "Malygos",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 60378,
   "dbfId": 61490,
@@ -9156,7 +9159,7 @@
  },
  {
   "name": "Millhouse Tempête-de-Mana",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 60405,
   "dbfId": 60366,
@@ -9208,7 +9211,7 @@
  },
  {
   "name": "Nozdormu",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 61491,
   "dbfId": 61489,
@@ -9221,7 +9224,7 @@
  },
  {
   "name": "N’Zoth",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 66484,
   "dbfId": 66483,
@@ -9234,7 +9237,7 @@
  },
  {
   "name": "Prince du mal Rafaam",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 60381,
   "dbfId": 60362,
@@ -9247,7 +9250,7 @@
  },
  {
   "name": "Pyraride",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 59832,
   "dbfId": 59831,
@@ -9260,7 +9263,7 @@
  },
  {
   "name": "Ragnaros, seigneur du feu",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 64424,
   "dbfId": 57892,
@@ -9273,7 +9276,7 @@
  },
  {
   "name": "Rakanishu",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 64401,
   "dbfId": 64400,
@@ -9286,7 +9289,7 @@
  },
  {
   "name": "Reno Jackson",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 60216,
   "dbfId": 60212,
@@ -9299,7 +9302,7 @@
  },
  {
   "name": "Roi Mukla",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 59815,
   "dbfId": 59814,
@@ -9312,7 +9315,7 @@
  },
  {
   "name": "Seigneur Barov",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 63600,
   "dbfId": 63602,
@@ -9338,7 +9341,7 @@
  },
  {
   "name": "Silas Sombrelune",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 64481,
   "dbfId": 64480,
@@ -9351,7 +9354,7 @@
  },
  {
   "name": "Sindragosa",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 57945,
   "dbfId": 58435,
@@ -9364,7 +9367,7 @@
  },
  {
   "name": "Sir Finley Mrrgglton",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 60450,
   "dbfId": 60211,
@@ -9377,7 +9380,7 @@
  },
  {
   "name": "Tess Grisetête",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 63162,
   "dbfId": 60367,
@@ -9390,7 +9393,7 @@
  },
  {
   "name": "Tickatus",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 67357,
   "dbfId": 67356,
@@ -9403,7 +9406,7 @@
  },
  {
   "name": "Toki l’Infinie",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 58537,
   "dbfId": 58534,
@@ -9416,7 +9419,7 @@
  },
  {
   "name": "Seigneur Saurcroc",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 71455,
   "dbfId": 71454,
@@ -9429,7 +9432,7 @@
  },
  {
   "name": "Souveraine Cire-Reine",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 59863,
   "dbfId": 57924,
@@ -9442,7 +9445,7 @@
  },
  {
   "name": "Vol’jin",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 71464,
   "dbfId": 71463,
@@ -9455,7 +9458,7 @@
  },
  {
   "name": "Xyrella",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 70957,
   "dbfId": 70956,
@@ -9468,7 +9471,7 @@
  },
  {
   "name": "Yogg-Saron, la fin de l’espoir",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 59826,
   "dbfId": 59805,
@@ -9494,7 +9497,7 @@
  },
  {
   "name": "Y’Shaarj",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 66197,
   "dbfId": 66196,
@@ -9507,7 +9510,7 @@
  },
  {
   "name": "Zéphrys le Grand",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 64486,
   "dbfId": 64485,
@@ -9520,7 +9523,7 @@
  },
  {
   "name": "Kurtrus Chutecendre",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 74632,
   "dbfId": 74631,
@@ -9533,7 +9536,7 @@
  },
  {
   "name": "Guff Totem-Runique",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 68130,
   "dbfId": 68129,
@@ -9546,7 +9549,7 @@
  },
  {
   "name": "Mutanus le Dévoreur",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "power_id": 71914,
   "dbfId": 71916,
@@ -12415,7 +12418,7 @@
  },
  {
   "name": "Le temps des rois",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "enchantment_dbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 63127,
@@ -13102,14 +13105,14 @@
  },
  {
   "type": "ZONE",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "zone_type": "HAND",
   "phase": [],
   "dbfId": -13
  },
  {
   "type": "ZONE",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "zone_type": "PLAY",
   "id": "Player_board",
   "phase": [
@@ -13119,7 +13122,7 @@
  },
  {
   "type": "ZONE",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "zone_type": "PLAY",
   "id": "Bob_board",
   "phase": [],
@@ -13132,7 +13135,7 @@
  },
  {
   "type": "ZONE",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "zone_type": "PLAY",
   "id": "Secret_board",
   "phase": [
@@ -13142,7 +13145,7 @@
  },
  {
   "type": "ZONE",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "zone_type": "GRAVEYARD",
   "id": "Graveyard",
   "phase": [],
@@ -13150,7 +13153,7 @@
  },
  {
   "type": "ZONE",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "id": "Field",
   "phase": [
    "ALL"
@@ -13172,7 +13175,7 @@
  {
   "name": "Amalgame",
   "race": "ALL",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "techLevel": 1,
   "attack": 4,
   "health": 4,
@@ -13183,7 +13186,7 @@
  },
  {
   "name": "Héros tout nul",
-  "synergy": "ALL",
+  "synergy": "NONE",
   "max_health": 40,
   "type": "HERO",
   "power_id": 0,
