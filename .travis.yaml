@@ -16,3 +16,4 @@ branches:
 
 script:
   - pytest tests/
+
