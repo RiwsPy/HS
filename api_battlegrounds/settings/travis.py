@@ -6,7 +6,7 @@ DATABASES = {
         'NAME': 'battlegrounds_cards',
         'USER': 'postgres',
         'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'HOST': '',
+        'PORT': '',
     },
 }
