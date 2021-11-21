@@ -2,8 +2,8 @@ from . import *
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': '',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'travisci',
         'USER': 'postgres',
         'PASSWORD': '',
         'HOST': '',
