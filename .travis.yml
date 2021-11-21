@@ -3,9 +3,9 @@ python:
   - '3.8'
 
 before_script:
-  - pipenv install
+  - pipenv shell
 
-env: DJANGO_SETTINGS_MODULE="api_battlegrounds.settings"
+env: DJANGO_SETTINGS_MODULE="api_battlegrounds.settings.travis"
 
 services:
   - postgresql
