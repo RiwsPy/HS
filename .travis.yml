@@ -4,7 +4,6 @@ python:
 
 before_script:
   - pipenv install
-  - psql -c "CREATE DATABASE card_card;" -U postgres
 
 env: DJANGO_SETTINGS_MODULE="api_battlegrounds.settings.travis"
 
