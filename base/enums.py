@@ -69,6 +69,10 @@ class Race(str):
     data['DEFAULT'] = data['NONE']
 
     @classmethod
+    def battleground_race_name(cls) -> List[str]:
+        return list(cls.data.keys())[1:-2]
+
+    @classmethod
     def battleground_race(cls) -> List[int]:
         return [
             0x1, 0x2, 0x4, 0x8,

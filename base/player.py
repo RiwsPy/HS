@@ -16,7 +16,7 @@ class Player(Entity):
         'combat': None,
         'field': None,
         #'method': 'player', # ??
-        'levelup_cost_mod': 0,
+        #'levelup_cost_mod': 0,
         'card_by_roll_mod': 0,
     }
     def __init__(self, dbfId, **kwargs):
@@ -28,7 +28,7 @@ class Player(Entity):
             bought_minions=defaultdict(Card_list),
             sold_minions=defaultdict(Card_list),
             played_cards=defaultdict(Card_list),
-            **{**self.default_attr, **kwargs})
+            **kwargs)
 
         self.pseudo = pseudo
         self.health = self.max_health
@@ -140,7 +140,7 @@ class Player(Entity):
     def levelup_cost(self) -> int:
         return max(0, 
             LEVELUP_COST[self.level] +\
-            self.power.levelup_cost_mod +\
+            getattr(self.power, 'levelup_cost_mod', 0) +\
             self.levelup_cost_mod)
 
     def can_buy_minion(self, cost=None) -> bool:

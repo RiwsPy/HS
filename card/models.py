@@ -63,8 +63,8 @@ class Card(models.Model):
     aura= models.BooleanField(default=False)
     battlegroundsDarkmoonPrizeTurn= models.PositiveSmallIntegerField(null=True)
     minion_cost= models.PositiveSmallIntegerField(null=True)
-    roll_cost= models.PositiveSmallIntegerField(null=True)
-    levelup_cost_mod= models.PositiveSmallIntegerField(null=True)
+    roll_cost= models.PositiveSmallIntegerField(default=0)
+    levelup_cost_mod= models.PositiveSmallIntegerField(default=0)
     #zone_type= models.CharField(max_length=30, default="DEFAULT")
     phase= models.CharField(max_length=30, null=True)
 

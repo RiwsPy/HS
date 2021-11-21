@@ -3,7 +3,7 @@ python:
   - '3.8'
 
 before_script:
-  - pipenv shell
+  - pipenv install
 
 env: DJANGO_SETTINGS_MODULE="api_battlegrounds.settings.travis"
 

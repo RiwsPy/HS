@@ -27,18 +27,24 @@ class Game(Entity):
     }
 
     def __init__(self, *args, **attr):
+        # ban les types avant la création de game ?
         super().__init__(CardName.DEFAULT_GAME, **attr)
 
         self.reinit()
 
-        self.type_ban = attr.get('type_ban', self.determine_present_type())
-
+        types_ban = self.determine_ban_type()
         all_cards = card_db()
+        for type_ban in types_ban:
+            all_cards = all_cards.exclude(synergy=Race(type_ban))
+
+        self.type_ban = attr.get('type_ban',
+            sum(Race(race).hex for race in types_ban))
+
         self.craftable_cards = all_cards
         #self.craftable_cards = all_cards.exclude_hex(synergy=self.type_ban)
-        self.craftable_heroes = CARD_DB.filter(battlegroundsHero=True)
+        self.craftable_heroes = all_cards.filter(battlegroundsHero=True)
         #self.craftable_heroes = self.craftable_cards.filter(battlegroundsHero=True)
-        self.minion_can_collect = self.craftable_cards.exclude(techLevel=None)
+        self.minion_can_collect = all_cards.exclude(techLevel=None)
 
         self.hand = Bob_hand()
         self.hand.owner = self
@@ -101,11 +107,11 @@ class Game(Entity):
             new_field = Card(CardName.DEFAULT_FIELD, p1=plyr, p2=plyr.bob)
             self.append(new_field)
 
-    def determine_present_type(self) -> int:
-        lst = Race.battleground_race()
+    def determine_ban_type(self) -> list:
+        lst = Race.battleground_race_name()
         random.shuffle(lst)
 
-        return sum(lst[:NB_PRESENT_TYPE])
+        return lst[NB_PRESENT_TYPE:]
 
     def turn_start(self, sequence):
         self._turn += 1

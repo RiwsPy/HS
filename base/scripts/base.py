@@ -82,8 +82,8 @@ buff_attr_add = {
 
 class add_stat(Enchantment):
     def apply(self):
-        target = self.owner
-        for attr in buff_attr_add & set(dir(self)) & set(dir(target)):
-            target[attr] += self[attr]
+        for attr in buff_attr_add:
+            if getattr(self, attr, None) and getattr(self.owner, attr, None):
+                self.owner[attr] += self[attr]
         for mechanic in self.mechanics:
-            setattr(target, mechanic, True)
+            setattr(self.owner, mechanic, True)

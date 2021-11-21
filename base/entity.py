@@ -181,7 +181,7 @@ class Entity:
 
     @property
     def attack(self) -> int:
-        return self._attack
+        return getattr(self, '_attack', None)
 
     @attack.setter
     def attack(self, value) -> None:
@@ -329,9 +329,9 @@ class Entity:
 
 class Minion(Entity):
     default_attr = {
-        'techLevel': 1,
-        'health': 1,
-        'attack': 1,
+        #'techLevel': 1,
+        #'health': 1,
+        #'attack': 1,
     }
 
     def __init__(self, dbfId, **kwargs):

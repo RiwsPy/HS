@@ -708,5 +708,4 @@ class BG20_HERO_301p(Hero_power):
     # Mutanus le Dévoreur
     pass
 
-class Taverne(Hero_power):
-    pass
+Taverne= Hero_power

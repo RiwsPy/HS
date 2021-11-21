@@ -225,8 +225,8 @@ def test_modular(reinit_game):
 
 def test_give_golden_card(reinit_game):
     p1 = g.players[0]
+    old_hand_len = g.hand.size
     with Sequence('TURN', g):
-        old_hand_len = g.hand.size
         g.hand.give_or_create_in(65658, p1.hand) # Acolyte de C'thun
         assert p1.hand.size == 1
-        assert g.hand.size == old_hand_len - 3
+        assert g.hand.size == old_hand_len - 6
