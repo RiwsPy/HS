@@ -1,8 +1,8 @@
 import pytest
-from entity import Card
-from enums import CardName, ADAPT_ENCHANTMENT
-from db_card import CARD_DB
-from sequence import Sequence
+from base.entity import Card
+from base.enums import CardName, ADAPT_ENCHANTMENT
+from base.db_card import CARD_DB
+from base.sequence import Sequence
 from game import Game
 
 

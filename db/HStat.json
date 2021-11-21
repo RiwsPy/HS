@@ -2,10 +2,7 @@
  {
   "name": "Chasse-marée murloc",
   "synergy": "MURLOC",
-  "phase": [
-   "BATTLECRY"
-  ],
-  "repop_dbfId": 68469,
+  "repopDbfId": 68469,
   "dbfId": 976,
   "artist": "Dan Scott",
   "attack": 2,
@@ -29,11 +26,7 @@
  {
   "name": "Chasse-marée murloc",
   "synergy": "MURLOC",
-  "phase": [
-   "BATTLECRY"
-  ],
-  "repop_dbfId": 57339,
-  "cant_collect": true,
+  "repopDbfId": 57339,
   "dbfId": 57338,
   "attack": 4,
   "battlegroundsNormalDbfId": 976,
@@ -53,7 +46,6 @@
  {
   "name": "Éclaireur murloc",
   "synergy": "MURLOC",
-  "cant_collect": true,
   "dbfId": 68469,
   "attack": 1,
   "battlegroundsPremiumDbfId": 57339,
@@ -69,7 +61,6 @@
  {
   "name": "Éclaireur murloc",
   "synergy": "MURLOC",
-  "cant_collect": true,
   "dbfId": 57339,
   "attack": 2,
   "battlegroundsNormalDbfId": 68469,
@@ -85,10 +76,7 @@
  {
   "name": "Chasseur rochecave",
   "synergy": "MURLOC",
-  "phase": [
-   "BATTLECRY"
-  ],
-  "enchantment_dbfId": 41244,
+  "enchantmentDbfId": 41244,
   "dbfId": 41245,
   "artist": "Alex Horley Orlandelli",
   "attack": 2,
@@ -113,11 +101,7 @@
  {
   "name": "Chasseur rochecave",
   "synergy": "MURLOC",
-  "phase": [
-   "BATTLECRY"
-  ],
-  "enchantment_dbfId": 59486,
-  "cant_collect": true,
+  "enchantmentDbfId": 59486,
   "dbfId": 59485,
   "attack": 4,
   "battlegroundsNormalDbfId": 41245,
@@ -137,11 +121,7 @@
  {
   "name": "Mande-flots murloc",
   "synergy": "MURLOC",
-  "phase": [
-   "SUMMON"
-  ],
-  "enchantment_dbfId": 1719,
-  "ban": true,
+  "enchantmentDbfId": 1719,
   "dbfId": 475,
   "artist": "Jaemin Kim",
   "attack": 1,
@@ -164,12 +144,7 @@
  {
   "name": "Mande-flots murloc",
   "synergy": "MURLOC",
-  "phase": [
-   "SUMMON"
-  ],
-  "enchantment_dbfId": 58139,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 58139,
   "dbfId": 58138,
   "attack": 2,
   "battlegroundsNormalDbfId": 475,
@@ -189,10 +164,7 @@
  {
   "name": "Chat de gouttière",
   "synergy": "BEAST",
-  "phase": [
-   "BATTLECRY"
-  ],
-  "repop_dbfId": 40425,
+  "repopDbfId": 40425,
   "dbfId": 40426,
   "artist": "Anton Zemskov",
   "attack": 1,
@@ -216,11 +188,7 @@
  {
   "name": "Chat de gouttière",
   "synergy": "BEAST",
-  "phase": [
-   "BATTLECRY"
-  ],
-  "repop_dbfId": 60054,
-  "cant_collect": true,
+  "repopDbfId": 60054,
   "dbfId": 60053,
   "attack": 2,
   "battlegroundsNormalDbfId": 40426,
@@ -240,7 +208,6 @@
  {
   "name": "Chat tigré",
   "synergy": "BEAST",
-  "cant_collect": true,
   "dbfId": 40425,
   "artist": "Anton Zemskov",
   "attack": 1,
@@ -256,7 +223,6 @@
  {
   "name": "Chat tigré",
   "synergy": "BEAST",
-  "cant_collect": true,
   "dbfId": 60054,
   "attack": 2,
   "battlegroundsNormalDbfId": 40425,
@@ -271,10 +237,7 @@
  {
   "name": "Hyène charognarde",
   "synergy": "BEAST",
-  "phase": [
-   "DIE"
-  ],
-  "enchantment_dbfId": 1633,
+  "enchantmentDbfId": 1633,
   "dbfId": 1281,
   "artist": "Jim Nelson",
   "attack": 2,
@@ -298,11 +261,7 @@
  {
   "name": "Hyène charognarde",
   "synergy": "BEAST",
-  "phase": [
-   "DIE"
-  ],
-  "enchantment_dbfId": 58396,
-  "cant_collect": true,
+  "enchantmentDbfId": 58396,
   "dbfId": 58395,
   "attack": 4,
   "battlegroundsNormalDbfId": 1281,
@@ -322,10 +281,6 @@
  {
   "name": "Homoncule sans-gêne",
   "synergy": "DEMON",
-  "phase": [
-   "BATTLECRY"
-  ],
-  "ban": true,
   "dbfId": 43121,
   "artist": "Steve Prescott",
   "attack": 2,
@@ -349,11 +304,6 @@
  {
   "name": "Homoncule sans-gêne",
   "synergy": "DEMON",
-  "phase": [
-   "BATTLECRY"
-  ],
-  "cant_collect": true,
-  "ban": true,
   "dbfId": 63778,
   "attack": 4,
   "battlegroundsNormalDbfId": 43121,
@@ -374,10 +324,7 @@
  {
   "name": "Tisse-colère",
   "synergy": "DEMON",
-  "phase": [
-   "PLAY"
-  ],
-  "enchantment_dbfId": 59671,
+  "enchantmentDbfId": 59671,
   "dbfId": 59670,
   "attack": 1,
   "battlegroundsPremiumDbfId": 59679,
@@ -397,11 +344,7 @@
  {
   "name": "Tisse-colère",
   "synergy": "DEMON",
-  "phase": [
-   "PLAY"
-  ],
-  "enchantment_dbfId": 59678,
-  "cant_collect": true,
+  "enchantmentDbfId": 59678,
   "dbfId": 59679,
   "attack": 2,
   "battlegroundsNormalDbfId": 59670,
@@ -420,8 +363,7 @@
  {
   "name": "Serviteur diabolique",
   "synergy": "DEMON",
-  "enchantment_dbfId": 56113,
-  "ban": true,
+  "enchantmentDbfId": 56113,
   "dbfId": 56112,
   "artist": "Mike Sass",
   "attack": 2,
@@ -444,9 +386,7 @@
  {
   "name": "Serviteur diabolique",
   "synergy": "DEMON",
-  "enchantment_dbfId": 56113,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 56113,
   "dbfId": 60671,
   "attack": 4,
   "battlegroundsNormalDbfId": 56112,
@@ -466,10 +406,7 @@
  {
   "name": "Micromomie",
   "synergy": "MECHANICAL",
-  "phase": [
-   "TURN"
-  ],
-  "enchantment_dbfId": 54810,
+  "enchantmentDbfId": 54810,
   "dbfId": 53445,
   "artist": "Matt Dixon",
   "attack": 1,
@@ -494,11 +431,7 @@
  {
   "name": "Micromomie",
   "synergy": "MECHANICAL",
-  "phase": [
-   "TURN"
-  ],
-  "enchantment_dbfId": 64344,
-  "cant_collect": true,
+  "enchantmentDbfId": 64344,
   "dbfId": 64343,
   "attack": 2,
   "battlegroundsNormalDbfId": 53445,
@@ -519,11 +452,7 @@
  {
   "name": "Micro-machine",
   "synergy": "MECHANICAL",
-  "phase": [
-   "TURN"
-  ],
-  "enchantment_dbfId": 2183,
-  "ban": true,
+  "enchantmentDbfId": 2183,
   "dbfId": 60055,
   "attack": 1,
   "battlegroundsPremiumDbfId": 60056,
@@ -543,12 +472,7 @@
  {
   "name": "Micro-machine",
   "synergy": "MECHANICAL",
-  "phase": [
-   "TURN"
-  ],
-  "enchantment_dbfId": 60057,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 60057,
   "dbfId": 60056,
   "attack": 2,
   "battlegroundsNormalDbfId": 60055,
@@ -568,7 +492,6 @@
  {
   "name": "Lieutenant draconide",
   "synergy": "DRAGON",
-  "ban": true,
   "dbfId": 60628,
   "attack": 2,
   "battlegroundsPremiumDbfId": 63772,
@@ -587,8 +510,6 @@
  {
   "name": "Lieutenant draconide",
   "synergy": "DRAGON",
-  "cant_collect": true,
-  "ban": true,
   "dbfId": 63772,
   "attack": 4,
   "battlegroundsNormalDbfId": 60628,
@@ -607,9 +528,6 @@
  {
   "name": "Dragonnet rouge",
   "synergy": "DRAGON",
-  "phase": [
-   "FIGHT"
-  ],
   "dbfId": 59968,
   "attack": 1,
   "battlegroundsPremiumDbfId": 60642,
@@ -629,10 +547,6 @@
  {
   "name": "Dragonnet rouge",
   "synergy": "DRAGON",
-  "phase": [
-   "FIGHT"
-  ],
-  "cant_collect": true,
   "dbfId": 60642,
   "attack": 2,
   "battlegroundsNormalDbfId": 59968,
@@ -651,7 +565,7 @@
  {
   "name": "Forban",
   "synergy": "PIRATE",
-  "repop_dbfId": 62213,
+  "repopDbfId": 62213,
   "dbfId": 61061,
   "attack": 3,
   "battlegroundsPremiumDbfId": 62262,
@@ -671,8 +585,7 @@
  {
   "name": "Forban",
   "synergy": "PIRATE",
-  "repop_dbfId": 61055,
-  "cant_collect": true,
+  "repopDbfId": 61055,
   "dbfId": 62262,
   "attack": 6,
   "battlegroundsNormalDbfId": 61061,
@@ -691,10 +604,6 @@
  {
   "name": "Pirate du ciel",
   "synergy": "PIRATE",
-  "phase": [
-   "SUMMON"
-  ],
-  "cant_collect": true,
   "dbfId": 62213,
   "attack": 1,
   "cardClass": "ROGUE",
@@ -708,10 +617,6 @@
  {
   "name": "Pirate du ciel",
   "synergy": "PIRATE",
-  "phase": [
-   "SUMMON"
-  ],
-  "cant_collect": true,
   "dbfId": 62215,
   "attack": 2,
   "cardClass": "ROGUE",
@@ -725,9 +630,6 @@
  {
   "name": "Mousse du pont",
   "synergy": "PIRATE",
-  "phase": [
-   "BATTLECRY"
-  ],
   "dbfId": 61055,
   "attack": 2,
   "battlegroundsPremiumDbfId": 62186,
@@ -747,10 +649,6 @@
  {
   "name": "Mousse du pont",
   "synergy": "PIRATE",
-  "phase": [
-   "BATTLECRY"
-  ],
-  "cant_collect": true,
   "dbfId": 62186,
   "attack": 4,
   "battlegroundsNormalDbfId": 61055,
@@ -788,7 +686,6 @@
  {
   "name": "Acolyte de C’Thun",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 65658,
   "attack": 4,
   "battlegroundsNormalDbfId": 63614,
@@ -807,9 +704,6 @@
  {
   "name": "Élémenplus",
   "synergy": "ELEMENTAL",
-  "phase": [
-   "SELL"
-  ],
   "dbfId": 64038,
   "attack": 2,
   "battlegroundsPremiumDbfId": 64041,
@@ -826,10 +720,6 @@
  {
   "name": "Élémenplus",
   "synergy": "ELEMENTAL",
-  "phase": [
-   "SELL"
-  ],
-  "cant_collect": true,
   "dbfId": 64041,
   "attack": 4,
   "battlegroundsNormalDbfId": 64038,
@@ -845,7 +735,6 @@
  {
   "name": "Goutte d’eau",
   "synergy": "ELEMENTAL",
-  "cant_collect": true,
   "battlegroundsPremiumDbfId": -64040,
   "dbfId": 64040,
   "attack": 2,
@@ -859,11 +748,8 @@
  },
  {
   "name": "Anomalie actualisante",
-  "enchantment_dbfId": 64043,
+  "enchantmentDbfId": 64043,
   "synergy": "ELEMENTAL",
-  "phase": [
-   "BATTLECRY"
-  ],
   "dbfId": 64042,
   "attack": 1,
   "battlegroundsPremiumDbfId": 64045,
@@ -882,12 +768,8 @@
  },
  {
   "name": "Anomalie actualisante",
-  "enchantment_dbfId": 64043,
+  "enchantmentDbfId": 64043,
   "synergy": "ELEMENTAL",
-  "phase": [
-   "BATTLECRY"
-  ],
-  "cant_collect": true,
   "dbfId": 64045,
   "attack": 2,
   "battlegroundsNormalDbfId": 64042,
@@ -906,9 +788,6 @@
  {
   "name": "Bronze-couenne",
   "synergy": "QUILBOAR",
-  "phase": [
-   "SELL"
-  ],
   "dbfId": 70147,
   "attack": 1,
   "battlegroundsPremiumDbfId": 70148,
@@ -925,10 +804,6 @@
  {
   "name": "Bronze-couenne",
   "synergy": "QUILBOAR",
-  "phase": [
-   "SELL"
-  ],
-  "cant_collect": true,
   "dbfId": 70148,
   "attack": 2,
   "battlegroundsNormalDbfId": 70147,
@@ -944,9 +819,6 @@
  {
   "name": "Géomancien de Tranchebauge",
   "synergy": "QUILBOAR",
-  "phase": [
-   "BATTLECRY"
-  ],
   "dbfId": 70143,
   "attack": 3,
   "battlegroundsPremiumDbfId": 70150,
@@ -966,10 +838,6 @@
  {
   "name": "Géomancien de Tranchebauge",
   "synergy": "QUILBOAR",
-  "phase": [
-   "BATTLECRY"
-  ],
-  "cant_collect": true,
   "dbfId": 70150,
   "attack": 6,
   "battlegroundsNormalDbfId": 70143,
@@ -988,7 +856,6 @@
  {
   "name": "Amalgame",
   "synergy": "NONE",
-  "cant_collect": true,
   "battlegroundsPremiumDbfId": -59202,
   "dbfId": 59202,
   "attack": 2,
@@ -1004,7 +871,6 @@
  {
   "name": "Cobra empereur",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 1098,
   "artist": "Lars Grant-West",
   "attack": 2,
@@ -1026,7 +892,6 @@
  {
   "name": "Serpent",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 204,
   "attack": 1,
   "cardClass": "HUNTER",
@@ -1040,10 +905,6 @@
  {
   "name": "Poisson de N’Zoth",
   "synergy": "NONE",
-  "cant_collect": true,
-  "phase": [
-   "DIE"
-  ],
   "dbfId": 67213,
   "attack": 2,
   "battlegroundsPremiumDbfId": 67216,
@@ -1066,10 +927,6 @@
  {
   "name": "Carpe de N’Zoth",
   "synergy": "NONE",
-  "cant_collect": true,
-  "phase": [
-   "DIE"
-  ],
   "dbfId": 78747,
   "attack": 2,
   "battlegroundsPremiumDbfId": 67216,
@@ -1092,10 +949,6 @@
  {
   "name": "Poisson de N’Zoth",
   "synergy": "NONE",
-  "cant_collect": true,
-  "phase": [
-   "DIE"
-  ],
   "dbfId": 67216,
   "attack": 4,
   "battlegroundsNormalDbfId": 78747,
@@ -1118,10 +971,7 @@
  {
   "name": "Chromaile évolutive",
   "synergy": "DRAGON",
-  "phase": [
-   "LEVELUP"
-  ],
-  "enchantment_dbfId": 74660,
+  "enchantmentDbfId": 74660,
   "dbfId": 74659,
   "attack": 1,
   "battlegroundsPremiumDbfId": 74661,
@@ -1141,11 +991,7 @@
  {
   "name": "Chromaile évolutive",
   "synergy": "DRAGON",
-  "phase": [
-   "LEVELUP"
-  ],
-  "enchantment_dbfId": 76253,
-  "cant_collect": true,
+  "enchantmentDbfId": 76253,
   "dbfId": 74661,
   "attack": 2,
   "battlegroundsNormalDbfId": 74659,
@@ -1164,7 +1010,7 @@
  {
   "name": "Diablotin dégoûtant",
   "synergy": "DEMON",
-  "repop_dbfId": 2779,
+  "repopDbfId": 2779,
   "dbfId": 74910,
   "attack": 1,
   "battlegroundsPremiumDbfId": 74911,
@@ -1184,8 +1030,7 @@
  {
   "name": "Diablotin dégoûtant",
   "synergy": "DEMON",
-  "repop_dbfId": 58373,
-  "cant_collect": true,
+  "repopDbfId": 58373,
   "dbfId": 74911,
   "attack": 2,
   "battlegroundsNormalDbfId": 74910,
@@ -1204,7 +1049,7 @@
  {
   "name": "Entourloupeur impétueux",
   "synergy": "DEMON",
-  "enchantment_dbfId": 73759,
+  "enchantmentDbfId": 73759,
   "dbfId": 72059,
   "attack": 2,
   "battlegroundsPremiumDbfId": 72922,
@@ -1224,8 +1069,7 @@
  {
   "name": "Entourloupeur impétueux",
   "synergy": "DEMON",
-  "enchantment_dbfId": 73759,
-  "cant_collect": true,
+  "enchantmentDbfId": 73759,
   "dbfId": 72922,
   "attack": 4,
   "battlegroundsNormalDbfId": 72059,
@@ -1263,7 +1107,6 @@
  {
   "name": "Robo-toutou",
   "synergy": "MECHANICAL",
-  "cant_collect": true,
   "dbfId": 73015,
   "attack": 4,
   "battlegroundsNormalDbfId": 72387,
@@ -1280,9 +1123,86 @@
   "type": "MINION"
  },
  {
+  "name": "Protectrice vertueuse",
+  "synergy": "NONE",
+  "dbfId": 42467,
+  "artist": "Evgeniy Dlinnov",
+  "attack": 1,
+  "battlegroundsPremiumDbfId": 63774,
+  "cardClass": "PALADIN",
+  "collectible": true,
+  "cost": 1,
+  "flavor": "Son cœur ne connaît que la vertu, son épée défend les démunis, son bras protège les faibles, sa bouche méprise le mensonge, sa colère déjoue les tours du malin.",
+  "health": 1,
+  "id": "ICC_038",
+  "mechanics": [
+   "DIVINE_SHIELD",
+   "TAUNT"
+  ],
+  "rarity": "COMMON",
+  "set": "ICECROWN",
+  "text": "<b>Provocation</b>\n<b>Bouclier divin</b>",
+  "type": "MINION"
+ },
+ {
+  "name": "Protectrice vertueuse",
+  "synergy": "NONE",
+  "dbfId": 63774,
+  "attack": 2,
+  "battlegroundsNormalDbfId": 42467,
+  "cardClass": "PALADIN",
+  "cost": 1,
+  "health": 2,
+  "id": "TB_BaconUps_147",
+  "mechanics": [
+   "DIVINE_SHIELD",
+   "TAUNT"
+  ],
+  "rarity": "COMMON",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Provocation</b>\n<b>Bouclier divin</b>",
+  "type": "MINION"
+ },
+ {
+  "name": "Carnipousse",
+  "synergy": "NONE",
+  "dbfId": 76964,
+  "artist": "Matt Dixon",
+  "attack": 1,
+  "battlegroundsPremiumDbfId": 76965,
+  "cardClass": "NEUTRAL",
+  "cost": 1,
+  "health": 1,
+  "id": "TB_BaconShop_HP_022t",
+  "mechanics": [
+   "BATTLECRY"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Cri de guerre :</b> répète tous les autres <b>Cris de guerre</b> des cartes que vous avez jouées pendant cette partie <i>(cibles choisies au hasard)</i>.",
+  "type": "MINION"
+ },
+ {
+  "name": "Carnipousse",
+  "synergy": "NONE",
+  "dbfId": 76965,
+  "artist": "Matt Dixon",
+  "attack": 2,
+  "battlegroundsNormalDbfId": 76964,
+  "cardClass": "NEUTRAL",
+  "cost": 1,
+  "health": 2,
+  "id": "TB_BaconShop_HP_022t_G",
+  "mechanics": [
+   "BATTLECRY"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Cri de guerre :</b> répète deux fois tous les autres <b>Cris de guerre</b> des cartes que vous avez jouées pendant cette partie <i>(cibles choisies au hasard)</i>.",
+  "type": "MINION"
+ },
+ {
   "name": "Bondisseur dent-de-métal",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 2205,
+  "enchantmentDbfId": 2205,
   "dbfId": 2016,
   "artist": "Hideaki Takamura",
   "attack": 3,
@@ -1306,8 +1226,7 @@
  {
   "name": "Bondisseur dent-de-métal",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 59496,
-  "cant_collect": true,
+  "enchantmentDbfId": 59496,
   "dbfId": 59495,
   "attack": 6,
   "battlegroundsNormalDbfId": 2016,
@@ -1327,7 +1246,7 @@
  {
   "name": "Capitaine des mers du Sud",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 70472,
+  "enchantmentDbfId": 70472,
   "dbfId": 680,
   "artist": "Ken Steacy",
   "attack": 3,
@@ -1351,8 +1270,7 @@
  {
   "name": "Capitaine des mers du Sud",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 62238,
-  "cant_collect": true,
+  "enchantmentDbfId": 62238,
   "dbfId": 62237,
   "attack": 6,
   "battlegroundsNormalDbfId": 680,
@@ -1372,7 +1290,7 @@
  {
   "name": "Chef de guerre murloc",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 535,
+  "enchantmentDbfId": 535,
   "dbfId": 1063,
   "artist": "Tim McBurnie",
   "attack": 3,
@@ -1396,8 +1314,7 @@
  {
   "name": "Chef de guerre murloc",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 57406,
-  "cant_collect": true,
+  "enchantmentDbfId": 57406,
   "dbfId": 57403,
   "attack": 6,
   "battlegroundsNormalDbfId": 1063,
@@ -1417,8 +1334,7 @@
  {
   "name": "Gentille grand-mère",
   "synergy": "BEAST",
-  "repop_dbfId": 39161,
-  "ban": true,
+  "repopDbfId": 39161,
   "dbfId": 39481,
   "artist": "Matt Dixon",
   "attack": 1,
@@ -1443,9 +1359,7 @@
  {
   "name": "Gentille grand-mère",
   "synergy": "BEAST",
-  "repop_dbfId": 57341,
-  "cant_collect": true,
-  "ban": true,
+  "repopDbfId": 57341,
   "dbfId": 57340,
   "attack": 2,
   "battlegroundsNormalDbfId": 39481,
@@ -1465,7 +1379,6 @@
  {
   "name": "Grand Méchant Loup",
   "synergy": "BEAST",
-  "cant_collect": true,
   "dbfId": 39161,
   "artist": "Matt Dixon",
   "attack": 3,
@@ -1480,7 +1393,6 @@
  {
   "name": "Grand Méchant Loup",
   "synergy": "BEAST",
-  "cant_collect": true,
   "dbfId": 57341,
   "attack": 6,
   "cardClass": "HUNTER",
@@ -1494,7 +1406,7 @@
  {
   "name": "Golem des moissons",
   "synergy": "MECHANICAL",
-  "repop_dbfId": 471,
+  "repopDbfId": 471,
   "dbfId": 778,
   "artist": "Brian Despain",
   "attack": 2,
@@ -1518,8 +1430,7 @@
  {
   "name": "Golem des moissons",
   "synergy": "MECHANICAL",
-  "repop_dbfId": 57408,
-  "cant_collect": true,
+  "repopDbfId": 57408,
   "dbfId": 57401,
   "attack": 4,
   "battlegroundsNormalDbfId": 778,
@@ -1539,7 +1450,6 @@
  {
   "name": "Golem endommagé",
   "synergy": "MECHANICAL",
-  "cant_collect": true,
   "dbfId": 471,
   "attack": 2,
   "cardClass": "NEUTRAL",
@@ -1553,7 +1463,6 @@
  {
   "name": "Golem endommagé",
   "synergy": "MECHANICAL",
-  "cant_collect": true,
   "dbfId": 57408,
   "attack": 4,
   "cardClass": "NEUTRAL",
@@ -1592,7 +1501,6 @@
  {
   "name": "Goule instable",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 61077,
   "attack": 2,
   "battlegroundsNormalDbfId": 1808,
@@ -1635,7 +1543,6 @@
  {
   "name": "Gro’Boum",
   "synergy": "MECHANICAL",
-  "cant_collect": true,
   "dbfId": 58369,
   "attack": 4,
   "battlegroundsNormalDbfId": 49279,
@@ -1655,7 +1562,7 @@
  {
   "name": "Rejeton de N’Zoth",
   "synergy": "NONE",
-  "enchantment_dbfId": 38796,
+  "enchantmentDbfId": 38796,
   "dbfId": 38797,
   "artist": "Peter Stapleton",
   "attack": 2,
@@ -1678,8 +1585,7 @@
  {
   "name": "Rejeton de N’Zoth",
   "synergy": "NONE",
-  "enchantment_dbfId": 58169,
-  "cant_collect": true,
+  "enchantmentDbfId": 58169,
   "dbfId": 58168,
   "attack": 4,
   "battlegroundsNormalDbfId": 38797,
@@ -1723,7 +1629,6 @@
  {
   "name": "Vieux Troublœil",
   "synergy": "MURLOC",
-  "cant_collect": true,
   "dbfId": 58382,
   "attack": 4,
   "battlegroundsNormalDbfId": 736,
@@ -1744,8 +1649,7 @@
  {
   "name": "Chef de meute",
   "synergy": "BEAST",
-  "enchantment_dbfId": 59970,
-  "ban": true,
+  "enchantmentDbfId": 59970,
   "dbfId": 59940,
   "attack": 3,
   "battlegroundsPremiumDbfId": 59969,
@@ -1764,9 +1668,7 @@
  {
   "name": "Chef de meute",
   "synergy": "BEAST",
-  "enchantment_dbfId": 59972,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 59972,
   "dbfId": 59969,
   "attack": 6,
   "battlegroundsNormalDbfId": 59940,
@@ -1785,7 +1687,7 @@
  {
   "name": "Emprisonneur",
   "synergy": "DEMON",
-  "repop_dbfId": 2779,
+  "repopDbfId": 2779,
   "dbfId": 59937,
   "attack": 3,
   "battlegroundsPremiumDbfId": 60676,
@@ -1807,8 +1709,7 @@
  {
   "name": "Emprisonneur",
   "synergy": "DEMON",
-  "repop_dbfId": 58373,
-  "cant_collect": true,
+  "repopDbfId": 58373,
   "dbfId": 60676,
   "attack": 6,
   "battlegroundsNormalDbfId": 59937,
@@ -1829,7 +1730,7 @@
  {
   "name": "Gardien des glyphes",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 61030,
+  "enchantmentDbfId": 61030,
   "dbfId": 61029,
   "attack": 2,
   "battlegroundsPremiumDbfId": 61032,
@@ -1849,8 +1750,7 @@
  {
   "name": "Gardien des glyphes",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 61031,
-  "cant_collect": true,
+  "enchantmentDbfId": 61031,
   "dbfId": 61032,
   "attack": 4,
   "battlegroundsNormalDbfId": 61029,
@@ -1885,7 +1785,6 @@
  {
   "name": "Parieuse convaincante",
   "synergy": "PIRATE",
-  "cant_collect": true,
   "dbfId": 62187,
   "attack": 6,
   "battlegroundsNormalDbfId": 61049,
@@ -1901,8 +1800,7 @@
  {
   "name": "Régisseur du temps",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 60639,
-  "ban": true,
+  "enchantmentDbfId": 60639,
   "dbfId": 60621,
   "attack": 3,
   "battlegroundsPremiumDbfId": 60663,
@@ -1918,9 +1816,7 @@
  {
   "name": "Régisseur du temps",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 60664,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 60664,
   "dbfId": 60663,
   "attack": 6,
   "battlegroundsNormalDbfId": 60621,
@@ -1936,7 +1832,7 @@
  {
   "name": "Saurolisque enragé",
   "synergy": "BEAST",
-  "enchantment_dbfId": 62164,
+  "enchantmentDbfId": 62164,
   "dbfId": 62162,
   "attack": 3,
   "battlegroundsPremiumDbfId": 62165,
@@ -1959,8 +1855,7 @@
  {
   "name": "Saurolisque enragé",
   "synergy": "BEAST",
-  "enchantment_dbfId": 62166,
-  "cant_collect": true,
+  "enchantmentDbfId": 62166,
   "dbfId": 62165,
   "attack": 6,
   "battlegroundsNormalDbfId": 62162,
@@ -1982,7 +1877,7 @@
  {
   "name": "Surveillant nathrezim",
   "synergy": "DEMON",
-  "enchantment_dbfId": 59187,
+  "enchantmentDbfId": 59187,
   "dbfId": 59186,
   "attack": 2,
   "battlegroundsPremiumDbfId": 59487,
@@ -2003,8 +1898,7 @@
  {
   "name": "Surveillant nathrezim",
   "synergy": "DEMON",
-  "enchantment_dbfId": 59488,
-  "cant_collect": true,
+  "enchantmentDbfId": 59488,
   "dbfId": 59487,
   "attack": 4,
   "battlegroundsNormalDbfId": 59186,
@@ -2024,7 +1918,7 @@
  {
   "name": "Tasse de la Ménagerie",
   "synergy": "NONE",
-  "enchantment_dbfId": 63488,
+  "enchantmentDbfId": 63488,
   "dbfId": 63435,
   "attack": 2,
   "battlegroundsPremiumDbfId": 63489,
@@ -2043,8 +1937,7 @@
  {
   "name": "Tasse de la Ménagerie",
   "synergy": "NONE",
-  "enchantment_dbfId": 63490,
-  "cant_collect": true,
+  "enchantmentDbfId": 63490,
   "dbfId": 63489,
   "attack": 4,
   "battlegroundsNormalDbfId": 63435,
@@ -2062,8 +1955,7 @@
  {
   "name": "Trotte-bougie Cire-Pilleur",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 60560,
-  "ban": true,
+  "enchantmentDbfId": 60560,
   "dbfId": 60559,
   "attack": 1,
   "battlegroundsPremiumDbfId": 60647,
@@ -2082,9 +1974,7 @@
  {
   "name": "Trotte-bougie Cire-Pilleur",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 60648,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 60648,
   "dbfId": 60647,
   "attack": 2,
   "battlegroundsNormalDbfId": 60559,
@@ -2103,7 +1993,7 @@
  {
   "name": "Élémentaire de fête",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 64057,
+  "enchantmentDbfId": 64057,
   "dbfId": 64056,
   "attack": 3,
   "battlegroundsPremiumDbfId": 64058,
@@ -2123,8 +2013,7 @@
  {
   "name": "Élémentaire de fête",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 64057,
-  "cant_collect": true,
+  "enchantmentDbfId": 64057,
   "dbfId": 64058,
   "attack": 6,
   "battlegroundsNormalDbfId": 64056,
@@ -2143,7 +2032,7 @@
  {
   "name": "Roche en fusion",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 64298,
+  "enchantmentDbfId": 64298,
   "dbfId": 64296,
   "attack": 2,
   "battlegroundsPremiumDbfId": 64300,
@@ -2164,8 +2053,7 @@
  {
   "name": "Roche en fusion",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 64301,
-  "cant_collect": true,
+  "enchantmentDbfId": 64301,
   "dbfId": 64300,
   "attack": 4,
   "battlegroundsNormalDbfId": 64296,
@@ -2210,7 +2098,6 @@
  {
   "name": "Héroïne altruiste",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 58143,
   "attack": 4,
   "battlegroundsNormalDbfId": 38740,
@@ -2232,8 +2119,7 @@
  {
   "name": "Ritualiste tourmenté",
   "synergy": "NONE",
-  "enchantment_dbfId": 66838,
-  "ban": true,
+  "enchantmentDbfId": 66838,
   "dbfId": 65661,
   "attack": 2,
   "battlegroundsPremiumDbfId": 65668,
@@ -2252,9 +2138,7 @@
  {
   "name": "Ritualiste tourmenté",
   "synergy": "NONE",
-  "enchantment_dbfId": 66839,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 66839,
   "dbfId": 65668,
   "attack": 4,
   "battlegroundsNormalDbfId": 65661,
@@ -2273,6 +2157,10 @@
  {
   "name": "Yo-oh-Ogre",
   "synergy": "PIRATE",
+  "mechanics": [
+   "TRIGGER_VISUAL",
+   "TAUNT"
+  ],
   "dbfId": 61060,
   "attack": 3,
   "battlegroundsPremiumDbfId": 63782,
@@ -2280,9 +2168,6 @@
   "cost": 6,
   "health": 5,
   "id": "BGS_060",
-  "mechanics": [
-   "TRIGGER_VISUAL"
-  ],
   "race": "PIRATE",
   "referencedTags": [
    "TAUNT"
@@ -2295,7 +2180,10 @@
  {
   "name": "Yo-oh-Ogre",
   "synergy": "PIRATE",
-  "cant_collect": true,
+  "mechanics": [
+   "TRIGGER_VISUAL",
+   "TAUNT"
+  ],
   "dbfId": 63782,
   "attack": 6,
   "battlegroundsNormalDbfId": 61060,
@@ -2303,9 +2191,6 @@
   "cost": 6,
   "health": 10,
   "id": "TB_BaconUps_150",
-  "mechanics": [
-   "TRIGGER_VISUAL"
-  ],
   "race": "PIRATE",
   "referencedTags": [
    "TAUNT"
@@ -2342,7 +2227,6 @@
   "mechanics": [
    "FRENZY"
   ],
-  "cant_collect": true,
   "dbfId": 70161,
   "attack": 4,
   "battlegroundsNormalDbfId": 70157,
@@ -2361,7 +2245,7 @@
  {
   "name": "Défense-robuste",
   "synergy": "QUILBOAR",
-  "enchantment_dbfId": 70167,
+  "enchantmentDbfId": 70167,
   "dbfId": 70162,
   "attack": 5,
   "battlegroundsPremiumDbfId": 70168,
@@ -2384,8 +2268,7 @@
  {
   "name": "Défense-robuste",
   "synergy": "QUILBOAR",
-  "enchantment_dbfId": 70169,
-  "cant_collect": true,
+  "enchantmentDbfId": 70169,
   "dbfId": 70168,
   "attack": 10,
   "battlegroundsNormalDbfId": 70162,
@@ -2425,7 +2308,6 @@
  {
   "name": "Prophète du Sanglier",
   "synergy": "QUILBOAR",
-  "cant_collect": true,
   "dbfId": 70155,
   "attack": 6,
   "battlegroundsNormalDbfId": 70153,
@@ -2443,7 +2325,7 @@
  {
   "name": "Boss écailles-salines",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 74912,
+  "enchantmentDbfId": 74912,
   "dbfId": 72065,
   "attack": 3,
   "battlegroundsPremiumDbfId": 72832,
@@ -2463,8 +2345,7 @@
  {
   "name": "Boss écailles-salines",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 74913,
-  "cant_collect": true,
+  "enchantmentDbfId": 74913,
   "dbfId": 72832,
   "attack": 6,
   "battlegroundsNormalDbfId": 72065,
@@ -2483,7 +2364,7 @@
  {
   "name": "Contrebandier dragonnet",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 73544,
+  "enchantmentDbfId": 73544,
   "dbfId": 72072,
   "attack": 2,
   "battlegroundsPremiumDbfId": 73546,
@@ -2502,8 +2383,7 @@
  {
   "name": "Contrebandier dragonnet",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 73544,
-  "cant_collect": true,
+  "enchantmentDbfId": 73544,
   "dbfId": 73546,
   "attack": 4,
   "battlegroundsNormalDbfId": 72072,
@@ -2521,7 +2401,10 @@
  {
   "name": "Rat d’égout",
   "synergy": "BEAST",
-  "repop_dbfId": 70791,
+  "mechanics": [
+   "DEATHRATTLE"
+  ],
+  "repopDbfId": 70791,
   "dbfId": 70790,
   "attack": 3,
   "battlegroundsPremiumDbfId": 70801,
@@ -2542,8 +2425,10 @@
  {
   "name": "Rat d’égout",
   "synergy": "BEAST",
-  "repop_dbfId": 70802,
-  "cant_collect": true,
+  "mechanics": [
+   "DEATHRATTLE"
+  ],
+  "repopDbfId": 70802,
   "dbfId": 70801,
   "attack": 6,
   "battlegroundsNormalDbfId": 70790,
@@ -2563,7 +2448,9 @@
  {
   "name": "Demi-carapace",
   "synergy": "BEAST",
-  "cant_collect": true,
+  "mechanics": [
+   "TAUNT"
+  ],
   "dbfId": 70791,
   "attack": 2,
   "cardClass": "NEUTRAL",
@@ -2581,7 +2468,9 @@
  {
   "name": "Demi-carapace",
   "synergy": "BEAST",
-  "cant_collect": true,
+  "mechanics": [
+   "TAUNT"
+  ],
   "dbfId": 70802,
   "attack": 4,
   "cardClass": "NEUTRAL",
@@ -2599,7 +2488,7 @@
  {
   "name": "Saute-mouton",
   "synergy": "BEAST",
-  "enchantment_dbfId": 74971,
+  "enchantmentDbfId": 74971,
   "dbfId": 72042,
   "attack": 3,
   "battlegroundsPremiumDbfId": 74974,
@@ -2619,8 +2508,7 @@
  {
   "name": "Saute-mouton",
   "synergy": "BEAST",
-  "enchantment_dbfId": 74972,
-  "cant_collect": true,
+  "enchantmentDbfId": 74972,
   "dbfId": 74974,
   "attack": 6,
   "battlegroundsNormalDbfId": 72042,
@@ -2639,8 +2527,7 @@
  {
   "name": "Chef du gang des diablotins",
   "synergy": "DEMON",
-  "repop_dbfId": 2779,
-  "ban": true,
+  "repopDbfId": 2779,
   "dbfId": 2288,
   "artist": "Steve Prescott",
   "attack": 2,
@@ -2665,9 +2552,7 @@
  {
   "name": "Chef du gang des diablotins",
   "synergy": "DEMON",
-  "repop_dbfId": 58373,
-  "cant_collect": true,
-  "ban": true,
+  "repopDbfId": 58373,
   "dbfId": 58372,
   "attack": 4,
   "battlegroundsNormalDbfId": 2288,
@@ -2687,7 +2572,6 @@
  {
   "name": "Diablotin",
   "synergy": "DEMON",
-  "cant_collect": true,
   "dbfId": 2779,
   "attack": 1,
   "cardClass": "WARLOCK",
@@ -2701,7 +2585,6 @@
  {
   "name": "Diablotin",
   "synergy": "DEMON",
-  "cant_collect": true,
   "dbfId": 58373,
   "attack": 2,
   "cardClass": "WARLOCK",
@@ -2715,7 +2598,7 @@
  {
   "name": "Cliquetteur perce-vrille",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 2223,
+  "enchantmentDbfId": 2223,
   "dbfId": 2023,
   "artist": "Jesper Ejsing",
   "attack": 2,
@@ -2740,8 +2623,7 @@
  {
   "name": "Cliquetteur perce-vrille",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 59502,
-  "cant_collect": true,
+  "enchantmentDbfId": 59502,
   "dbfId": 59501,
   "attack": 4,
   "battlegroundsNormalDbfId": 2023,
@@ -2784,7 +2666,6 @@
  {
   "name": "Khadgar",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 58380,
   "attack": 4,
   "battlegroundsNormalDbfId": 52502,
@@ -2804,7 +2685,7 @@
  {
   "name": "Le clan des rats",
   "synergy": "BEAST",
-  "repop_dbfId": 41839,
+  "repopDbfId": 41839,
   "dbfId": 40428,
   "artist": "Ozhill Studio",
   "attack": 2,
@@ -2828,8 +2709,7 @@
  {
   "name": "Le clan des rats",
   "synergy": "BEAST",
-  "repop_dbfId": 58368,
-  "cant_collect": true,
+  "repopDbfId": 58368,
   "dbfId": 58367,
   "attack": 4,
   "battlegroundsNormalDbfId": 40428,
@@ -2849,7 +2729,6 @@
  {
   "name": "Rat",
   "synergy": "BEAST",
-  "cant_collect": true,
   "dbfId": 41839,
   "artist": "L. Lullabi & A. Bozonnet",
   "attack": 1,
@@ -2864,7 +2743,6 @@
  {
   "name": "Rat",
   "synergy": "BEAST",
-  "cant_collect": true,
   "dbfId": 58368,
   "attack": 2,
   "cardClass": "HUNTER",
@@ -2878,8 +2756,7 @@
  {
   "name": "Loup contaminé",
   "synergy": "BEAST",
-  "repop_dbfId": 38735,
-  "ban": true,
+  "repopDbfId": 38735,
   "dbfId": 38734,
   "artist": "E. Guiton & A. Bozonnet",
   "attack": 3,
@@ -2902,9 +2779,7 @@
  {
   "name": "Loup contaminé",
   "synergy": "BEAST",
-  "repop_dbfId": 58366,
-  "cant_collect": true,
-  "ban": true,
+  "repopDbfId": 58366,
   "dbfId": 58365,
   "attack": 6,
   "battlegroundsNormalDbfId": 38734,
@@ -2924,7 +2799,6 @@
  {
   "name": "Araignée",
   "synergy": "BEAST",
-  "cant_collect": true,
   "dbfId": 38735,
   "artist": "Luca Zontini",
   "attack": 1,
@@ -2939,7 +2813,6 @@
  {
   "name": "Araignée",
   "synergy": "BEAST",
-  "cant_collect": true,
   "dbfId": 58366,
   "attack": 2,
   "cardClass": "HUNTER",
@@ -2953,7 +2826,7 @@
  {
   "name": "Maître-chien",
   "synergy": "BEAST",
-  "enchantment_dbfId": 722,
+  "enchantmentDbfId": 722,
   "dbfId": 1003,
   "artist": "Dan Brereton",
   "attack": 4,
@@ -2980,8 +2853,7 @@
  {
   "name": "Maître-chien",
   "synergy": "BEAST",
-  "enchantment_dbfId": 59500,
-  "cant_collect": true,
+  "enchantmentDbfId": 59500,
   "dbfId": 59499,
   "attack": 8,
   "battlegroundsNormalDbfId": 1003,
@@ -3003,8 +2875,8 @@
  {
   "name": "Menace répliquante",
   "synergy": "MECHANICAL",
-  "repop_dbfId": 48842,
-  "enchantment_dbfId": 48546,
+  "repopDbfId": 48842,
+  "enchantmentDbfId": 48546,
   "dbfId": 48536,
   "artist": "Vladimir Kafanov",
   "attack": 3,
@@ -3029,9 +2901,8 @@
  {
   "name": "Menace répliquante",
   "synergy": "MECHANICAL",
-  "repop_dbfId": 58377,
-  "enchantment_dbfId": 60294,
-  "cant_collect": true,
+  "repopDbfId": 58377,
+  "enchantmentDbfId": 60294,
   "dbfId": 58376,
   "attack": 6,
   "battlegroundsNormalDbfId": 48536,
@@ -3052,7 +2923,6 @@
  {
   "name": "Microbot",
   "synergy": "MECHANICAL",
-  "cant_collect": true,
   "dbfId": 48842,
   "artist": "Vladimir Kafanov",
   "attack": 1,
@@ -3067,7 +2937,6 @@
  {
   "name": "Microbot",
   "synergy": "MECHANICAL",
-  "cant_collect": true,
   "dbfId": 58377,
   "attack": 2,
   "cardClass": "NEUTRAL",
@@ -3081,7 +2950,7 @@
  {
   "name": "Navigateur gangraileron",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 59713,
+  "enchantmentDbfId": 59713,
   "dbfId": 56393,
   "artist": "Andrew Hou",
   "attack": 4,
@@ -3105,8 +2974,7 @@
  {
   "name": "Navigateur gangraileron",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 61935,
-  "cant_collect": true,
+  "enchantmentDbfId": 61935,
   "dbfId": 61934,
   "attack": 8,
   "battlegroundsNormalDbfId": 56393,
@@ -3126,8 +2994,7 @@
  {
   "name": "Tisse-cristal",
   "synergy": "DEMON",
-  "enchantment_dbfId": 40390,
-  "ban": true,
+  "enchantmentDbfId": 40390,
   "dbfId": 40391,
   "artist": "Arthur Gimaldinov",
   "attack": 5,
@@ -3149,9 +3016,7 @@
  {
   "name": "Tisse-cristal",
   "synergy": "DEMON",
-  "enchantment_dbfId": 59505,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 59505,
   "dbfId": 59504,
   "attack": 10,
   "battlegroundsNormalDbfId": 40391,
@@ -3170,7 +3035,7 @@
  {
   "name": "Voyant froide-lumière",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 1718,
+  "enchantmentDbfId": 1718,
   "dbfId": 453,
   "artist": "Arthur Gimaldinov",
   "attack": 2,
@@ -3194,8 +3059,7 @@
  {
   "name": "Voyant froide-lumière",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 59492,
-  "cant_collect": true,
+  "enchantmentDbfId": 59492,
   "dbfId": 59491,
   "attack": 4,
   "battlegroundsNormalDbfId": 453,
@@ -3237,7 +3101,6 @@
  {
   "name": "Ara monstrueux",
   "synergy": "BEAST",
-  "cant_collect": true,
   "dbfId": 62231,
   "attack": 10,
   "battlegroundsNormalDbfId": 62230,
@@ -3259,8 +3122,7 @@
  {
   "name": "Assistant arcanique",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 64302,
-  "ban": true,
+  "enchantmentDbfId": 64302,
   "dbfId": 64297,
   "attack": 3,
   "battlegroundsPremiumDbfId": 64303,
@@ -3279,9 +3141,7 @@
  {
   "name": "Assistant arcanique",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 64304,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 64304,
   "dbfId": 64303,
   "attack": 6,
   "battlegroundsNormalDbfId": 64297,
@@ -3300,8 +3160,7 @@
  {
   "name": "Canonnier de la Voile sanglante",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 62253,
-  "ban": true,
+  "enchantmentDbfId": 62253,
   "dbfId": 61053,
   "attack": 4,
   "battlegroundsPremiumDbfId": 62254,
@@ -3320,9 +3179,7 @@
  {
   "name": "Canonnier de la Voile sanglante",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 62255,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 62255,
   "dbfId": 62254,
   "attack": 8,
   "battlegroundsNormalDbfId": 61053,
@@ -3361,7 +3218,6 @@
  {
   "name": "Cyclone crépitant",
   "synergy": "ELEMENTAL",
-  "cant_collect": true,
   "dbfId": 64055,
   "attack": 8,
   "battlegroundsNormalDbfId": 64054,
@@ -3381,8 +3237,7 @@
  {
   "name": "Dragon infâmélique",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 60553,
-  "ban": true,
+  "enchantmentDbfId": 60553,
   "dbfId": 60552,
   "attack": 4,
   "battlegroundsPremiumDbfId": 60645,
@@ -3401,9 +3256,7 @@
  {
   "name": "Dragon infâmélique",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 60646,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 60646,
   "dbfId": 60645,
   "attack": 8,
   "battlegroundsNormalDbfId": 60552,
@@ -3422,7 +3275,6 @@
  {
   "name": "Déchiqueteur piloté",
   "synergy": "MECHANICAL",
-  "ban": true,
   "dbfId": 60048,
   "attack": 4,
   "battlegroundsPremiumDbfId": 58381,
@@ -3442,8 +3294,6 @@
  {
   "name": "Déchiqueteur piloté",
   "synergy": "MECHANICAL",
-  "cant_collect": true,
-  "ban": true,
   "dbfId": 58381,
   "attack": 8,
   "battlegroundsNormalDbfId": 60048,
@@ -3463,7 +3313,7 @@
  {
   "name": "Déflect-o-bot",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 61931,
+  "enchantmentDbfId": 61931,
   "dbfId": 61930,
   "attack": 3,
   "battlegroundsPremiumDbfId": 61932,
@@ -3486,8 +3336,7 @@
  {
   "name": "Déflect-o-bot",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 61933,
-  "cant_collect": true,
+  "enchantmentDbfId": 61933,
   "dbfId": 61932,
   "attack": 6,
   "battlegroundsNormalDbfId": 61930,
@@ -3509,7 +3358,6 @@
  {
   "name": "Gardien de bronze",
   "synergy": "DRAGON",
-  "techLevel": 3,
   "dbfId": 63779,
   "attack": 4,
   "battlegroundsNormalDbfId": 60558,
@@ -3529,8 +3377,6 @@
  {
   "name": "Gardien de bronze",
   "synergy": "DRAGON",
-  "techLevel": 3,
-  "cant_collect": true,
   "dbfId": 60558,
   "attack": 2,
   "battlegroundsPremiumDbfId": 63779,
@@ -3544,6 +3390,7 @@
   ],
   "race": "DRAGON",
   "set": "BATTLEGROUNDS",
+  "techLevel": 3,
   "text": "<b>Bouclier divin</b>\n<b>Réincarnation</b>",
   "type": "MINION"
  },
@@ -3568,7 +3415,6 @@
  {
   "name": "Jongleur d’âmes",
   "synergy": "DEMON",
-  "cant_collect": true,
   "dbfId": 59661,
   "attack": 6,
   "battlegroundsNormalDbfId": 59660,
@@ -3586,7 +3432,7 @@
  {
   "name": "Pillard pirate",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 62738,
+  "enchantmentDbfId": 62738,
   "dbfId": 62734,
   "attack": 4,
   "battlegroundsPremiumDbfId": 62739,
@@ -3606,8 +3452,7 @@
  {
   "name": "Pillard pirate",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 62740,
-  "cant_collect": true,
+  "enchantmentDbfId": 62740,
   "dbfId": 62739,
   "attack": 8,
   "battlegroundsNormalDbfId": 62734,
@@ -3648,7 +3493,6 @@
  {
   "name": "Élémentaire de stase",
   "synergy": "ELEMENTAL",
-  "cant_collect": true,
   "dbfId": 64073,
   "attack": 8,
   "battlegroundsNormalDbfId": 64069,
@@ -3670,7 +3514,7 @@
  {
   "name": "Émissaire du Crépuscule",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 60627,
+  "enchantmentDbfId": 60627,
   "dbfId": 60626,
   "attack": 4,
   "battlegroundsPremiumDbfId": 60665,
@@ -3691,8 +3535,7 @@
  {
   "name": "Émissaire du Crépuscule",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 60666,
-  "cant_collect": true,
+  "enchantmentDbfId": 60666,
   "dbfId": 60665,
   "attack": 8,
   "battlegroundsNormalDbfId": 60626,
@@ -3712,7 +3555,7 @@
  {
   "name": "Bras de l’Empire",
   "synergy": "NONE",
-  "enchantment_dbfId": 65670,
+  "enchantmentDbfId": 65670,
   "dbfId": 63622,
   "attack": 4,
   "battlegroundsPremiumDbfId": 65673,
@@ -3734,8 +3577,7 @@
  {
   "name": "Bras de l’Empire",
   "synergy": "NONE",
-  "enchantment_dbfId": 65674,
-  "cant_collect": true,
+  "enchantmentDbfId": 65674,
   "dbfId": 65673,
   "attack": 8,
   "battlegroundsNormalDbfId": 63622,
@@ -3756,7 +3598,7 @@
  {
   "name": "Dévoreur d’âmes",
   "synergy": "DEMON",
-  "enchantment_dbfId": 61080,
+  "enchantmentDbfId": 61080,
   "dbfId": 61059,
   "attack": 3,
   "battlegroundsPremiumDbfId": 61081,
@@ -3776,8 +3618,7 @@
  {
   "name": "Dévoreur d’âmes",
   "synergy": "DEMON",
-  "enchantment_dbfId": 61080,
-  "cant_collect": true,
+  "enchantmentDbfId": 61080,
   "dbfId": 61081,
   "attack": 6,
   "battlegroundsNormalDbfId": 61059,
@@ -3796,7 +3637,6 @@
  {
   "name": "Gardienne d’antan",
   "synergy": "NONE",
-  "ban": true,
   "dbfId": 65660,
   "attack": 3,
   "battlegroundsPremiumDbfId": 65665,
@@ -3814,8 +3654,6 @@
  {
   "name": "Gardienne d’antan",
   "synergy": "NONE",
-  "cant_collect": true,
-  "ban": true,
   "dbfId": 65665,
   "attack": 6,
   "battlegroundsNormalDbfId": 65660,
@@ -3833,8 +3671,7 @@
  {
   "name": "Forgeronne des Tarides",
   "synergy": "NONE",
-  "enchantment_dbfId": 63241,
-  "ban": true,
+  "enchantmentDbfId": 63241,
   "dbfId": 62582,
   "artist": "Ursula Dorada",
   "attack": 3,
@@ -3856,9 +3693,7 @@
  {
   "name": "Forgeronne des Tarides",
   "synergy": "NONE",
-  "enchantment_dbfId": 71534,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 71534,
   "dbfId": 71533,
   "artist": "Ursula Dorada",
   "attack": 6,
@@ -3897,7 +3732,6 @@
  {
   "name": "Brute dos-hirsute",
   "synergy": "QUILBOAR",
-  "cant_collect": true,
   "dbfId": 70172,
   "attack": 6,
   "battlegroundsNormalDbfId": 70171,
@@ -3936,7 +3770,6 @@
  {
   "name": "Mande-épines",
   "synergy": "QUILBOAR",
-  "cant_collect": true,
   "dbfId": 70181,
   "attack": 8,
   "battlegroundsNormalDbfId": 70175,
@@ -3976,7 +3809,6 @@
  {
   "name": "Nécrolyte",
   "synergy": "QUILBOAR",
-  "cant_collect": true,
   "dbfId": 70152,
   "attack": 6,
   "battlegroundsNormalDbfId": 70151,
@@ -4015,7 +3847,6 @@
  {
   "name": "Porte-bannière huran",
   "synergy": "QUILBOAR",
-  "cant_collect": true,
   "dbfId": 70146,
   "attack": 2,
   "battlegroundsNormalDbfId": 70144,
@@ -4034,8 +3865,7 @@
  {
   "name": "Sensei de fer",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 2220,
-  "ban": true,
+  "enchantmentDbfId": 2220,
   "dbfId": 1992,
   "artist": "Brian Despain",
   "attack": 2,
@@ -4058,9 +3888,7 @@
  {
   "name": "Sensei de fer",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 58399,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 58399,
   "dbfId": 58397,
   "attack": 4,
   "battlegroundsNormalDbfId": 1992,
@@ -4080,7 +3908,7 @@
  {
   "name": "Gaillarde des mers du Sud",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 62261,
+  "enchantmentDbfId": 62261,
   "dbfId": 61048,
   "attack": 4,
   "battlegroundsPremiumDbfId": 62259,
@@ -4101,8 +3929,7 @@
  {
   "name": "Gaillarde des mers du Sud",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 62260,
-  "cant_collect": true,
+  "enchantmentDbfId": 62260,
   "dbfId": 62259,
   "attack": 8,
   "battlegroundsNormalDbfId": 61048,
@@ -4141,7 +3968,6 @@
  {
   "name": "Contrebandier saumâtre",
   "synergy": "PIRATE",
-  "cant_collect": true,
   "dbfId": 73951,
   "attack": 8,
   "battlegroundsNormalDbfId": 72071,
@@ -4160,7 +3986,7 @@
  {
   "name": "Enfumeur",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 74896,
+  "enchantmentDbfId": 74896,
   "dbfId": 72069,
   "attack": 3,
   "battlegroundsPremiumDbfId": 74898,
@@ -4180,8 +4006,7 @@
  {
   "name": "Enfumeur",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 74896,
-  "cant_collect": true,
+  "enchantmentDbfId": 74896,
   "dbfId": 74898,
   "attack": 6,
   "battlegroundsNormalDbfId": 72069,
@@ -4222,7 +4047,6 @@
  {
   "name": "Fendeur de gemmes",
   "synergy": "QUILBOAR",
-  "cant_collect": true,
   "dbfId": 75485,
   "attack": 4,
   "battlegroundsNormalDbfId": 75484,
@@ -4244,7 +4068,7 @@
  {
   "name": "Gonflaileron",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 73010,
+  "enchantmentDbfId": 73010,
   "dbfId": 72064,
   "attack": 4,
   "battlegroundsPremiumDbfId": 73011,
@@ -4264,8 +4088,7 @@
  {
   "name": "Gonflaileron",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 73767,
-  "cant_collect": true,
+  "enchantmentDbfId": 73767,
   "dbfId": 73011,
   "attack": 8,
   "battlegroundsNormalDbfId": 72064,
@@ -4284,7 +4107,7 @@
  {
   "name": "Kathra’natir",
   "synergy": "DEMON",
-  "enchantment_dbfId": 76567,
+  "enchantmentDbfId": 76567,
   "dbfId": 76566,
   "attack": 5,
   "battlegroundsPremiumDbfId": 76569,
@@ -4308,8 +4131,7 @@
  {
   "name": "Kathra’natir",
   "synergy": "DEMON",
-  "enchantment_dbfId": 76568,
-  "cant_collect": true,
+  "enchantmentDbfId": 76568,
   "dbfId": 76569,
   "attack": 10,
   "battlegroundsNormalDbfId": 76566,
@@ -4332,7 +4154,7 @@
  {
   "name": "Mainverte en herbe",
   "synergy": "BEAST",
-  "enchantment_dbfId": 74930,
+  "enchantmentDbfId": 74930,
   "avenge_counter": 3,
   "dbfId": 74929,
   "attack": 1,
@@ -4352,9 +4174,8 @@
  {
   "name": "Mainverte en herbe",
   "synergy": "BEAST",
-  "enchantment_dbfId": 74931,
+  "enchantmentDbfId": 74931,
   "avenge_counter": 3,
-  "cant_collect": true,
   "dbfId": 74932,
   "attack": 2,
   "battlegroundsNormalDbfId": 74929,
@@ -4372,7 +4193,7 @@
  {
   "name": "Pote à plumes",
   "synergy": "BEAST",
-  "enchantment_dbfId": 72827,
+  "enchantmentDbfId": 72827,
   "avenge_counter": 1,
   "dbfId": 72055,
   "attack": 2,
@@ -4392,9 +4213,8 @@
  {
   "name": "Pote à plumes",
   "synergy": "BEAST",
-  "enchantment_dbfId": 72829,
+  "enchantmentDbfId": 72829,
   "avenge_counter": 1,
-  "cant_collect": true,
   "dbfId": 72830,
   "attack": 4,
   "battlegroundsNormalDbfId": 72055,
@@ -4432,7 +4252,6 @@
  {
   "name": "Tarecgosa",
   "synergy": "DRAGON",
-  "cant_collect": true,
   "dbfId": 73453,
   "attack": 8,
   "battlegroundsNormalDbfId": 72062,
@@ -4452,8 +4271,7 @@
  {
   "name": "Aileron-Toxique",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 52297,
-  "ban": true,
+  "enchantmentDbfId": 52297,
   "dbfId": 52277,
   "artist": "Anton Zemskov",
   "attack": 1,
@@ -4480,9 +4298,7 @@
  {
   "name": "Aileron-Toxique",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 52297,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 52297,
   "dbfId": 63796,
   "attack": 2,
   "battlegroundsNormalDbfId": 52277,
@@ -4505,8 +4321,7 @@
  {
   "name": "Bolvar sang-de-feu",
   "synergy": "NONE",
-  "enchantment_dbfId": 46580,
-  "ban": true,
+  "enchantmentDbfId": 46580,
   "dbfId": 45392,
   "artist": "Tooth",
   "attack": 1,
@@ -4530,9 +4345,7 @@
  {
   "name": "Bolvar sang-de-feu",
   "synergy": "NONE",
-  "enchantment_dbfId": 58406,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 58406,
   "dbfId": 58405,
   "attack": 2,
   "battlegroundsNormalDbfId": 45392,
@@ -4553,8 +4366,7 @@
  {
   "name": "Brise-siège",
   "synergy": "DEMON",
-  "enchantment_dbfId": 54842,
-  "ban": true,
+  "enchantmentDbfId": 54842,
   "dbfId": 54835,
   "artist": "James Ryman",
   "attack": 5,
@@ -4580,9 +4392,7 @@
  {
   "name": "Brise-siège",
   "synergy": "DEMON",
-  "enchantment_dbfId": 58419,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 58419,
   "dbfId": 58418,
   "attack": 10,
   "battlegroundsNormalDbfId": 54835,
@@ -4603,7 +4413,7 @@
  {
   "name": "Défenseur d’Argus",
   "synergy": "NONE",
-  "enchantment_dbfId": 1103,
+  "enchantmentDbfId": 1103,
   "dbfId": 763,
   "artist": "Alex Horley Orlandelli",
   "attack": 3,
@@ -4630,8 +4440,7 @@
  {
   "name": "Défenseur d’Argus",
   "synergy": "NONE",
-  "enchantment_dbfId": 57407,
-  "cant_collect": true,
+  "enchantmentDbfId": 57407,
   "dbfId": 57404,
   "attack": 6,
   "battlegroundsNormalDbfId": 763,
@@ -4654,7 +4463,7 @@
  {
   "name": "Ennuy-o-module",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 49003,
+  "enchantmentDbfId": 49003,
   "dbfId": 48993,
   "artist": "Matt Dixon",
   "attack": 2,
@@ -4680,8 +4489,7 @@
  {
   "name": "Ennuy-o-module",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 60328,
-  "cant_collect": true,
+  "enchantmentDbfId": 60328,
   "dbfId": 60327,
   "attack": 4,
   "battlegroundsNormalDbfId": 48993,
@@ -4703,7 +4511,7 @@
  {
   "name": "Grande crinière des savanes",
   "synergy": "BEAST",
-  "repop_dbfId": 1624,
+  "repopDbfId": 1624,
   "dbfId": 1261,
   "artist": "Milivoj Ceran",
   "attack": 6,
@@ -4727,8 +4535,7 @@
  {
   "name": "Grande crinière des savanes",
   "synergy": "BEAST",
-  "repop_dbfId": 58410,
-  "cant_collect": true,
+  "repopDbfId": 58410,
   "dbfId": 58409,
   "attack": 12,
   "battlegroundsNormalDbfId": 1261,
@@ -4748,7 +4555,6 @@
  {
   "name": "Hyène",
   "synergy": "BEAST",
-  "cant_collect": true,
   "dbfId": 1624,
   "artist": "Andrew Robinson",
   "attack": 2,
@@ -4763,7 +4569,6 @@
  {
   "name": "Hyène",
   "synergy": "BEAST",
-  "cant_collect": true,
   "dbfId": 58410,
   "attack": 4,
   "cardClass": "HUNTER",
@@ -4777,7 +4582,7 @@
  {
   "name": "Démon démesuré",
   "synergy": "DEMON",
-  "repop_dbfId": 66230,
+  "repopDbfId": 66230,
   "dbfId": 66227,
   "attack": 6,
   "battlegroundsPremiumDbfId": 66237,
@@ -4797,8 +4602,7 @@
  {
   "name": "Démon démesuré",
   "synergy": "DEMON",
-  "repop_dbfId": 66238,
-  "cant_collect": true,
+  "repopDbfId": 66238,
   "dbfId": 66237,
   "attack": 12,
   "battlegroundsNormalDbfId": 66227,
@@ -4837,7 +4641,6 @@
  {
   "name": "Hydre des cavernes",
   "synergy": "BEAST",
-  "cant_collect": true,
   "dbfId": 63794,
   "attack": 4,
   "battlegroundsNormalDbfId": 43358,
@@ -4854,7 +4657,7 @@
  {
   "name": "Mécanœuf",
   "synergy": "MECHANICAL",
-  "repop_dbfId": 49168,
+  "repopDbfId": 49168,
   "dbfId": 49169,
   "artist": "Hideaki Takamura",
   "attack": 0,
@@ -4878,8 +4681,7 @@
  {
   "name": "Mécanœuf",
   "synergy": "MECHANICAL",
-  "repop_dbfId": 58389,
-  "cant_collect": true,
+  "repopDbfId": 58389,
   "dbfId": 58387,
   "attack": 0,
   "battlegroundsNormalDbfId": 49169,
@@ -4899,7 +4701,6 @@
  {
   "name": "Robosaure",
   "synergy": "MECHANICAL",
-  "cant_collect": true,
   "dbfId": 49168,
   "artist": "Hideaki Takamura",
   "attack": 8,
@@ -4914,7 +4715,6 @@
  {
   "name": "Robosaure",
   "synergy": "MECHANICAL",
-  "cant_collect": true,
   "dbfId": 58389,
   "attack": 16,
   "cardClass": "PALADIN",
@@ -4928,7 +4728,7 @@
  {
   "name": "Plaiedécaille cobalt",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 42441,
+  "enchantmentDbfId": 42441,
   "dbfId": 42442,
   "artist": "Jim Nelson",
   "attack": 5,
@@ -4952,8 +4752,7 @@
  {
   "name": "Plaiedécaille cobalt",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 61443,
-  "cant_collect": true,
+  "enchantmentDbfId": 61443,
   "dbfId": 61442,
   "attack": 10,
   "battlegroundsNormalDbfId": 42442,
@@ -4973,8 +4772,7 @@
  {
   "name": "Rover de sécurité",
   "synergy": "MECHANICAL",
-  "repop_dbfId": 49278,
-  "ban": true,
+  "repopDbfId": 49278,
   "dbfId": 48100,
   "artist": "Adam Byrne",
   "attack": 2,
@@ -5000,9 +4798,7 @@
  {
   "name": "Rover de sécurité",
   "synergy": "MECHANICAL",
-  "repop_dbfId": 58393,
-  "cant_collect": true,
-  "ban": true,
+  "repopDbfId": 58393,
   "dbfId": 58392,
   "attack": 4,
   "battlegroundsNormalDbfId": 48100,
@@ -5025,7 +4821,6 @@
  {
   "name": "Robot gardien",
   "synergy": "MECHANICAL",
-  "cant_collect": true,
   "dbfId": 49278,
   "artist": "Sam Nielson",
   "attack": 2,
@@ -5044,7 +4839,6 @@
  {
   "name": "Robot gardien",
   "synergy": "MECHANICAL",
-  "cant_collect": true,
   "dbfId": 58393,
   "attack": 4,
   "cardClass": "WARRIOR",
@@ -5062,8 +4856,7 @@
  {
   "name": "Sensei virmen",
   "synergy": "BEAST",
-  "enchantment_dbfId": 40640,
-  "ban": true,
+  "enchantmentDbfId": 40640,
   "dbfId": 40641,
   "artist": "Dany Orizio",
   "attack": 4,
@@ -5086,9 +4879,7 @@
  {
   "name": "Sensei virmen",
   "synergy": "BEAST",
-  "enchantment_dbfId": 59513,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 59513,
   "dbfId": 59512,
   "attack": 8,
   "battlegroundsNormalDbfId": 40641,
@@ -5107,7 +4898,7 @@
  {
   "name": "Capitaine Grondéventre",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 62256,
+  "enchantmentDbfId": 62256,
   "dbfId": 61056,
   "attack": 4,
   "battlegroundsPremiumDbfId": 62257,
@@ -5127,8 +4918,7 @@
  {
   "name": "Capitaine Grondéventre",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 62258,
-  "cant_collect": true,
+  "enchantmentDbfId": 62258,
   "dbfId": 62257,
   "attack": 8,
   "battlegroundsNormalDbfId": 61056,
@@ -5147,7 +4937,7 @@
  {
   "name": "Chambellan Executus",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 65180,
+  "enchantmentDbfId": 65180,
   "dbfId": 63630,
   "attack": 6,
   "battlegroundsPremiumDbfId": 64459,
@@ -5167,8 +4957,7 @@
  {
   "name": "Chambellan Executus",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 65180,
-  "cant_collect": true,
+  "enchantmentDbfId": 65180,
   "dbfId": 64459,
   "attack": 12,
   "battlegroundsNormalDbfId": 63630,
@@ -5208,7 +4997,6 @@
  {
   "name": "Guetteur primaileron",
   "synergy": "MURLOC",
-  "cant_collect": true,
   "dbfId": 60027,
   "attack": 6,
   "battlegroundsNormalDbfId": 60028,
@@ -5229,7 +5017,6 @@
  {
   "name": "Héraut de la flamme",
   "synergy": "DRAGON",
-  "ban": true,
   "dbfId": 60498,
   "attack": 6,
   "battlegroundsPremiumDbfId": 60643,
@@ -5248,8 +5035,6 @@
  {
   "name": "Héraut de la flamme",
   "synergy": "DRAGON",
-  "cant_collect": true,
-  "ban": true,
   "dbfId": 60643,
   "attack": 12,
   "battlegroundsNormalDbfId": 60498,
@@ -5268,7 +5053,7 @@
  {
   "name": "Massacreur drakônide",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 61074,
+  "enchantmentDbfId": 61074,
   "dbfId": 61072,
   "attack": 3,
   "battlegroundsPremiumDbfId": 61075,
@@ -5291,8 +5076,7 @@
  {
   "name": "Massacreur drakônide",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 61076,
-  "cant_collect": true,
+  "enchantmentDbfId": 61076,
   "dbfId": 61075,
   "attack": 6,
   "battlegroundsNormalDbfId": 61072,
@@ -5314,7 +5098,7 @@
  {
   "name": "Raflelor",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 62193,
+  "enchantmentDbfId": 62193,
   "dbfId": 61066,
   "attack": 4,
   "battlegroundsPremiumDbfId": 62194,
@@ -5334,8 +5118,7 @@
  {
   "name": "Raflelor",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 62195,
-  "cant_collect": true,
+  "enchantmentDbfId": 62195,
   "dbfId": 62194,
   "attack": 8,
   "battlegroundsNormalDbfId": 61066,
@@ -5354,7 +5137,7 @@
  {
   "name": "Théière de la Ménagerie",
   "synergy": "NONE",
-  "enchantment_dbfId": 63491,
+  "enchantmentDbfId": 63491,
   "dbfId": 63487,
   "attack": 3,
   "battlegroundsPremiumDbfId": 63492,
@@ -5373,8 +5156,7 @@
  {
   "name": "Théière de la Ménagerie",
   "synergy": "NONE",
-  "enchantment_dbfId": 63493,
-  "cant_collect": true,
+  "enchantmentDbfId": 63493,
   "dbfId": 63492,
   "attack": 6,
   "battlegroundsNormalDbfId": 63487,
@@ -5411,7 +5193,6 @@
  {
   "name": "Élémentaire du feu de brousse",
   "synergy": "ELEMENTAL",
-  "cant_collect": true,
   "dbfId": 64190,
   "attack": 14,
   "battlegroundsNormalDbfId": 64189,
@@ -5430,8 +5211,7 @@
  {
   "name": "Brik-à-bot",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 2241,
-  "ban": true,
+  "enchantmentDbfId": 2241,
   "dbfId": 2074,
   "artist": "Zoltan Boros",
   "attack": 1,
@@ -5454,9 +5234,7 @@
  {
   "name": "Brik-à-bot",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 58404,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 58404,
   "dbfId": 58402,
   "attack": 2,
   "battlegroundsNormalDbfId": 2074,
@@ -5476,7 +5254,7 @@
  {
   "name": "Champion d’Y’Shaarj",
   "synergy": "NONE",
-  "enchantment_dbfId": 65659,
+  "enchantmentDbfId": 65659,
   "dbfId": 63623,
   "attack": 4,
   "battlegroundsPremiumDbfId": 65666,
@@ -5498,8 +5276,7 @@
  {
   "name": "Champion d’Y’Shaarj",
   "synergy": "NONE",
-  "enchantment_dbfId": 65667,
-  "cant_collect": true,
+  "enchantmentDbfId": 65667,
   "dbfId": 65666,
   "attack": 8,
   "battlegroundsNormalDbfId": 63623,
@@ -5520,8 +5297,7 @@
  {
   "name": "Héraut qiraji",
   "synergy": "NONE",
-  "enchantment_dbfId": 68225,
-  "ban": true,
+  "enchantmentDbfId": 68225,
   "dbfId": 63619,
   "attack": 5,
   "battlegroundsPremiumDbfId": 65675,
@@ -5542,9 +5318,7 @@
  {
   "name": "Héraut qiraji",
   "synergy": "NONE",
-  "enchantment_dbfId": 68226,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 68226,
   "dbfId": 65675,
   "attack": 10,
   "battlegroundsNormalDbfId": 63619,
@@ -5565,7 +5339,7 @@
  {
   "name": "Matrone de la piste",
   "synergy": "DEMON",
-  "repop_dbfId": 63273,
+  "repopDbfId": 63273,
   "dbfId": 61884,
   "artist": "James Ryman",
   "attack": 6,
@@ -5590,8 +5364,7 @@
  {
   "name": "Matrone de la piste",
   "synergy": "DEMON",
-  "repop_dbfId": 67729,
-  "cant_collect": true,
+  "repopDbfId": 67729,
   "dbfId": 67728,
   "attack": 12,
   "battlegroundsNormalDbfId": 61884,
@@ -5612,7 +5385,6 @@
  {
   "name": "Diablotin embrasé",
   "synergy": "DEMON",
-  "cant_collect": true,
   "dbfId": 63273,
   "artist": "James Ryman",
   "attack": 3,
@@ -5627,7 +5399,6 @@
  {
   "name": "Diablotin embrasé",
   "synergy": "DEMON",
-  "cant_collect": true,
   "dbfId": 67729,
   "attack": 6,
   "cardClass": "WARLOCK",
@@ -5661,7 +5432,6 @@
  {
   "name": "Cogneur",
   "synergy": "QUILBOAR",
-  "cant_collect": true,
   "dbfId": 70174,
   "attack": 6,
   "battlegroundsNormalDbfId": 70173,
@@ -5681,7 +5451,7 @@
  {
   "name": "Duo dynamique",
   "synergy": "QUILBOAR",
-  "enchantment_dbfId": 70185,
+  "enchantmentDbfId": 70185,
   "dbfId": 70184,
   "attack": 5,
   "battlegroundsPremiumDbfId": 70191,
@@ -5702,8 +5472,7 @@
  {
   "name": "Duo dynamique",
   "synergy": "QUILBOAR",
-  "enchantment_dbfId": 70192,
-  "cant_collect": true,
+  "enchantmentDbfId": 70192,
   "dbfId": 70191,
   "attack": 10,
   "battlegroundsNormalDbfId": 70184,
@@ -5723,7 +5492,7 @@
  {
   "name": "Tremble-terre",
   "synergy": "QUILBOAR",
-  "enchantment_dbfId": 71268,
+  "enchantmentDbfId": 71268,
   "dbfId": 70188,
   "attack": 2,
   "battlegroundsPremiumDbfId": 70189,
@@ -5743,8 +5512,7 @@
  {
   "name": "Tremble-terre",
   "synergy": "QUILBOAR",
-  "enchantment_dbfId": 71268,
-  "cant_collect": true,
+  "enchantmentDbfId": 71268,
   "dbfId": 70189,
   "attack": 4,
   "battlegroundsNormalDbfId": 70188,
@@ -5763,8 +5531,7 @@
  {
   "name": "Maraudeur des ruines maléficié",
   "synergy": "DEMON",
-  "enchantment_dbfId": 73088,
-  "ban": true,
+  "enchantmentDbfId": 73088,
   "dbfId": 73072,
   "attack": 3,
   "battlegroundsPremiumDbfId": 73092,
@@ -5783,9 +5550,7 @@
  {
   "name": "Maraudeur des ruines maléficié",
   "synergy": "DEMON",
-  "enchantment_dbfId": 73090,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 73090,
   "dbfId": 73092,
   "attack": 6,
   "battlegroundsNormalDbfId": 73072,
@@ -5824,7 +5589,6 @@
   "name": "Auspice funeste impatient",
   "synergy": "DEMON",
   "avenge_counter": 4,
-  "cant_collect": true,
   "dbfId": 73474,
   "attack": 4,
   "battlegroundsNormalDbfId": 72066,
@@ -5842,7 +5606,7 @@
  {
   "name": "Graiss-o-bot",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 75139,
+  "enchantmentDbfId": 75139,
   "dbfId": 72389,
   "attack": 3,
   "battlegroundsPremiumDbfId": 75141,
@@ -5865,8 +5629,7 @@
  {
   "name": "Graiss-o-bot",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 75140,
-  "cant_collect": true,
+  "enchantmentDbfId": 75140,
   "dbfId": 75141,
   "attack": 6,
   "battlegroundsNormalDbfId": 72389,
@@ -5911,7 +5674,6 @@
   "name": "Matrone ensorçaile",
   "synergy": "NONE",
   "avenge_counter": 3,
-  "cant_collect": true,
   "dbfId": 76187,
   "attack": 6,
   "battlegroundsNormalDbfId": 76185,
@@ -5953,7 +5715,6 @@
   "name": "Méca-tank",
   "synergy": "MECHANICAL",
   "avenge_counter": 2,
-  "cant_collect": true,
   "dbfId": 74906,
   "attack": 10,
   "battlegroundsNormalDbfId": 72388,
@@ -5972,7 +5733,7 @@
  {
   "name": "Peggy les Os-de-verre",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 75148,
+  "enchantmentDbfId": 75148,
   "dbfId": 72070,
   "attack": 6,
   "battlegroundsPremiumDbfId": 73813,
@@ -5992,8 +5753,7 @@
  {
   "name": "Peggy les Os-de-verre",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 75149,
-  "cant_collect": true,
+  "enchantmentDbfId": 75149,
   "dbfId": 73813,
   "attack": 12,
   "battlegroundsNormalDbfId": 72070,
@@ -6031,7 +5791,6 @@
  {
   "name": "Pyrogéniture de Prestor",
   "synergy": "DRAGON",
-  "cant_collect": true,
   "dbfId": 73450,
   "attack": 6,
   "battlegroundsNormalDbfId": 72063,
@@ -6050,7 +5809,7 @@
  {
   "name": "Rejeton de Lumière éclatant",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 74936,
+  "enchantmentDbfId": 74936,
   "avenge_counter": 2,
   "dbfId": 72068,
   "attack": 4,
@@ -6071,9 +5830,8 @@
  {
   "name": "Rejeton de Lumière éclatant",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 74936,
+  "enchantmentDbfId": 74936,
   "avenge_counter": 2,
-  "cant_collect": true,
   "dbfId": 74938,
   "attack": 8,
   "battlegroundsNormalDbfId": 72068,
@@ -6092,7 +5850,7 @@
  {
   "name": "Super promo-Drake",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 73451,
+  "enchantmentDbfId": 73451,
   "dbfId": 72073,
   "attack": 5,
   "battlegroundsPremiumDbfId": 73452,
@@ -6112,8 +5870,7 @@
  {
   "name": "Super promo-Drake",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 73451,
-  "cant_collect": true,
+  "enchantmentDbfId": 73451,
   "dbfId": 73452,
   "attack": 10,
   "battlegroundsNormalDbfId": 72073,
@@ -6132,7 +5889,7 @@
  {
   "name": "Âme en peine recycleuse",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 80998,
+  "enchantmentDbfId": 80998,
   "dbfId": 76902,
   "attack": 5,
   "battlegroundsPremiumDbfId": 76903,
@@ -6152,8 +5909,7 @@
  {
   "name": "Âme en peine recycleuse",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 80998,
-  "cant_collect": true,
+  "enchantmentDbfId": 80998,
   "dbfId": 76903,
   "attack": 10,
   "battlegroundsNormalDbfId": 76902,
@@ -6200,7 +5956,6 @@
  {
   "name": "Baron Vaillefendre",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 58421,
   "attack": 2,
   "battlegroundsNormalDbfId": 1915,
@@ -6251,7 +6006,6 @@
  {
   "name": "Brann Barbe-de-Bronze",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 58400,
   "attack": 4,
   "battlegroundsNormalDbfId": 2949,
@@ -6274,8 +6028,7 @@
  {
   "name": "Mal’Ganis",
   "synergy": "DEMON",
-  "enchantment_dbfId": 2203,
-  "ban": true,
+  "enchantmentDbfId": 2203,
   "dbfId": 1986,
   "artist": "Wayne Reynolds",
   "attack": 9,
@@ -6302,9 +6055,7 @@
  {
   "name": "Mal’Ganis",
   "synergy": "DEMON",
-  "enchantment_dbfId": 58429,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 58429,
   "dbfId": 58428,
   "attack": 18,
   "battlegroundsNormalDbfId": 1986,
@@ -6328,8 +6079,7 @@
  {
   "name": "Navrecorne cuiracier",
   "synergy": "BEAST",
-  "repop_dbfId": 50359,
-  "ban": true,
+  "repopDbfId": 50359,
   "dbfId": 49973,
   "artist": "Luca Zontini",
   "attack": 7,
@@ -6352,9 +6102,7 @@
  {
   "name": "Navrecorne cuiracier",
   "synergy": "BEAST",
-  "repop_dbfId": 60232,
-  "cant_collect": true,
-  "ban": true,
+  "repopDbfId": 60232,
   "dbfId": 58412,
   "attack": 14,
   "battlegroundsNormalDbfId": 49973,
@@ -6374,7 +6122,6 @@
  {
   "name": "Rejeton cuiracier",
   "synergy": "BEAST",
-  "cant_collect": true,
   "dbfId": 50359,
   "artist": "Luca Zontini",
   "attack": 5,
@@ -6389,7 +6136,6 @@
  {
   "name": "Rejeton cuiracier",
   "synergy": "BEAST",
-  "cant_collect": true,
   "dbfId": 60232,
   "attack": 10,
   "cardClass": "DRUID",
@@ -6403,7 +6149,7 @@
  {
   "name": "Pillard dure-écaille",
   "synergy": "NONE",
-  "enchantment_dbfId": 43023,
+  "enchantmentDbfId": 43023,
   "dbfId": 43022,
   "artist": "James Ryman",
   "attack": 2,
@@ -6429,8 +6175,7 @@
  {
   "name": "Pillard dure-écaille",
   "synergy": "NONE",
-  "enchantment_dbfId": 59509,
-  "cant_collect": true,
+  "enchantmentDbfId": 59509,
   "dbfId": 59508,
   "attack": 4,
   "battlegroundsNormalDbfId": 43022,
@@ -6452,7 +6197,7 @@
  {
   "name": "Seigneur du Vide",
   "synergy": "DEMON",
-  "repop_dbfId": 48,
+  "repopDbfId": 48,
   "dbfId": 46056,
   "artist": "Jerry Mascho",
   "attack": 3,
@@ -6477,8 +6222,7 @@
  {
   "name": "Seigneur du Vide",
   "synergy": "DEMON",
-  "repop_dbfId": 57299,
-  "cant_collect": true,
+  "repopDbfId": 57299,
   "dbfId": 58427,
   "attack": 6,
   "battlegroundsNormalDbfId": 46056,
@@ -6499,7 +6243,6 @@
  {
   "name": "Marcheur du Vide",
   "synergy": "DEMON",
-  "cant_collect": true,
   "dbfId": 48,
   "artist": "Alex Horley Orlandelli",
   "attack": 1,
@@ -6521,7 +6264,6 @@
  {
   "name": "Marcheur du Vide",
   "synergy": "DEMON",
-  "cant_collect": true,
   "dbfId": 57299,
   "attack": 2,
   "cardClass": "WARLOCK",
@@ -6560,7 +6302,6 @@
  {
   "name": "Cap’taine Larrrdeur",
   "synergy": "PIRATE",
-  "cant_collect": true,
   "dbfId": 62224,
   "attack": 12,
   "battlegroundsNormalDbfId": 61989,
@@ -6580,8 +6321,7 @@
  {
   "name": "Goliath brisemer",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 62459,
-  "ban": true,
+  "enchantmentDbfId": 62459,
   "dbfId": 62458,
   "attack": 6,
   "battlegroundsPremiumDbfId": 62460,
@@ -6603,9 +6343,7 @@
  {
   "name": "Goliath brisemer",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 62461,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 62461,
   "dbfId": 62460,
   "attack": 12,
   "battlegroundsNormalDbfId": 62458,
@@ -6625,7 +6363,7 @@
  {
   "name": "Maman ourse",
   "synergy": "BEAST",
-  "enchantment_dbfId": 60037,
+  "enchantmentDbfId": 60037,
   "dbfId": 60036,
   "attack": 5,
   "battlegroundsPremiumDbfId": 60038,
@@ -6646,8 +6384,7 @@
  {
   "name": "Maman ourse",
   "synergy": "BEAST",
-  "enchantment_dbfId": 60039,
-  "cant_collect": true,
+  "enchantmentDbfId": 60039,
   "dbfId": 60038,
   "attack": 10,
   "battlegroundsNormalDbfId": 60036,
@@ -6667,7 +6404,7 @@
  {
   "name": "Massacreuse Croc-Radieux",
   "synergy": "NONE",
-  "enchantment_dbfId": 59709,
+  "enchantmentDbfId": 59709,
   "dbfId": 59707,
   "attack": 2,
   "battlegroundsPremiumDbfId": 59711,
@@ -6687,8 +6424,7 @@
  {
   "name": "Massacreuse Croc-Radieux",
   "synergy": "NONE",
-  "enchantment_dbfId": 59712,
-  "cant_collect": true,
+  "enchantmentDbfId": 59712,
   "dbfId": 59711,
   "attack": 4,
   "battlegroundsNormalDbfId": 59707,
@@ -6707,7 +6443,7 @@
  {
   "name": "Maître de guerre annihiléen",
   "synergy": "DEMON",
-  "enchantment_dbfId": 59715,
+  "enchantmentDbfId": 59715,
   "dbfId": 59714,
   "attack": 3,
   "battlegroundsPremiumDbfId": 59716,
@@ -6728,8 +6464,7 @@
  {
   "name": "Maître de guerre annihiléen",
   "synergy": "DEMON",
-  "enchantment_dbfId": 59715,
-  "cant_collect": true,
+  "enchantmentDbfId": 59715,
   "dbfId": 59716,
   "attack": 6,
   "battlegroundsNormalDbfId": 59714,
@@ -6769,7 +6504,6 @@
  {
   "name": "Murozond",
   "synergy": "DRAGON",
-  "cant_collect": true,
   "dbfId": 60669,
   "attack": 10,
   "battlegroundsNormalDbfId": 60637,
@@ -6789,7 +6523,6 @@
  {
   "name": "Nat Pagle, pêcheur de l’extrême",
   "synergy": "PIRATE",
-  "ban": true,
   "dbfId": 61046,
   "attack": 8,
   "battlegroundsPremiumDbfId": 62217,
@@ -6809,8 +6542,6 @@
  {
   "name": "Nat Pagle, pêcheur de l’extrême",
   "synergy": "PIRATE",
-  "cant_collect": true,
-  "ban": true,
   "dbfId": 62217,
   "attack": 16,
   "battlegroundsNormalDbfId": 61046,
@@ -6830,7 +6561,7 @@
  {
   "name": "Nomi, cauchemar culinaire",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 64167,
+  "enchantmentDbfId": 64167,
   "dbfId": 63626,
   "attack": 4,
   "battlegroundsPremiumDbfId": 64185,
@@ -6850,8 +6581,7 @@
  {
   "name": "Nomi, cauchemar culinaire",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 64167,
-  "cant_collect": true,
+  "enchantmentDbfId": 64167,
   "dbfId": 64185,
   "attack": 8,
   "battlegroundsNormalDbfId": 63626,
@@ -6870,7 +6600,7 @@
  {
   "name": "Roi Bagargouille",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 60393,
+  "enchantmentDbfId": 60393,
   "dbfId": 60247,
   "attack": 6,
   "battlegroundsPremiumDbfId": 60396,
@@ -6893,8 +6623,7 @@
  {
   "name": "Roi Bagargouille",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 60397,
-  "cant_collect": true,
+  "enchantmentDbfId": 60397,
   "dbfId": 60396,
   "attack": 12,
   "battlegroundsNormalDbfId": 60247,
@@ -6935,7 +6664,6 @@
  {
   "name": "Tempête de la taverne",
   "synergy": "ELEMENTAL",
-  "cant_collect": true,
   "dbfId": 64079,
   "attack": 8,
   "battlegroundsNormalDbfId": 64077,
@@ -6954,7 +6682,7 @@
  {
   "name": "Tranchetripe l’Indompté",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 60562,
+  "enchantmentDbfId": 60562,
   "dbfId": 60561,
   "attack": 4,
   "battlegroundsPremiumDbfId": 60649,
@@ -6975,8 +6703,7 @@
  {
   "name": "Tranchetripe l’Indompté",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 60650,
-  "cant_collect": true,
+  "enchantmentDbfId": 60650,
   "dbfId": 60649,
   "attack": 8,
   "battlegroundsNormalDbfId": 60561,
@@ -6996,7 +6723,6 @@
  {
   "name": "Vieux déchiqueteur de Sneed",
   "synergy": "MECHANICAL",
-  "ban": true,
   "dbfId": 59682,
   "attack": 5,
   "battlegroundsPremiumDbfId": 59683,
@@ -7017,8 +6743,6 @@
  {
   "name": "Vieux déchiqueteur de Sneed",
   "synergy": "MECHANICAL",
-  "cant_collect": true,
-  "ban": true,
   "dbfId": 59683,
   "attack": 10,
   "battlegroundsNormalDbfId": 59682,
@@ -7057,7 +6781,6 @@
  {
   "name": "Spore mortelle",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 65122,
   "attack": 2,
   "battlegroundsNormalDbfId": 65031,
@@ -7075,7 +6798,6 @@
  {
   "name": "Habitué sans-visage",
   "synergy": "NONE",
-  "ban": true,
   "dbfId": 63627,
   "attack": 4,
   "battlegroundsPremiumDbfId": 66597,
@@ -7093,8 +6815,6 @@
  {
   "name": "Habitué sans-visage",
   "synergy": "NONE",
-  "cant_collect": true,
-  "ban": true,
   "dbfId": 66597,
   "attack": 8,
   "battlegroundsNormalDbfId": 63627,
@@ -7112,7 +6832,7 @@
  {
   "name": "Mythrax le Disloqueur",
   "synergy": "NONE",
-  "enchantment_dbfId": 65669,
+  "enchantmentDbfId": 65669,
   "dbfId": 65662,
   "attack": 4,
   "battlegroundsPremiumDbfId": 65671,
@@ -7132,8 +6852,7 @@
  {
   "name": "Mythrax le Disloqueur",
   "synergy": "NONE",
-  "enchantment_dbfId": 65672,
-  "cant_collect": true,
+  "enchantmentDbfId": 65672,
   "dbfId": 65671,
   "attack": 8,
   "battlegroundsNormalDbfId": 65662,
@@ -7152,7 +6871,7 @@
  {
   "name": "Aggem Malépine",
   "synergy": "QUILBOAR",
-  "enchantment_dbfId": 71163,
+  "enchantmentDbfId": 71163,
   "dbfId": 70163,
   "attack": 3,
   "battlegroundsPremiumDbfId": 70164,
@@ -7173,8 +6892,7 @@
  {
   "name": "Aggem Malépine",
   "synergy": "QUILBOAR",
-  "enchantment_dbfId": 70284,
-  "cant_collect": true,
+  "enchantmentDbfId": 70284,
   "dbfId": 70164,
   "attack": 6,
   "battlegroundsNormalDbfId": 70163,
@@ -7194,7 +6912,6 @@
  {
   "name": "Chevalier dos-hirsute",
   "synergy": "QUILBOAR",
-  "ban": true,
   "dbfId": 70158,
   "attack": 4,
   "battlegroundsPremiumDbfId": 70159,
@@ -7215,8 +6932,6 @@
  {
   "name": "Chevalier dos-hirsute",
   "synergy": "QUILBOAR",
-  "cant_collect": true,
-  "ban": true,
   "dbfId": 70159,
   "attack": 8,
   "battlegroundsNormalDbfId": 70158,
@@ -7257,7 +6972,6 @@
  {
   "name": "Agamaggan, le grand Sanglier",
   "synergy": "QUILBOAR",
-  "cant_collect": true,
   "dbfId": 70177,
   "attack": 12,
   "battlegroundsNormalDbfId": 70176,
@@ -7296,7 +7010,6 @@
  {
   "name": "Apprentie de Kangor",
   "synergy": "MECHANICAL",
-  "cant_collect": true,
   "dbfId": 59976,
   "attack": 6,
   "battlegroundsNormalDbfId": 59935,
@@ -7315,7 +7028,7 @@
  {
   "name": "Crocilisque claires-écailles",
   "synergy": "BEAST",
-  "enchantment_dbfId": 74900,
+  "enchantmentDbfId": 74900,
   "avenge_counter": 2,
   "dbfId": 72043,
   "attack": 4,
@@ -7337,9 +7050,8 @@
  {
   "name": "Crocilisque claires-écailles",
   "synergy": "BEAST",
-  "enchantment_dbfId": 74901,
+  "enchantmentDbfId": 74901,
   "avenge_counter": 2,
-  "cant_collect": true,
   "dbfId": 74902,
   "attack": 8,
   "battlegroundsNormalDbfId": 72043,
@@ -7359,7 +7071,7 @@
  {
   "name": "Crotale résurrecteur",
   "synergy": "BEAST",
-  "enchantment_dbfId": 76176,
+  "enchantmentDbfId": 76176,
   "dbfId": 72045,
   "attack": 7,
   "battlegroundsPremiumDbfId": 72825,
@@ -7382,8 +7094,7 @@
  {
   "name": "Crotale résurrecteur",
   "synergy": "BEAST",
-  "enchantment_dbfId": 76176,
-  "cant_collect": true,
+  "enchantmentDbfId": 76176,
   "dbfId": 72825,
   "attack": 14,
   "battlegroundsNormalDbfId": 72045,
@@ -7405,7 +7116,7 @@
  {
   "name": "Maître des réalités",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 75181,
+  "enchantmentDbfId": 75181,
   "dbfId": 75180,
   "attack": 6,
   "battlegroundsPremiumDbfId": 75182,
@@ -7425,8 +7136,7 @@
  {
   "name": "Maître des réalités",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 75183,
-  "cant_collect": true,
+  "enchantmentDbfId": 75183,
   "dbfId": 75182,
   "attack": 12,
   "battlegroundsNormalDbfId": 75180,
@@ -7467,7 +7177,6 @@
  {
   "name": "Mécareau divin",
   "synergy": "MECHANICAL",
-  "cant_collect": true,
   "dbfId": 73503,
   "attack": 12,
   "battlegroundsNormalDbfId": 66618,
@@ -7489,7 +7198,7 @@
  {
   "name": "SI:septique",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 73760,
+  "enchantmentDbfId": 73760,
   "avenge_counter": 3,
   "dbfId": 72057,
   "attack": 2,
@@ -7513,9 +7222,8 @@
  {
   "name": "SI:septique",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 73760,
+  "enchantmentDbfId": 73760,
   "avenge_counter": 3,
-  "cant_collect": true,
   "dbfId": 73762,
   "attack": 4,
   "battlegroundsNormalDbfId": 72057,
@@ -7558,7 +7266,6 @@
   "name": "Tony Deux-Défenses",
   "synergy": "PIRATE",
   "avenge_counter": 4,
-  "cant_collect": true,
   "dbfId": 74934,
   "attack": 8,
   "battlegroundsNormalDbfId": 74933,
@@ -7577,7 +7284,7 @@
  {
   "name": "Ur’zul insatiable",
   "synergy": "DEMON",
-  "enchantment_dbfId": 72820,
+  "enchantmentDbfId": 72820,
   "dbfId": 72060,
   "attack": 4,
   "battlegroundsPremiumDbfId": 72821,
@@ -7598,8 +7305,7 @@
  {
   "name": "Ur’zul insatiable",
   "synergy": "DEMON",
-  "enchantment_dbfId": 72820,
-  "cant_collect": true,
+  "enchantmentDbfId": 72820,
   "dbfId": 72821,
   "attack": 8,
   "battlegroundsNormalDbfId": 72060,
@@ -7640,7 +7346,6 @@
  {
   "name": "Faucheur 4000",
   "synergy": "MECHANICAL",
-  "cant_collect": true,
   "dbfId": 63776,
   "attack": 12,
   "battlegroundsNormalDbfId": 2081,
@@ -7684,7 +7389,6 @@
  {
   "name": "Maexxna",
   "synergy": "BEAST",
-  "cant_collect": true,
   "dbfId": 63781,
   "attack": 4,
   "battlegroundsNormalDbfId": 1791,
@@ -7727,7 +7431,6 @@
  {
   "name": "Amalgadon",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 61445,
   "attack": 12,
   "battlegroundsNormalDbfId": 61444,
@@ -7749,7 +7452,6 @@
  {
   "name": "Plante",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 41067,
   "artist": "Zoltan Boros",
   "attack": 1,
@@ -7763,7 +7465,7 @@
  {
   "name": "Amiral de l’effroi Eliza",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 62227,
+  "enchantmentDbfId": 62227,
   "dbfId": 61047,
   "attack": 6,
   "battlegroundsPremiumDbfId": 62228,
@@ -7784,8 +7486,7 @@
  {
   "name": "Amiral de l’effroi Eliza",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 62229,
-  "cant_collect": true,
+  "enchantmentDbfId": 62229,
   "dbfId": 62228,
   "attack": 12,
   "battlegroundsNormalDbfId": 61047,
@@ -7805,31 +7506,28 @@
  {
   "name": "Boagnarok",
   "synergy": "BEAST",
-  "techLevel": 6,
-  "dbfId": 52041,
-  "artist": "Jim Nelson",
+  "dbfId": 59687,
   "attack": 7,
   "battlegroundsPremiumDbfId": 58424,
   "cardClass": "PRIEST",
   "cost": 6,
   "health": 7,
-  "id": "TRLA_149",
+  "id": "BGS_008",
   "mechanics": [
    "DEATHRATTLE"
   ],
   "race": "BEAST",
-  "set": "TROLL",
+  "set": "BATTLEGROUNDS",
+  "techLevel": 6,
   "text": "<b>Râle d’agonie :</b> invoque 2 serviteurs aléatoires avec <b>Râle d’agonie</b>.",
   "type": "MINION"
  },
  {
   "name": "Boagnarok",
   "synergy": "BEAST",
-  "techLevel": 6,
-  "cant_collect": true,
+  "battlegroundsNormalDbfId": 59687,
   "dbfId": 58424,
   "attack": 14,
-  "battlegroundsNormalDbfId": 52041,
   "cardClass": "PRIEST",
   "cost": 6,
   "health": 14,
@@ -7845,7 +7543,7 @@
  {
   "name": "Goldrinn, le grand loup",
   "synergy": "BEAST",
-  "enchantment_dbfId": 59957,
+  "enchantmentDbfId": 59957,
   "dbfId": 59955,
   "attack": 4,
   "battlegroundsPremiumDbfId": 59956,
@@ -7867,8 +7565,7 @@
  {
   "name": "Goldrinn, le grand loup",
   "synergy": "BEAST",
-  "enchantment_dbfId": 59958,
-  "cant_collect": true,
+  "enchantmentDbfId": 59958,
   "dbfId": 59956,
   "attack": 8,
   "battlegroundsNormalDbfId": 59955,
@@ -7889,7 +7586,7 @@
  {
   "name": "Kalecgos, Aspect des Arcanes",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 60644,
+  "enchantmentDbfId": 60644,
   "dbfId": 60630,
   "attack": 4,
   "battlegroundsPremiumDbfId": 60667,
@@ -7913,8 +7610,7 @@
  {
   "name": "Kalecgos, Aspect des Arcanes",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 60668,
-  "cant_collect": true,
+  "enchantmentDbfId": 60668,
   "dbfId": 60667,
   "attack": 8,
   "battlegroundsNormalDbfId": 60630,
@@ -7937,7 +7633,6 @@
  {
   "name": "Le Tranche-les-vagues",
   "synergy": "PIRATE",
-  "ban": true,
   "dbfId": 62232,
   "attack": 6,
   "battlegroundsPremiumDbfId": 62251,
@@ -7955,8 +7650,6 @@
  {
   "name": "Le Tranche-les-vagues",
   "synergy": "PIRATE",
-  "cant_collect": true,
-  "ban": true,
   "dbfId": 62251,
   "attack": 12,
   "battlegroundsNormalDbfId": 62232,
@@ -7974,8 +7667,7 @@
  {
   "name": "Lieutenant Garr",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 64082,
-  "ban": true,
+  "enchantmentDbfId": 64082,
   "dbfId": 64081,
   "attack": 8,
   "battlegroundsPremiumDbfId": 64085,
@@ -7996,9 +7688,7 @@
  {
   "name": "Lieutenant Garr",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 64083,
-  "cant_collect": true,
-  "ban": true,
+  "enchantmentDbfId": 64083,
   "dbfId": 64085,
   "attack": 16,
   "battlegroundsNormalDbfId": 64081,
@@ -8019,7 +7709,7 @@
  {
   "name": "Maman des diablotins",
   "synergy": "DEMON",
-  "enchantment_dbfId": 61393,
+  "enchantmentDbfId": 61393,
   "dbfId": 61028,
   "attack": 6,
   "battlegroundsPremiumDbfId": 61043,
@@ -8042,8 +7732,7 @@
  {
   "name": "Maman des diablotins",
   "synergy": "DEMON",
-  "enchantment_dbfId": 61393,
-  "cant_collect": true,
+  "enchantmentDbfId": 61393,
   "dbfId": 61043,
   "attack": 12,
   "battlegroundsNormalDbfId": 61028,
@@ -8087,7 +7776,6 @@
  {
   "name": "Nadina la Rouge",
   "synergy": "DRAGON",
-  "cant_collect": true,
   "dbfId": 63780,
   "attack": 14,
   "battlegroundsNormalDbfId": 60629,
@@ -8128,7 +7816,6 @@
  {
   "name": "Zapp Mèche-Sournoise",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 60041,
   "attack": 14,
   "battlegroundsNormalDbfId": 60040,
@@ -8147,7 +7834,7 @@
  {
   "name": "Mini Rag",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 64075,
+  "enchantmentDbfId": 64075,
   "dbfId": 63624,
   "attack": 6,
   "battlegroundsPremiumDbfId": 64076,
@@ -8168,8 +7855,7 @@
  {
   "name": "Mini Rag",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 64075,
-  "cant_collect": true,
+  "enchantmentDbfId": 64075,
   "dbfId": 64076,
   "attack": 12,
   "battlegroundsNormalDbfId": 63624,
@@ -8209,7 +7895,6 @@
  {
   "name": "Capitaine Plate-Défense",
   "synergy": "QUILBOAR",
-  "cant_collect": true,
   "dbfId": 70190,
   "attack": 18,
   "battlegroundsNormalDbfId": 70179,
@@ -8249,7 +7934,6 @@
  {
   "name": "Charlga",
   "synergy": "QUILBOAR",
-  "cant_collect": true,
   "dbfId": 70166,
   "attack": 8,
   "battlegroundsNormalDbfId": 70165,
@@ -8288,7 +7972,6 @@
  {
   "name": "Archidruide Hamuul",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 72231,
   "attack": 8,
   "battlegroundsNormalDbfId": 72230,
@@ -8327,7 +8010,6 @@
  {
   "name": "Gentil djinn",
   "synergy": "ELEMENTAL",
-  "cant_collect": true,
   "dbfId": 64064,
   "attack": 8,
   "battlegroundsNormalDbfId": 64062,
@@ -8347,8 +8029,8 @@
  {
   "name": "Casseur Oméga",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 73012,
-  "repop_dbfId": 48842,
+  "enchantmentDbfId": 73012,
+  "repopDbfId": 48842,
   "dbfId": 72391,
   "attack": 5,
   "battlegroundsPremiumDbfId": 73014,
@@ -8368,9 +8050,8 @@
  {
   "name": "Casseur Oméga",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 73013,
-  "repop_dbfId": 58377,
-  "cant_collect": true,
+  "enchantmentDbfId": 73013,
+  "repopDbfId": 58377,
   "dbfId": 73014,
   "attack": 10,
   "battlegroundsNormalDbfId": 72391,
@@ -8389,7 +8070,7 @@
  {
   "name": "Gangroptère affamé",
   "synergy": "DEMON",
-  "enchantment_dbfId": 72822,
+  "enchantmentDbfId": 72822,
   "dbfId": 72067,
   "attack": 9,
   "battlegroundsPremiumDbfId": 72824,
@@ -8409,8 +8090,7 @@
  {
   "name": "Gangroptère affamé",
   "synergy": "DEMON",
-  "enchantment_dbfId": 72822,
-  "cant_collect": true,
+  "enchantmentDbfId": 72822,
   "dbfId": 72824,
   "attack": 18,
   "battlegroundsNormalDbfId": 72067,
@@ -8447,7 +8127,6 @@
  {
   "name": "Lanceur de crustacés",
   "synergy": "MURLOC",
-  "cant_collect": true,
   "dbfId": 73009,
   "attack": 10,
   "battlegroundsNormalDbfId": 72044,
@@ -8484,7 +8163,6 @@
  {
   "name": "Pillarde curieuse",
   "synergy": "PIRATE",
-  "cant_collect": true,
   "dbfId": 73504,
   "attack": 14,
   "battlegroundsNormalDbfId": 72053,
@@ -8503,7 +8181,6 @@
  {
   "name": "Pièce d’or",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 58596,
   "cardClass": "NEUTRAL",
   "cost": 0,
@@ -8516,7 +8193,6 @@
  {
   "name": "Carte de recrutement",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 60265,
   "cardClass": "NEUTRAL",
   "cost": 3,
@@ -8528,7 +8204,6 @@
  {
   "name": "Trophée",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 64484,
   "artist": "Eva Widermann",
   "cardClass": "NEUTRAL",
@@ -8540,9 +8215,8 @@
  },
  {
   "name": "Banane",
-  "enchantment_dbfId": 53217,
+  "enchantmentDbfId": 53217,
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 53215,
   "cardClass": "NEUTRAL",
   "cost": 1,
@@ -8553,9 +8227,8 @@
  },
  {
   "name": "Grande banane",
-  "enchantment_dbfId": 65231,
+  "enchantmentDbfId": 65231,
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 65230,
   "battlegroundsDarkmoonPrizeTurn": 1,
   "cardClass": "NEUTRAL",
@@ -8568,7 +8241,6 @@
  {
   "name": "Récompense de triple",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 59604,
   "cardClass": "NEUTRAL",
   "cost": 0,
@@ -8579,9 +8251,8 @@
  },
  {
   "name": "Gemme de sang",
-  "enchantment_dbfId": 72191,
+  "enchantmentDbfId": 72191,
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 70136,
   "cardClass": "NEUTRAL",
   "cost": 0,
@@ -8593,7 +8264,6 @@
  {
   "name": "Matrice d’autodéfense",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 58505,
   "cardClass": "PALADIN",
   "cost": 0,
@@ -8613,7 +8283,6 @@
  {
   "name": "Rédemption",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 58509,
   "cardClass": "PALADIN",
   "cost": 0,
@@ -8629,9 +8298,8 @@
  },
  {
   "name": "Venger",
-  "enchantment_dbfId": 1812,
+  "enchantmentDbfId": 1812,
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 58507,
   "cardClass": "PALADIN",
   "cost": 0,
@@ -8647,9 +8315,8 @@
  },
  {
   "name": "Piège à serpents",
-  "repop_dbfId": 204,
+  "repopDbfId": 204,
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 58500,
   "cardClass": "HUNTER",
   "cost": 0,
@@ -8664,9 +8331,8 @@
  },
  {
   "name": "Piège frappe-venin",
-  "repop_dbfId": 1098,
+  "repopDbfId": 1098,
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 58499,
   "cardClass": "HUNTER",
   "cost": 0,
@@ -8684,9 +8350,8 @@
  },
  {
   "name": "Bloc de glace",
-  "enchantment_dbfId": -58512,
+  "enchantmentDbfId": -58512,
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 58512,
   "battlegroundsDarkmoonPrizeTurn": 3,
   "cardClass": "MAGE",
@@ -8707,7 +8372,6 @@
  {
   "name": "Portrait caché",
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 58502,
   "cardClass": "MAGE",
   "cost": 0,
@@ -8723,9 +8387,8 @@
  },
  {
   "name": "Esprit combatif",
-  "enchantment_dbfId": 70115,
+  "enchantmentDbfId": 70115,
   "synergy": "NONE",
-  "cant_collect": true,
   "dbfId": 70114,
   "cardClass": "PALADIN",
   "cost": 0,
@@ -8742,9 +8405,7 @@
   "name": "Bob le barman",
   "synergy": "NONE",
   "max_health": 40,
-  "cant_collect": true,
-  "power_id": -1,
-  "ban": true,
+  "powerDbfId": -1,
   "dbfId": 57110,
   "cardClass": "NEUTRAL",
   "health": 60,
@@ -8754,10 +8415,38 @@
   "type": "HERO"
  },
  {
+  "name": "Kel’Thuzad",
+  "synergy": "NONE",
+  "max_health": 0,
+  "powerDbfId": -1,
+  "dbfId": 59194,
+  "cardClass": "NEUTRAL",
+  "health": 0,
+  "hideCost": true,
+  "id": "TB_BaconShop_HERO_KelThuzad",
+  "mechanics": [
+   "CANT_BE_DESTROYED"
+  ],
+  "set": "BATTLEGROUNDS",
+  "type": "HERO"
+ },
+ {
+  "name": "BaconPHhero",
+  "synergy": "NONE",
+  "max_health": 40,
+  "powerDbfId": -1,
+  "dbfId": 56298,
+  "cardClass": "NEUTRAL",
+  "health": 40,
+  "id": "TB_BaconShop_HERO_PH",
+  "set": "BATTLEGROUNDS",
+  "type": "HERO"
+ },
+ {
   "name": "A. F. Kah",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 59891,
+  "powerDbfId": 59891,
   "dbfId": 57944,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8770,7 +8459,7 @@
   "name": "Aile de mort",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 61406,
+  "powerDbfId": 61406,
   "dbfId": 60369,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8783,7 +8472,7 @@
   "name": "Alexstrasza",
   "synergy": "DRAGON",
   "max_health": 40,
-  "power_id": 61517,
+  "powerDbfId": 61517,
   "dbfId": 61488,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8796,7 +8485,7 @@
   "name": "Al’Akir",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 64402,
+  "powerDbfId": 64402,
   "dbfId": 64403,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8809,7 +8498,7 @@
   "name": "Aranna Cherchétoile",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 61915,
+  "powerDbfId": 61915,
   "dbfId": 61910,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8822,7 +8511,7 @@
   "name": "Baz’hial la liche",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 60285,
+  "powerDbfId": 60285,
   "dbfId": 58044,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8835,7 +8524,7 @@
   "name": "Capitaine Double-Crochet",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 62267,
+  "powerDbfId": 62267,
   "dbfId": 62266,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8848,7 +8537,7 @@
   "name": "Capitaine Eudora",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 62250,
+  "powerDbfId": 62250,
   "dbfId": 62242,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8861,7 +8550,7 @@
   "name": "Cap’taine céleste Kragg",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 62269,
+  "powerDbfId": 62269,
   "dbfId": 62268,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8874,8 +8563,7 @@
   "name": "Carniflore",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 58028,
-  "ban": true,
+  "powerDbfId": 58028,
   "dbfId": 58027,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8888,7 +8576,7 @@
   "name": "Chenvaa’la",
   "synergy": "ELEMENTAL",
   "max_health": 40,
-  "power_id": 64476,
+  "powerDbfId": 64476,
   "dbfId": 64475,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8901,7 +8589,7 @@
   "name": "C’Thun",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 66246,
+  "powerDbfId": 66246,
   "dbfId": 58535,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8914,7 +8602,7 @@
   "name": "Daryl le Danseur",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 59860,
+  "powerDbfId": 59860,
   "dbfId": 59806,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8927,7 +8615,7 @@
   "name": "Dinodompteur Brann",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 60218,
+  "powerDbfId": 60218,
   "dbfId": 60214,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8940,7 +8628,7 @@
   "name": "Edwin VanCleef",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 57567,
+  "powerDbfId": 57567,
   "dbfId": 57633,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8953,7 +8641,7 @@
   "name": "Élise Cherchétoile",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 60217,
+  "powerDbfId": 60217,
   "dbfId": 60213,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8966,7 +8654,7 @@
   "name": "Fongimancien Flurgl",
   "synergy": "MURLOC",
   "max_health": 40,
-  "power_id": 60448,
+  "powerDbfId": 60448,
   "dbfId": 60372,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8979,7 +8667,7 @@
   "name": "Gardienne de la forêt Omu",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 63605,
+  "powerDbfId": 63605,
   "dbfId": 63604,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -8992,7 +8680,7 @@
   "name": "George le Déchu",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 57562,
+  "powerDbfId": 57562,
   "dbfId": 57929,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9005,7 +8693,7 @@
   "name": "Grisebranche",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 67554,
+  "powerDbfId": 67554,
   "dbfId": 67553,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9018,7 +8706,7 @@
   "name": "Illidan Hurlorage",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 61851,
+  "powerDbfId": 61851,
   "dbfId": 57634,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9031,7 +8719,7 @@
   "name": "Jandice Barov",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 63607,
+  "powerDbfId": 63607,
   "dbfId": 63601,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9044,7 +8732,7 @@
   "name": "Kael’thas Haut-Soleil",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 61917,
+  "powerDbfId": 61917,
   "dbfId": 61912,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9057,7 +8745,7 @@
   "name": "Le Recousu",
   "synergy": "NONE",
   "max_health": 55,
-  "power_id": 59399,
+  "powerDbfId": 59399,
   "dbfId": 59397,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9070,7 +8758,7 @@
   "name": "Le conservateur",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 59201,
+  "powerDbfId": 59201,
   "dbfId": 59203,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9083,7 +8771,7 @@
   "name": "Le grand Akazamzarak",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 58022,
+  "powerDbfId": 58022,
   "dbfId": 58021,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9096,7 +8784,7 @@
   "name": "Le roi des rats",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 63127,
+  "powerDbfId": 63127,
   "dbfId": 57893,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9109,7 +8797,7 @@
   "name": "Le roi-liche",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 58040,
+  "powerDbfId": 58040,
   "dbfId": 58024,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9122,7 +8810,7 @@
   "name": "M. Bigglesworth",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 63320,
+  "powerDbfId": 63320,
   "dbfId": 63319,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9135,7 +8823,7 @@
   "name": "Maiev Chantelombre",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 61919,
+  "powerDbfId": 61919,
   "dbfId": 61914,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9148,7 +8836,7 @@
   "name": "Malygos",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 60378,
+  "powerDbfId": 60378,
   "dbfId": 61490,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9161,7 +8849,7 @@
   "name": "Millhouse Tempête-de-Mana",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 60405,
+  "powerDbfId": 60405,
   "dbfId": 60366,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9174,7 +8862,7 @@
   "name": "Millificent Tempête-de-Mana",
   "synergy": "MECHANICAL",
   "max_health": 40,
-  "power_id": 57949,
+  "powerDbfId": 57949,
   "dbfId": 57946,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9187,7 +8875,7 @@
   "name": "Neunœil le pirate",
   "synergy": "PIRATE",
   "max_health": 40,
-  "power_id": 62243,
+  "powerDbfId": 62243,
   "dbfId": 57947,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9200,7 +8888,7 @@
   "name": "Nécrorateur Noirépine",
   "synergy": "QUILBOAR",
   "max_health": 40,
-  "power_id": 71459,
+  "powerDbfId": 71459,
   "dbfId": 71458,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9213,7 +8901,7 @@
   "name": "Nozdormu",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 61491,
+  "powerDbfId": 61491,
   "dbfId": 61489,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9226,7 +8914,7 @@
   "name": "N’Zoth",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 66484,
+  "powerDbfId": 66484,
   "dbfId": 66483,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9239,7 +8927,7 @@
   "name": "Prince du mal Rafaam",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 60381,
+  "powerDbfId": 60381,
   "dbfId": 60362,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9252,7 +8940,7 @@
   "name": "Pyraride",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 59832,
+  "powerDbfId": 59832,
   "dbfId": 59831,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9265,7 +8953,7 @@
   "name": "Ragnaros, seigneur du feu",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 64424,
+  "powerDbfId": 64424,
   "dbfId": 57892,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9278,7 +8966,7 @@
   "name": "Rakanishu",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 64401,
+  "powerDbfId": 64401,
   "dbfId": 64400,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9291,7 +8979,7 @@
   "name": "Reno Jackson",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 60216,
+  "powerDbfId": 60216,
   "dbfId": 60212,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9304,7 +8992,7 @@
   "name": "Roi Mukla",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 59815,
+  "powerDbfId": 59815,
   "dbfId": 59814,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9317,7 +9005,7 @@
   "name": "Seigneur Barov",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 63600,
+  "powerDbfId": 63600,
   "dbfId": 63602,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9330,7 +9018,7 @@
   "name": "Seigneur Jaraxxus",
   "synergy": "DEMON",
   "max_health": 40,
-  "power_id": 59808,
+  "powerDbfId": 59808,
   "dbfId": 59807,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9343,7 +9031,7 @@
   "name": "Silas Sombrelune",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 64481,
+  "powerDbfId": 64481,
   "dbfId": 64480,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9356,7 +9044,7 @@
   "name": "Sindragosa",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 57945,
+  "powerDbfId": 57945,
   "dbfId": 58435,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9369,7 +9057,7 @@
   "name": "Sir Finley Mrrgglton",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 60450,
+  "powerDbfId": 60450,
   "dbfId": 60211,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9382,7 +9070,7 @@
   "name": "Tess Grisetête",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 63162,
+  "powerDbfId": 63162,
   "dbfId": 60367,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9395,7 +9083,7 @@
   "name": "Tickatus",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 67357,
+  "powerDbfId": 67357,
   "dbfId": 67356,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9408,7 +9096,7 @@
   "name": "Toki l’Infinie",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 58537,
+  "powerDbfId": 58537,
   "dbfId": 58534,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9421,7 +9109,7 @@
   "name": "Seigneur Saurcroc",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 71455,
+  "powerDbfId": 71455,
   "dbfId": 71454,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9434,7 +9122,7 @@
   "name": "Souveraine Cire-Reine",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 59863,
+  "powerDbfId": 59863,
   "dbfId": 57924,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9447,7 +9135,7 @@
   "name": "Vol’jin",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 71464,
+  "powerDbfId": 71464,
   "dbfId": 71463,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9460,7 +9148,7 @@
   "name": "Xyrella",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 70957,
+  "powerDbfId": 70957,
   "dbfId": 70956,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9473,7 +9161,7 @@
   "name": "Yogg-Saron, la fin de l’espoir",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 59826,
+  "powerDbfId": 59826,
   "dbfId": 59805,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9486,7 +9174,7 @@
   "name": "Ysera",
   "synergy": "DRAGON",
   "max_health": 40,
-  "power_id": 61408,
+  "powerDbfId": 61408,
   "dbfId": 60370,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9499,7 +9187,7 @@
   "name": "Y’Shaarj",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 66197,
+  "powerDbfId": 66197,
   "dbfId": 66196,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9512,7 +9200,7 @@
   "name": "Zéphrys le Grand",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 64486,
+  "powerDbfId": 64486,
   "dbfId": 64485,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9525,7 +9213,7 @@
   "name": "Kurtrus Chutecendre",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 74632,
+  "powerDbfId": 74632,
   "dbfId": 74631,
   "battlegroundsHero": true,
   "cardClass": "DEMONHUNTER",
@@ -9538,7 +9226,7 @@
   "name": "Guff Totem-Runique",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 68130,
+  "powerDbfId": 68130,
   "dbfId": 68129,
   "battlegroundsHero": true,
   "cardClass": "DRUID",
@@ -9551,7 +9239,7 @@
   "name": "Mutanus le Dévoreur",
   "synergy": "NONE",
   "max_health": 40,
-  "power_id": 71914,
+  "powerDbfId": 71914,
   "dbfId": 71916,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
@@ -9805,8 +9493,7 @@
   "type": "ENCHANTMENT"
  },
  {
-  "bonus_value": 0,
-  "enchantment_dbfId": 64168,
+  "enchantmentDbfId": 64168,
   "name": "Ench. de joueur Nomi",
   "dbfId": 64167,
   "cardClass": "NEUTRAL",
@@ -10451,7 +10138,7 @@
   "mechanics": [
    "DEATHRATTLE"
   ],
-  "repop_dbfId": 41067,
+  "repopDbfId": 41067,
   "name": "Spores vivantes",
   "dbfId": 41693,
   "artist": "Zoltan Boros",
@@ -11460,8 +11147,7 @@
   "type": "ENCHANTMENT"
  },
  {
-  "bonus_value": 0,
-  "enchantment_dbfId": 74935,
+  "enchantmentDbfId": 74935,
   "name": "Ench. de joueur Rejeton de Lumière éclatant",
   "dbfId": 74936,
   "cardClass": "NEUTRAL",
@@ -11785,7 +11471,7 @@
   ],
   "duration": 3,
   "name": "Emprisonné",
-  "enchantmend_dbfId": 62265,
+  "enchantmentDbfId": 62265,
   "dbfId": 61936,
   "cardClass": "NEUTRAL",
   "id": "TB_BaconShop_HP_068e",
@@ -11947,7 +11633,7 @@
    "DEATHRATTLE"
   ],
   "name": "Menace répliquante",
-  "repop_dbfId": 48842,
+  "repopDbfId": 48842,
   "dbfId": 48546,
   "cardClass": "NEUTRAL",
   "id": "BOT_312e",
@@ -11961,7 +11647,7 @@
    "DEATHRATTLE"
   ],
   "name": "Menace répliquante",
-  "repop_dbfId": 58377,
+  "repopDbfId": 58377,
   "dbfId": 60294,
   "cardClass": "NEUTRAL",
   "id": "TB_BaconUps_032e",
@@ -12056,6 +11742,7 @@
   "mechanics": [
    "IMMUNE"
   ],
+  "type": "ENCHANTMENT",
   "duration": 1,
   "name": "Bloc de glace",
   "id": "IMMUNE_000",
@@ -12078,7 +11765,7 @@
  },
  {
   "name": "Vous brûlerez tous !",
-  "enchantment_dbfId": 61407,
+  "enchantmentDbfId": 61407,
   "hero_script": "Default_script",
   "dbfId": 61406,
   "cardClass": "NEUTRAL",
@@ -12110,7 +11797,7 @@
  },
  {
   "name": "Tapette à insectes",
-  "enchantment_dbfId": -101,
+  "enchantmentDbfId": -101,
   "hero_script": "Default_script",
   "dbfId": 64402,
   "cardClass": "NEUTRAL",
@@ -12189,8 +11876,8 @@
  },
  {
   "name": "Flac-vlan",
+  "remain_use": 2,
   "hero_script": "Default_script",
-  "banned": 1,
   "dbfId": 58028,
   "cardClass": "NEUTRAL",
   "cost": 2,
@@ -12216,7 +11903,7 @@
  },
  {
   "name": "Générosité de C’Thun",
-  "enchantment_dbfId": 66248,
+  "enchantmentDbfId": 66248,
   "hero_script": "Default_script",
   "dbfId": 66246,
   "cardClass": "NEUTRAL",
@@ -12228,7 +11915,7 @@
  },
  {
   "name": "Tour du chapeau",
-  "enchantment_dbfId": 59861,
+  "enchantmentDbfId": 59861,
   "hero_script": "Default_script",
   "dbfId": 59860,
   "cardClass": "NEUTRAL",
@@ -12264,7 +11951,7 @@
  },
  {
   "name": "Affûtage de lames",
-  "enchantment_dbfId": 60314,
+  "enchantmentDbfId": 60314,
   "hero_script": "Default_script",
   "dbfId": 57567,
   "cardClass": "NEUTRAL",
@@ -12306,7 +11993,7 @@
  },
  {
   "name": "Faveur de la lumière",
-  "enchantment_dbfId": -100,
+  "enchantmentDbfId": -100,
   "hero_script": "Default_script",
   "dbfId": 57562,
   "cardClass": "NEUTRAL",
@@ -12321,7 +12008,7 @@
  },
  {
   "name": "Pousse-toi de là !",
-  "enchantment_dbfId": 67556,
+  "enchantmentDbfId": 67556,
   "hero_script": "Default_script",
   "dbfId": 67554,
   "cardClass": "NEUTRAL",
@@ -12340,7 +12027,7 @@
  },
  {
   "name": "Fidèles lieutenants",
-  "enchantment_dbfId": 63161,
+  "enchantmentDbfId": 63161,
   "hero_script": "Default_script",
   "dbfId": 61851,
   "cardClass": "DEMONHUNTER",
@@ -12367,7 +12054,7 @@
  },
  {
   "name": "Sphères verdoyantes",
-  "enchantment_dbfId": 62149,
+  "enchantmentDbfId": 62149,
   "hero_script": "Default_script",
   "dbfId": 61917,
   "cardClass": "NEUTRAL",
@@ -12419,7 +12106,7 @@
  {
   "name": "Le temps des rois",
   "synergy": "NONE",
-  "enchantment_dbfId": 59842,
+  "enchantmentDbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 63127,
   "cardClass": "NEUTRAL",
@@ -12433,7 +12120,7 @@
  {
   "name": "Roi des Bêtes",
   "synergy": "BEAST",
-  "enchantment_dbfId": 59842,
+  "enchantmentDbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 59839,
   "cardClass": "NEUTRAL",
@@ -12450,7 +12137,7 @@
  {
   "name": "Roi des Méca",
   "synergy": "MECHANICAL",
-  "enchantment_dbfId": 59842,
+  "enchantmentDbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 59853,
   "cardClass": "NEUTRAL",
@@ -12467,7 +12154,7 @@
  {
   "name": "Roi des Murlocs",
   "synergy": "MURLOC",
-  "enchantment_dbfId": 59842,
+  "enchantmentDbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 59852,
   "cardClass": "NEUTRAL",
@@ -12484,7 +12171,7 @@
  {
   "name": "Roi des Démons",
   "synergy": "DEMON",
-  "enchantment_dbfId": 59842,
+  "enchantmentDbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 59854,
   "cardClass": "NEUTRAL",
@@ -12501,7 +12188,7 @@
  {
   "name": "Roi des Dragons",
   "synergy": "DRAGON",
-  "enchantment_dbfId": 59842,
+  "enchantmentDbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 60922,
   "cardClass": "NEUTRAL",
@@ -12518,7 +12205,7 @@
  {
   "name": "Roi des Pirates",
   "synergy": "PIRATE",
-  "enchantment_dbfId": 59842,
+  "enchantmentDbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 62277,
   "cardClass": "NEUTRAL",
@@ -12535,7 +12222,7 @@
  {
   "name": "Roi des Élémentaires",
   "synergy": "ELEMENTAL",
-  "enchantment_dbfId": 59842,
+  "enchantmentDbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 64220,
   "cardClass": "NEUTRAL",
@@ -12552,7 +12239,7 @@
  {
   "name": "Roi des Hurans",
   "synergy": "QUILBOAR",
-  "enchantment_dbfId": 59842,
+  "enchantmentDbfId": 59842,
   "hero_script": "Default_script",
   "dbfId": 71081,
   "cardClass": "NEUTRAL",
@@ -12568,7 +12255,7 @@
  },
  {
   "name": "Rites de réincarnation",
-  "enchantment_dbfId": 58043,
+  "enchantmentDbfId": 58043,
   "hero_script": "Roi_liche",
   "dbfId": 58040,
   "cardClass": "NEUTRAL",
@@ -12599,7 +12286,7 @@
  },
  {
   "name": "Emprisonnement",
-  "enchantment_dbfId": 61936,
+  "enchantmentDbfId": 61936,
   "hero_script": "Default_script",
   "dbfId": 61919,
   "cardClass": "NEUTRAL",
@@ -12637,7 +12324,7 @@
  },
  {
   "name": "Bricolage",
-  "enchantment_dbfId": 59812,
+  "enchantmentDbfId": 59812,
   "hero_script": "Default_script",
   "dbfId": 57949,
   "cardClass": "NEUTRAL",
@@ -12699,7 +12386,7 @@
  },
  {
   "name": "Brique par brique",
-  "enchantment_dbfId": 59835,
+  "enchantmentDbfId": 59835,
   "hero_script": "Default_script",
   "dbfId": 59832,
   "cardClass": "NEUTRAL",
@@ -12726,7 +12413,7 @@
  },
  {
   "name": "Sulfuras",
-  "enchantment_dbfId": 64427,
+  "enchantmentDbfId": 64427,
   "hero_script": "Default_script",
   "dbfId": 64426,
   "cardClass": "NEUTRAL",
@@ -12742,7 +12429,7 @@
  },
  {
   "name": "Éclairage de taverne",
-  "enchantment_dbfId": 64404,
+  "enchantmentDbfId": 64404,
   "hero_script": "Default_script",
   "dbfId": 64401,
   "cardClass": "NEUTRAL",
@@ -12788,7 +12475,7 @@
  },
  {
   "name": "Rouge furie",
-  "enchantment_dbfId": 59811,
+  "enchantmentDbfId": 59811,
   "hero_script": "Default_script",
   "dbfId": 59808,
   "cardClass": "NEUTRAL",
@@ -12800,7 +12487,7 @@
  },
  {
   "name": "Approchez, approchez !",
-  "enchantment_dbfId": 64675,
+  "enchantmentDbfId": 64675,
   "hero_script": "Default_script",
   "dbfId": 64481,
   "cardClass": "NEUTRAL",
@@ -12816,7 +12503,7 @@
  },
  {
   "name": "Givrage",
-  "enchantment_dbfId": 57948,
+  "enchantmentDbfId": 57948,
   "hero_script": "Default_script",
   "dbfId": 57945,
   "cardClass": "NEUTRAL",
@@ -12885,7 +12572,7 @@
  },
  {
   "name": "Boîte à secret",
-  "enchantment_dbfId": 59902,
+  "enchantmentDbfId": 59902,
   "hero_script": "Yogg",
   "dbfId": 59826,
   "cardClass": "NEUTRAL",
@@ -12964,7 +12651,7 @@
  },
  {
   "name": "Pour la Horde !",
-  "enchantment_dbfId": 71457,
+  "enchantmentDbfId": 71457,
   "hero_script": "Default_script",
   "dbfId": 71455,
   "cardClass": "WARRIOR",
@@ -12976,7 +12663,7 @@
  },
  {
   "name": "Troupe de guerre cirière",
-  "enchantment_dbfId": 59882,
+  "enchantmentDbfId": 59882,
   "hero_script": "Default_script",
   "dbfId": 59863,
   "cardClass": "NEUTRAL",
@@ -12988,7 +12675,7 @@
  },
  {
   "name": "Échange spirituel",
-  "enchantment_dbfId": 71653,
+  "enchantmentDbfId": 71653,
   "hero_script": "Default_script",
   "dbfId": 71464,
   "cardClass": "NEUTRAL",
@@ -13000,7 +12687,7 @@
  },
  {
   "name": "Échange spirituel",
-  "enchantment_dbfId": 72192,
+  "enchantmentDbfId": 72192,
   "hero_script": "Default_script",
   "dbfId": 71644,
   "cardClass": "NEUTRAL",
@@ -13012,7 +12699,7 @@
  },
  {
   "name": "Vision de Lumière",
-  "enchantment_dbfId": 70959,
+  "enchantmentDbfId": 70959,
   "hero_script": "Xyrella",
   "dbfId": 70957,
   "cardClass": "PRIEST",
@@ -13106,26 +12793,21 @@
  {
   "type": "ZONE",
   "synergy": "NONE",
-  "zone_type": "HAND",
-  "phase": [],
+  "phase": "NONE",
   "dbfId": -13
  },
  {
   "type": "ZONE",
   "synergy": "NONE",
-  "zone_type": "PLAY",
   "id": "Player_board",
-  "phase": [
-   "ALL"
-  ],
+  "phase": "ALL",
   "dbfId": -14
  },
  {
   "type": "ZONE",
   "synergy": "NONE",
-  "zone_type": "PLAY",
   "id": "Bob_board",
-  "phase": [],
+  "phase": "NONE",
   "dbfId": -15
  },
  {
@@ -13136,38 +12818,30 @@
  {
   "type": "ZONE",
   "synergy": "NONE",
-  "zone_type": "PLAY",
   "id": "Secret_board",
-  "phase": [
-   "ALL"
-  ],
+  "phase": "ALL",
   "dbfId": -17
  },
  {
   "type": "ZONE",
   "synergy": "NONE",
-  "zone_type": "GRAVEYARD",
   "id": "Graveyard",
-  "phase": [],
+  "phase": "NONE",
   "dbfId": -18
  },
  {
   "type": "ZONE",
   "synergy": "NONE",
   "id": "Field",
-  "phase": [
-   "ALL"
-  ],
+  "phase": "ALL",
   "dbfId": -19
  },
  {
   "name": "Goutte d’eau",
   "race": "ELEMENTAL",
   "synergy": "ELEMENTAL",
-  "techLevel": 1,
   "attack": 4,
   "health": 4,
-  "cant_collect": true,
   "type": "MINION",
   "battlegroundsNormalDbfId": 64040,
   "dbfId": -64040
@@ -13176,21 +12850,11 @@
   "name": "Amalgame",
   "race": "ALL",
   "synergy": "NONE",
-  "techLevel": 1,
   "attack": 4,
   "health": 4,
-  "cant_collect": true,
   "type": "MINION",
   "battlegroundsNormalDbfId": 59202,
   "dbfId": -59202
- },
- {
-  "name": "Héros tout nul",
-  "synergy": "NONE",
-  "max_health": 40,
-  "type": "HERO",
-  "power_id": 0,
-  "dbfId": -10
  },
  {
   "mechanics": [
@@ -13228,21 +12892,11 @@
   "dbfId": -101
  },
  {
-  "name": "Inconnu",
-  "cost": 0,
-  "hero_script": "Default_script",
-  "type": "HERO_POWER",
-  "ban": true,
-  "id": "Inconnu",
-  "dbfId": 0
- },
- {
   "name": "Taverne",
   "cost": 0,
   "hero_script": "Default_script",
   "type": "HERO_POWER",
   "minion_cost": 1,
-  "ban": true,
   "id": "Taverne",
   "dbfId": -1
  },

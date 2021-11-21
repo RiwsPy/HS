@@ -2826,6 +2826,24 @@
   "type": "MINION"
  },
  {
+  "attack": 7,
+  "battlegroundsPremiumDbfId": 58424,
+  "cardClass": "PRIEST",
+  "cost": 6,
+  "dbfId": 59687,
+  "health": 7,
+  "id": "BGS_008",
+  "mechanics": [
+   "DEATHRATTLE"
+  ],
+  "name": "Boagnarok",
+  "race": "BEAST",
+  "set": "BATTLEGROUNDS",
+  "techLevel": 6,
+  "text": "<b>Râle d’agonie :</b> invoque 2 serviteurs aléatoires avec <b>Râle d’agonie</b>.",
+  "type": "MINION"
+ },
+ {
   "attack": 2,
   "battlegroundsPremiumDbfId": 59711,
   "cardClass": "NEUTRAL",
@@ -5742,6 +5760,27 @@
   "type": "ENCHANTMENT"
  },
  {
+  "artist": "Evgeniy Dlinnov",
+  "attack": 1,
+  "battlegroundsPremiumDbfId": 63774,
+  "cardClass": "PALADIN",
+  "collectible": true,
+  "cost": 1,
+  "dbfId": 42467,
+  "flavor": "Son cœur ne connaît que la vertu, son épée défend les démunis, son bras protège les faibles, sa bouche méprise le mensonge, sa colère déjoue les tours du malin.",
+  "health": 1,
+  "id": "ICC_038",
+  "mechanics": [
+   "DIVINE_SHIELD",
+   "TAUNT"
+  ],
+  "name": "Protectrice vertueuse",
+  "rarity": "COMMON",
+  "set": "ICECROWN",
+  "text": "<b>Provocation</b>\n<b>Bouclier divin</b>",
+  "type": "MINION"
+ },
+ {
   "artist": "James Ryman",
   "attack": 2,
   "battlegroundsPremiumDbfId": 59508,
@@ -6742,6 +6781,28 @@
  },
  {
   "cardClass": "NEUTRAL",
+  "dbfId": 59194,
+  "health": 0,
+  "hideCost": true,
+  "id": "TB_BaconShop_HERO_KelThuzad",
+  "mechanics": [
+   "CANT_BE_DESTROYED"
+  ],
+  "name": "Kel’Thuzad",
+  "set": "BATTLEGROUNDS",
+  "type": "HERO"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "dbfId": 56298,
+  "health": 40,
+  "id": "TB_BaconShop_HERO_PH",
+  "name": "BaconPHhero",
+  "set": "BATTLEGROUNDS",
+  "type": "HERO"
+ },
+ {
+  "cardClass": "NEUTRAL",
   "cost": 1,
   "dbfId": 57567,
   "id": "TB_BaconShop_HP_001",
@@ -6850,6 +6911,40 @@
   "set": "BATTLEGROUNDS",
   "text": "Ajoute un Carnipousse 1/1 qui répète tous les <b>Cris de guerre</b> que vous avez joués dans votre main. <i>(Deux fois par partie.)</i>2Ajoute un Carnipousse 1/1 qui répète tous les <b>Cris de guerre</b> que vous avez joués dans votre main. <i>(Encore {0}.)</i>",
   "type": "HERO_POWER"
+ },
+ {
+  "artist": "Matt Dixon",
+  "attack": 1,
+  "battlegroundsPremiumDbfId": 76965,
+  "cardClass": "NEUTRAL",
+  "cost": 1,
+  "dbfId": 76964,
+  "health": 1,
+  "id": "TB_BaconShop_HP_022t",
+  "mechanics": [
+   "BATTLECRY"
+  ],
+  "name": "Carnipousse",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Cri de guerre :</b> répète tous les autres <b>Cris de guerre</b> des cartes que vous avez jouées pendant cette partie <i>(cibles choisies au hasard)</i>.",
+  "type": "MINION"
+ },
+ {
+  "artist": "Matt Dixon",
+  "attack": 2,
+  "battlegroundsNormalDbfId": 76964,
+  "cardClass": "NEUTRAL",
+  "cost": 1,
+  "dbfId": 76965,
+  "health": 2,
+  "id": "TB_BaconShop_HP_022t_G",
+  "mechanics": [
+   "BATTLECRY"
+  ],
+  "name": "Carnipousse",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Cri de guerre :</b> répète deux fois tous les autres <b>Cris de guerre</b> des cartes que vous avez jouées pendant cette partie <i>(cibles choisies au hasard)</i>.",
+  "type": "MINION"
  },
  {
   "cardClass": "NEUTRAL",
@@ -10170,6 +10265,24 @@
   "type": "MINION"
  },
  {
+  "attack": 2,
+  "battlegroundsNormalDbfId": 42467,
+  "cardClass": "PALADIN",
+  "cost": 1,
+  "dbfId": 63774,
+  "health": 2,
+  "id": "TB_BaconUps_147",
+  "mechanics": [
+   "DIVINE_SHIELD",
+   "TAUNT"
+  ],
+  "name": "Protectrice vertueuse",
+  "rarity": "COMMON",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Provocation</b>\n<b>Bouclier divin</b>",
+  "type": "MINION"
+ },
+ {
   "attack": 4,
   "battlegroundsNormalDbfId": 43121,
   "cardClass": "WARLOCK",
@@ -10974,24 +11087,6 @@
   "set": "TROLL",
   "text": "A +1/+1.",
   "type": "ENCHANTMENT"
- },
- {
-  "artist": "Jim Nelson",
-  "attack": 7,
-  "battlegroundsPremiumDbfId": 58424,
-  "cardClass": "PRIEST",
-  "cost": 6,
-  "dbfId": 52041,
-  "health": 7,
-  "id": "TRLA_149",
-  "mechanics": [
-   "DEATHRATTLE"
-  ],
-  "name": "Boagnarok",
-  "race": "BEAST",
-  "set": "TROLL",
-  "text": "<b>Râle d’agonie :</b> invoque 2 serviteurs aléatoires avec <b>Râle d’agonie</b>.",
-  "type": "MINION"
  },
  {
   "artist": "Matt Dixon",

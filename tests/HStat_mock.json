@@ -65,8 +65,7 @@
         "name": "Bob le barman",
         "synergy": "ALL",
         "max_health": 40,
-        "cant_collect": true,
-        "power_id": -1,
+        "power_dbfId": -1,
         "ban": true,
         "dbfId": 57110,
         "cardClass": "NEUTRAL",
@@ -81,7 +80,7 @@
         "synergy": "ALL",
         "max_health": 40,
         "type": "HERO",
-        "power_id": 0,
+        "power_dbfId": 0,
         "dbfId": -10
        },
        {
@@ -171,7 +170,7 @@
         "hero_script": "Default_script",
         "type": "HERO_POWER",
         "ban": true,
-        "id": "Inconnu",
+        "id": "Taverne",
         "dbfId": 0
        }
       

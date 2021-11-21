@@ -1,9 +1,9 @@
-from utils import *
-from enums import CardName
+from base.utils import *
+from base.enums import CardName
 import pytest
-from entity import Card
-from db_card import CARD_DB
-from sequence import Sequence
+from base.entity import Card
+from base.db_card import CARD_DB
+from base.sequence import Sequence
 from game import Game
 
 
