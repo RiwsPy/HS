@@ -3,7 +3,7 @@ from . import *
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'travis_ci_test',
+        'NAME': '',
         'USER': 'postgres',
         'PASSWORD': '',
         'HOST': '',
