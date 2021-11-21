@@ -15,5 +15,5 @@ branches:
     - staging
 
 script:
-  - ./manage test
+  - ./manage.py test
 
