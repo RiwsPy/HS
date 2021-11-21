@@ -15,5 +15,5 @@ branches:
     - staging
 
 script:
-  - pytest tests/
+  - ./manage test
 
