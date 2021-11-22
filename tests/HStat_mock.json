@@ -7,26 +7,21 @@
        {
         "type": "ZONE",
         "synergy": "ALL",
-        "zone_type": "HAND",
-        "phase": [],
+        "phase": "NONE",
         "dbfId": -13
        },
        {
         "type": "ZONE",
         "synergy": "ALL",
-        "zone_type": "PLAY",
         "id": "Player_board",
-        "phase": [
-         "ALL"
-        ],
+        "phase": "ALL",
         "dbfId": -14
        },
        {
         "type": "ZONE",
         "synergy": "ALL",
-        "zone_type": "PLAY",
         "id": "Bob_board",
-        "phase": [],
+        "phase": "NONE",
         "dbfId": -15
        },
        {
@@ -37,37 +32,29 @@
        {
         "type": "ZONE",
         "synergy": "ALL",
-        "zone_type": "PLAY",
         "id": "Secret_board",
-        "phase": [
-         "ALL"
-        ],
+        "phase": "ALL",
         "dbfId": -17
        },
        {
         "type": "ZONE",
         "synergy": "ALL",
-        "zone_type": "GRAVEYARD",
         "id": "Graveyard",
-        "phase": [],
+        "phase": "NONE",
         "dbfId": -18
        },
        {
         "type": "ZONE",
         "synergy": "ALL",
         "id": "Field",
-        "phase": [
-         "ALL"
-        ],
+        "phase": "ALL",
         "dbfId": -19
        },
        {
         "name": "Bob le barman",
         "synergy": "ALL",
         "max_health": 40,
-        "cant_collect": true,
-        "power_id": -1,
-        "ban": true,
+        "powerDbfId": -1,
         "dbfId": 57110,
         "cardClass": "NEUTRAL",
         "health": 60,
@@ -81,16 +68,13 @@
         "synergy": "ALL",
         "max_health": 40,
         "type": "HERO",
-        "power_id": 0,
+        "powerDbfId": 0,
         "dbfId": -10
        },
        {
         "name": "Chasse-marée murloc",
         "synergy": "MURLOC",
-        "phase": [
-         "BATTLECRY"
-        ],
-        "repop_dbfId": 68469,
+        "repopDbfId": 68469,
         "dbfId": 976,
         "artist": "Dan Scott",
         "attack": 2,
@@ -114,11 +98,7 @@
        {
         "name": "Mande-flots murloc",
         "synergy": "MURLOC",
-        "phase": [
-         "SUMMON"
-        ],
-        "enchantment_dbfId": 1719,
-        "ban": true,
+        "enchantmentDbfId": 1719,
         "dbfId": 475,
         "artist": "Jaemin Kim",
         "attack": 1,
@@ -141,10 +121,7 @@
        {
         "name": "Chat de gouttière",
         "synergy": "BEAST",
-        "phase": [
-         "BATTLECRY"
-        ],
-        "repop_dbfId": 40425,
+        "repopDbfId": 40425,
         "dbfId": 40426,
         "artist": "Anton Zemskov",
         "attack": 1,
@@ -170,8 +147,7 @@
         "cost": 0,
         "hero_script": "Default_script",
         "type": "HERO_POWER",
-        "ban": true,
-        "id": "Inconnu",
+        "id": "Taverne",
         "dbfId": 0
        }
       

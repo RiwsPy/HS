@@ -1,9 +1,9 @@
 import pytest
-from entity import Card
+from base.entity import Card
 from game import Game
-from enums import CardName
-from db_card import CARD_DB
-from sequence import Sequence
+from base.enums import CardName
+from base.db_card import CARD_DB
+from base.sequence import Sequence
 
 
 player_name = 'p1_name'

@@ -1,8 +1,8 @@
 import pytest
-from entity import Card
-from enums import CardName
-from db_card import CARD_DB
-from sequence import Sequence
+from base.entity import Card
+from base.enums import CardName
+from base.db_card import CARD_DB
+from base.sequence import Sequence
 from game import Game
 
 
@@ -99,3 +99,44 @@ def test_saute_mouton(reinit_game):
         assert len(sheep.entities) == 2
         assert sheep.attack == sheep.dbfId.attack + sheep.enchantment_dbfId.attack*2
 
+def test_gro_boum(reinit_game):
+    p1, p2 = g.players
+    with Sequence('TURN', g):
+        gro = p1.hand.create_card_in(49279) # Gro'Boum
+        gro.play()
+        gar = p2.hand.create_card_in(61029) # Gardien des glyphes
+        gar.play()
+
+    Sequence('FIGHT', g).start_and_close()
+    assert p1.health == p1.max_health
+    assert p2.health == p2.max_health
+
+def test_saurolisque(reinit_game):
+    p1, p2 = g.players
+    with Sequence('TURN', g):
+        sau = p1.hand.create_card_in(62162) # Saurolisque
+        sau.play()
+        rat = p1.hand.create_card_in(70790) # Rat d'égout
+        rat.play()
+
+    assert sau.health == sau.dbfId.health + sau.enchantment_dbfId.max_health
+    assert sau.attack == sau.dbfId.attack + sau.enchantment_dbfId.attack
+
+def test_yo_oh(reinit_game):
+    p1, p2 = g.players
+    with Sequence('TURN', g):
+        cha = p1.hand.create_card_in(41245) # Chasseur rochecave
+        cha.play()
+        yo = p1.hand.create_card_in(61060) # Yo-oh ogre
+        yo.play()
+        mou = p2.hand.create_card_in(61055) # Mousse du pont
+        mou.play()
+        mou = p2.hand.create_card_in(61055) # Mousse du pont
+        mou.play()
+        ele = p2.hand.create_card_in(64038) # ElémenPlus
+        ele.play()
+
+    with Sequence('FIGHT', g):
+        assert yo.is_alive
+        assert cha.is_alive
+        assert p1.field.combat.damage == 4

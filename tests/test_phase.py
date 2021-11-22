@@ -1,9 +1,9 @@
 from game import Game
 import pytest
-from entity import Card
-from enums import CardName, GOLD_BY_TURN
-from db_card import CARD_DB
-from sequence import Sequence
+from base.entity import Card
+from base.enums import CardName, GOLD_BY_TURN
+from base.db_card import CARD_DB
+from base.sequence import Sequence
 
 
 player_name = 'p1_name'
@@ -22,7 +22,7 @@ def test_start_sequence(reinit_game):
     crd = g.players[0].hand.create_card_in(60055) # Micro-machine
     crd.play()
     Sequence('TURN', g).start_and_close()
-    assert crd.attack == crd.dbfId.attack +1
+    assert crd.attack == crd.dbfId.attack + crd.enchantment_dbfId.attack
 
 def test_play_sequence(reinit_game):
     tisse = g.players[0].hand.create_card_in(59670) # Tisse-colère
@@ -223,3 +223,10 @@ def test_modular(reinit_game):
         old_size = p1.game.hand.size
         """
 
+def test_give_golden_card(reinit_game):
+    p1 = g.players[0]
+    old_hand_len = g.hand.size
+    with Sequence('TURN', g):
+        g.hand.give_or_create_in(65658, p1.hand) # Acolyte de C'thun
+        assert p1.hand.size == 1
+        assert g.hand.size == old_hand_len - 6

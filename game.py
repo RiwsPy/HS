@@ -1,16 +1,18 @@
-from db_card import CARD_DB
-from utils import Card_list, db_arene
-from enums import Race, Type, NB_PRESENT_TYPE, VERSION, CardName
+#!/usr/bin/env python
+
+from base.db_card import CARD_DB
+from base.utils import Card_list, db_arene
+from base.enums import Race, Type, NB_PRESENT_TYPE, VERSION, CardName
 import random
-import player
-from entity import Entity, Card
-from hand import Bob_hand
-from stats import *
-import entity
+import base.player
+from base.entity import Entity, Card, card_db
+from base.hand import Bob_hand
+from base.stats import *
+import base.entity
 from collections import deque
-from combat import Combat
+from base.combat import Combat
 from typing import Any
-from sequence import Sequence
+from base.sequence import Sequence
 
 
 class Game(Entity):
@@ -25,28 +27,32 @@ class Game(Entity):
     }
 
     def __init__(self, *args, **attr):
+        # ban les types avant la création de game ?
         super().__init__(CardName.DEFAULT_GAME, **attr)
 
         self.reinit()
 
-        self.type_ban = attr.get('type_ban', self.determine_present_type())
+        types_ban = self.determine_ban_type()
+        all_cards = card_db()
+        for type_ban in types_ban:
+            all_cards = all_cards.exclude(synergy=Race(type_ban))
 
-        all_cards = entity.card_db().exclude(ban=True)
-        self.craftable_card = all_cards.\
-            exclude_hex(synergy=self.type_ban)
+        self.type_ban = attr.get('type_ban',
+            sum(Race(race).hex for race in types_ban))
 
-        self.craftable_hero = self.craftable_card.\
-            filter(type=Type.HERO) #.exclude(dbfId=CardName.BOB) # test avec BOB ban
-
-        self.minion_can_collect = self.craftable_card.\
-            filter(type=Type.MINION, cant_collect=None)
+        self.craftable_cards = all_cards
+        #self.craftable_cards = all_cards.exclude_hex(synergy=self.type_ban)
+        self.craftable_heroes = all_cards.filter(battlegroundsHero=True)
+        #self.craftable_heroes = self.craftable_cards.filter(battlegroundsHero=True)
+        self.minion_can_collect = all_cards.exclude(techLevel=None)
 
         self.hand = Bob_hand()
         self.hand.owner = self
 
-        for dbfId in self.minion_can_collect:
-            for _ in range(dbfId.nb_copy):
-                self.hand.create_card_in(int(dbfId))
+        for minion in self.minion_can_collect:
+            for _ in range(minion.nb_copy):
+                #self.hand.create_card_in(int(dbfId))
+                self.hand.create_card_in(minion.dbfId)
             """
             *chain(*
             ([int(dbfId)]*dbfId.nb_copy
@@ -54,13 +60,14 @@ class Game(Entity):
             """
 
     def reinit(self):
+        self.fights = defaultdict(list)
         self.entities = Card_list()
         self._turn = 0
         self.action_stack = deque()
         self.players = Card_list()
         self.fields = Card_list()
 
-    def party_begin(self, *players, hero_p1='', hero_p2='') -> None:
+    def party_begin(self, *players, hero_p1=0, hero_p2=0) -> None:
         #TODO: Players are assigned opponents for the first round when the game begins before the heroes are chosen.
         #TODO: Players will not face the same player, or Kel'Thuzad, more than once in every 3 combat rounds (unless there are 2 players remaining).
         if not players:
@@ -69,13 +76,14 @@ class Game(Entity):
         self.all_in_bob()
         self.reinit()
 
-        random.shuffle(self.craftable_hero)
+        random_craftable_heroes = list(self.craftable_heroes)
+        random.shuffle(random_craftable_heroes)
 
         for nb, player_name in enumerate(players):
-            bob = player.Bob(
+            bob = base.player.Bob(
                     minion_can_collect=self.minion_can_collect)
-
             # de base, 4 héros sont disponibles lors de la sélection
+
             if self.is_arene:
                 if nb == 0 and hero_p1:
                     hero_chosen = CARD_DB[hero_p1]
@@ -86,7 +94,7 @@ class Game(Entity):
             elif nb == 0 and hero_p1:
                 hero_chosen = CARD_DB[hero_p1]
             else:
-                hero_chosen = self.choose_champion(self.craftable_hero[nb*4:nb*4+4],
+                hero_chosen = self.choose_champion(random_craftable_heroes[nb*4:nb*4+4],
                     pr=f'Choix du héros pour {player_name} :')
 
             plyr = Card(
@@ -96,15 +104,14 @@ class Game(Entity):
                 bob=bob,
                 is_bot=True)
             self.players.append(plyr)
-
             new_field = Card(CardName.DEFAULT_FIELD, p1=plyr, p2=plyr.bob)
             self.append(new_field)
 
-    def determine_present_type(self) -> int:
-        lst = Race.battleground_race()
+    def determine_ban_type(self) -> list:
+        lst = Race.battleground_race_name()
         random.shuffle(lst)
 
-        return sum(lst[:NB_PRESENT_TYPE])
+        return lst[NB_PRESENT_TYPE:]
 
     def turn_start(self, sequence):
         self._turn += 1
@@ -137,15 +144,13 @@ class Game(Entity):
             except ValueError:
                 print('Saississez une valeur.')
 
-    def turn_end(self, sequence):
-        self.entities = Card_list()
-        players = self.players
-        for p1, p2 in zip(players[::2], players[1::2]):
-            self.append(Card(CardName.DEFAULT_FIELD, p1=p1, p2=p2))
-
     def fight_start(self, sequence):
-        for field in self.entities:
-            field.combat = Combat(field, field.p1.board, field.p2.board)
+        self.entities = Card_list()
+        for p1, p2 in zip(self.players[::2], self.players[1::2]):
+            field = Card(CardName.DEFAULT_FIELD, p1=p1, p2=p2)
+            self.append(field)
+            field.combat = Combat(field, p1.board, p2.board)
+            self.fights[self._turn].append(field)
 
     def fight(self, sequence):
         for field in self.entities:
@@ -164,11 +169,22 @@ class Game(Entity):
 
 if __name__ == "__main__":
     g = Card(CardName.DEFAULT_GAME, is_test=True)
-    g.party_begin('p1_name', 'p2_name', hero_p1=57893)
+    g.party_begin('p1_name', 'p2_name', hero_p1=63601)
     p1, p2 = g.players
 
-    p1 = g.players[0]
     with Sequence('TURN', g):
-        print(p1.power.synergy)
-    with Sequence('TURN', g):
-        print(p1.power.synergy)
+        cha = p1.hand.create_card_in(41245) # Chasseur rochecave
+        cha.play()
+        yo = p1.hand.create_card_in(61060) # Yo-oh ogre
+        yo.play()
+        mou = p2.hand.create_card_in(61055) # Mousse du pont
+        mou.play()
+        mou = p2.hand.create_card_in(61055) # Mousse du pont
+        mou.play()
+        ele = p2.hand.create_card_in(64038) # ElémenPlus
+        ele.play()
+
+    with Sequence('FIGHT', g) as seq:
+        print(yo.health)
+        print(cha.health)
+        print(p1.field.combat.damage)

@@ -1,9 +1,9 @@
-from enums import *
-from entity import Card, Entity
-from db_card import CARD_DB
+from base.enums import *
+from base.entity import Card, Entity
+from base.db_card import CARD_DB
 import pytest
-from sequence import Sequence
-from db_card import Meta_card_data, Card_data
+from base.sequence import Sequence
+from base.db_card import Meta_card_data, Card_data
 from game import Game
 
 
@@ -37,7 +37,7 @@ def test_all_in_bob(reinit_game, monkeypatch):
         assert len(player.hand.cards) == 0
         assert player.bob.board.size == 3
 
-        monkeypatch.setattr('player.Player.can_buy_minion', lambda *args, **kwargs: True)
+        monkeypatch.setattr('base.player.Player.can_buy_minion', lambda *args, **kwargs: True)
         crd = player.bob.board[0]
         crd.buy()
         assert player.bob.board.size == 2
@@ -55,9 +55,10 @@ def test_game_hand(reinit_game):
     id = entity.dbfId
     assert entity.type == Type.MINION
     assert entity.level == entity_level
-    assert entity.synergy & g.type_ban == 0
     assert isinstance(entity, Entity)
     assert len(g.hand.cards.filter(dbfId=id)) == CARD_NB_COPY[entity_level]
+    for card in g.hand.cards:
+        assert card.synergy.hex & g.type_ban == 0
     nb = 0
     for card_id in g.minion_can_collect:
         if card_id.level == entity_level:
