@@ -43,7 +43,7 @@ class Player(Entity):
             self.append(self.board)
             self.append(self.secret_board)
 
-        self.power = self.create_card(self.power_dbfId)
+        self.power = self.create_card(self.powerDbfId)
         #self.method = 'player'
         self.append(self.power)
 
@@ -214,7 +214,7 @@ class Bob(Player):
         self.id = 'bob'
         self.board = self.create_card(CardName.DEFAULT_BOB_BOARD)
         self.append(self.board)
-        self.power = self.create_card(self.power_dbfId)
+        self.power = self.create_card(self.powerDbfId)
         self.append(self.power)
 
     @property

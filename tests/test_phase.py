@@ -22,7 +22,7 @@ def test_start_sequence(reinit_game):
     crd = g.players[0].hand.create_card_in(60055) # Micro-machine
     crd.play()
     Sequence('TURN', g).start_and_close()
-    assert crd.attack == crd.dbfId.attack + crd.enchantment_dbfId.attack
+    assert crd.attack == crd.dbfId.attack + crd.enchantmentDbfId.attack
 
 def test_play_sequence(reinit_game):
     tisse = g.players[0].hand.create_card_in(59670) # Tisse-colère
@@ -229,4 +229,4 @@ def test_give_golden_card(reinit_game):
     with Sequence('TURN', g):
         g.hand.give_or_create_in(65658, p1.hand) # Acolyte de C'thun
         assert p1.hand.size == 1
-        assert g.hand.size == old_hand_len - 6
+        assert g.hand.size == old_hand_len - len(g.players)*3 - 3

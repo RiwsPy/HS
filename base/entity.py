@@ -13,14 +13,6 @@ def card_db():
     return CARD_DB
 
 
-def func_name(function):
-    def new_function(self, *args, **kwargs):
-        self.func_name = function.__name__
-        return function(self, *args, **kwargs)
-
-    return new_function
-
-
 def khadgar_aura(function):
     def double_invoc(self, sequence, *args, **kwargs):
         card_id = function(self, sequence, *args, **kwargs)
@@ -64,7 +56,7 @@ class Entity:
             if data is not None:
                 setattr(self, key, data)
 
-        self.dbfId = Card_data(**db)
+        #self.dbfId = CARD_DB[str(dbfId)]#Card_data(**db)
 
     def __getitem__(self, attr):
         if isinstance(attr, str):
@@ -159,11 +151,11 @@ class Entity:
         card_id.owner = self.controller
         return card_id
 
-    def buff(self, enchantment_dbfId: int, target: 'Entity', **kwargs) -> None:
+    def buff(self, enchantmentDbfId: int, target: 'Entity', **kwargs) -> None:
         if target:
             Sequence(
                 'ENHANCE',
-                Card(enchantment_dbfId, source=self, **kwargs),
+                Card(enchantmentDbfId, source=self, **kwargs),
                 target=target
             ).start_and_close()
 
@@ -314,8 +306,8 @@ class Entity:
                         Sequence('FRENZY', target).start_and_close()
 
     @khadgar_aura
-    def invoc(self, sequence: Sequence, repop_dbfId: int) -> 'Entity':
-        minion_id = self.create_card(repop_dbfId)
+    def invoc(self, sequence: Sequence, repopDbfId: int) -> 'Entity':
+        minion_id = self.create_card(repopDbfId)
         if sequence.source in self.controller.board.cards:
             sequence.position += 1
 
@@ -437,7 +429,7 @@ class Minion(Entity):
             return None
 
         self.buff(
-            self.enchantment_dbfId,
+            self.enchantmentDbfId,
             modular_target,
             attack=self.attack,
             max_health=self.health,

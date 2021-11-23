@@ -13,6 +13,15 @@ LEVEL_MAX = 6
 BOB_MINION_COST = 1
 DEFAULT_MINION_COST = 3
 
+dbfId_attr = {
+    'enchantmentDbfId',
+    'repopDbfId',
+    'battlegroundsPremiumDbfId',
+    'battlegroundsNormalDbfId',
+    'powerDbfId',
+}
+
+
 class CardName:
     COIN = 58596
     BLOOD_GEM = 70136
@@ -144,6 +153,11 @@ class Type(int):
 
     DEFAULT = NONE
 
+    def __new__(cls, value):
+        if isinstance(value, str):
+            return super().__new__(cls, getattr(cls, value))
+        return super().__new__(cls, value)
+
     @property
     def can_be_add_in_hand(self):
         return self in (self.__class__.SPELL, self.__class__.MINION)
@@ -151,6 +165,11 @@ class Type(int):
     @property
     def can_be_add_in_board(self):
         return self == self.__class__.MINION
+
+    def __getattr__(self, attr):
+        if isinstance(attr, int):
+            return attr
+        raise AttributeError
 
 
 class Zone(int):

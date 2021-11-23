@@ -10,7 +10,7 @@ class AT_121(Minion):
     # Favori de la foule
     def play_on(self, sequence: Sequence):
         if sequence.source.BATTLECRY:
-            self.buff(self.enchantment_dbfId, self)
+            self.buff(self.enchantmentDbfId, self)
 TB_BaconUps_037= AT_121 # Favori de la foule premium
 
 
@@ -18,14 +18,14 @@ class BGS_080(Minion):
     # Goliath brisemer 
     def overkill(self, sequence: Sequence):
         for minion in self.my_zone.cards.filter(race='PIRATE').exclude(self):
-            self.buff(self.enchantment_dbfId, minion)
+            self.buff(self.enchantmentDbfId, minion)
 TB_BaconUps_142= BGS_080 # Goliath brisemer premium
 
 
 class TRL_232(Minion):        
     # Navrecorne cuiracier
     def overkill(self, sequence: Sequence):
-        self.invoc(sequence, self.repop_dbfId)
+        self.invoc(sequence, self.repopDbfId)
 TB_BaconUps_051= TRL_232 # Navrecorne cuiracier premium
 
 
@@ -33,7 +33,7 @@ class BAR_073(Minion):
     # Forgeronne des Tarides
     def frenzy(self, sequence: Sequence):
         for minion in self.my_zone.cards.exclude(self):
-            self.buff(self.enchantment_dbfId, minion)
+            self.buff(self.enchantmentDbfId, minion)
 TB_BaconUps_320= BAR_073 # Forgeronne des Tarides premium
 
 
@@ -42,7 +42,7 @@ class BGS_124(Minion):
     def play_off(self, sequence: Sequence):
         if self is not sequence.source and sequence.source.race.ELEMENTAL:
             for _ in self.my_zone.cards.filter(race='ELEMENTAL'):
-                self.buff(self.enchantment_dbfId, self)
+                self.buff(self.enchantmentDbfId, self)
 TB_BaconUps_163= BGS_124 # Lieutenant Garr premium
 
 
@@ -51,7 +51,7 @@ class BGS_112(Minion):
     def die_on(self, sequence: Sequence):
         if sequence.source.TAUNT and sequence.is_ally(self):
             for minion in sequence.source.adjacent_neighbors():
-                sequence(self.buff, self.enchantment_dbfId, minion)
+                sequence(self.buff, self.enchantmentDbfId, minion)
 TB_BaconUps_303= BGS_112 # Héraut qiraji premium
 
 
@@ -75,7 +75,7 @@ class BGS_201(Minion):
     def combat_on(self, sequence: Sequence):
         if self is sequence.target:
             for minion in self.adjacent_neighbors():
-                self.buff(self.enchantment_dbfId, minion)
+                self.buff(self.enchantmentDbfId, minion)
 TB_BaconUps_257= BGS_201
 
 
@@ -101,7 +101,7 @@ class GVG_027(Minion):
     # Sensei de fer
     def turn_off(self, sequence: Sequence):
         self.buff(
-            self.enchantment_dbfId,
+            self.enchantmentDbfId,
             self.my_zone.cards.filter(race='MECHANICAL').exclude(self).random_choice()
         )
 TB_BaconUps_044= GVG_027 # Sensei de fer premium
@@ -111,7 +111,7 @@ class BGS_033(Minion):
     # Dragon infâmélique
     def turn_on(self, sequence: Sequence):
         if self.controller.win_last_match:
-            self.buff(self.enchantment_dbfId, self)
+            self.buff(self.enchantmentDbfId, self)
 TB_BaconUps_104= BGS_033 # Dragon infâmélique premium
 
 
@@ -119,14 +119,14 @@ class BG20_210(Minion):
     # Maraudeur des ruines
     def turn_off(self, sequence: Sequence):
         if self.my_zone.size <= 6:
-            self.buff(self.enchantment_dbfId, self)
+            self.buff(self.enchantmentDbfId, self)
 BG20_210_G= BG20_210 # Maraudeur des ruines premium
 
 
 class BGS_027(Minion):
     # Micro-machine
     def turn_on(self, sequence: Sequence):
-        sequence(self.buff, self.enchantment_dbfId, self)
+        sequence(self.buff, self.enchantmentDbfId, self)
 TB_BaconUps_094= BGS_027 # Micro-machine premium
 
 
@@ -144,7 +144,7 @@ class GVG_106(Minion):
     # Brik-a-bot
     def die_off(self, sequence: Sequence):
         if sequence.is_ally(self) and sequence.source.race.MECHANICAL:
-            self.buff(self.enchantment_dbfId, self)
+            self.buff(self.enchantmentDbfId, self)
 TB_BaconUps_046= GVG_106 # Brik-a-bot premium
 
 
@@ -152,7 +152,7 @@ class EX1_509(Minion):
     # Mande-flots murloc
     def summon_on(self, sequence: Sequence):
         if sequence.source.race.MURLOC:
-            self.buff(self.enchantment_dbfId, self)
+            self.buff(self.enchantmentDbfId, self)
 TB_BaconUps_011= EX1_509 # Mande-flots murloc premium
 
 
@@ -164,7 +164,7 @@ class YOD_026(Minion):
     def deathrattle(self, sequence: Sequence):
         minions = self.controller.board.cards.filter(is_alive=True)
         if minions:
-            self.buff(self.enchantment_dbfId, random.choice(minions), attack=self.attack)
+            self.buff(self.enchantmentDbfId, random.choice(minions), attack=self.attack)
 
 
 class TB_BaconUps_112(YOD_026):

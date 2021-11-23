@@ -51,15 +51,15 @@ class Player_hand(Entity):
                 hasattr(x, 'summon_off'), # Maman des ours
                 hasattr(x, 'play_on'), # Pillard pirate
                 hasattr(x, 'play_off') and\
-                    hasattr(x, 'enchantment_dbfId') and\
-                    ((x.enchantment_dbfId.attack or 0) + \
-                    (x.enchantment_dbfId.max_health or 0)), # Élémentaire de fête
+                    hasattr(x, 'enchantmentDbfId') and\
+                    ((x.enchantmentDbfId.attack or 0) + \
+                    (x.enchantmentDbfId.max_health or 0)), # Élémentaire de fête
                 hasattr(x, 'play_off'), # Sanglier
                 x.AURA,
                 not x.MODULAR,
                 not x.BATTLECRY,
                 hasattr(x, 'battlecry_on'), # Brann
-                x.BATTLECRY and hasattr(x, 'repop_dbfId'),
+                x.BATTLECRY and hasattr(x, 'repopDbfId'),
                 -x.level))
 
         for card in self.cards[::-1]:

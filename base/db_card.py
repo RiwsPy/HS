@@ -1,5 +1,4 @@
-from .enums import Race, Zone, Type, CARD_NB_COPY, state_list
-from json import load
+from .enums import Race, Zone, Type, CARD_NB_COPY, state_list, dbfId_attr
 from typing import List, Any
 from .utils import Card_list
 import os
@@ -9,20 +8,27 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api_battlegrounds.settings')
 django.setup()
 from card.models import Card
 
-col_to_attr = {
-    'enchantment_dbfId': 'enchantmentDbfId',
-    'repop_dbfId': 'repopDbfId',
-    'premium_dbfId': 'battlegroundsPremiumDbfId',
-    'normal_dbfId': 'battlegroundsNormalDbfId',
-    'power_dbfId': 'powerDbfId',
-}
 
 class Card_data(int):
     def __new__(cls, **kwargs):
         return super().__new__(cls, kwargs['dbfId'])
 
     def __init__(self, **kwargs) -> None:
+        try:
+            del kwargs['_state']
+        except KeyError:
+            pass
+
+        kwargs['dbfId'] = self
+        kwargs['type'] = Type(kwargs['type'])
+        kwargs['synergy'] = Race(kwargs['synergy'])
+        kwargs['race'] = Race(kwargs['race'])
+        for mechanic in state_list:
+            kwargs[mechanic] = False
+        for mechanic in kwargs['mechanics']:
+            kwargs[mechanic] = True
         self.data = kwargs
+
         self.value = 0
         self.all_rating = {}
         self.rating = -999
@@ -74,7 +80,13 @@ class Meta_card_data(Card_list):
         super().sort(key=lambda x: x[attr], reverse=reverse)
 
     def __getitem__(self, value) -> Any:
-        # problème avec random.shuffle si dbfId <= len(self) ??
+        # TODO problème avec random.shuffle si dbfId <= len(self) ??
+        if isinstance(value, str):
+            try:
+                return super().__getitem__(self.index(int(value)))
+            except ValueError:
+                return super().__getitem__(self.index(value))
+
         if not isinstance(value, int):
             return super().__getitem__(value)
         try:
@@ -88,26 +100,13 @@ class Meta_card_data(Card_list):
         return value
 
 def charge_all_cards() -> Meta_card_data:
-    db = Meta_card_data()
-
-    for card in Card.objects.all():
-        value = card.__dict__.copy()
-        del value['_state']
-        value['type'] = Type(getattr(Type, value['type']))
-        value['synergy'] = Race(value['synergy'])
-        value['race'] = Race(value['race'])
-        for mechanic in state_list:
-            value[mechanic] = False
-        for mechanic in value['mechanics']:
-            value[mechanic] = True
-
-        db.append(Card_data(**value))
+    db = Meta_card_data(Card_data(**card.__dict__)
+        for card in Card.objects.all())
 
     for card in db:
-        for k, v in col_to_attr.items():
-            if getattr(card, v, False):
-                card[k] = db[getattr(card, v)]
-                del card.data[v]
+        for attr in dbfId_attr:
+            if getattr(card, attr, False):
+                card[attr] = db[card[attr]]
 
     return db
 

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from base.enums import CARD_NB_COPY, state_list, Race, Type, Zone
+from base.enums import CARD_NB_COPY, state_list, Race, Type, Zone, dbfId_attr
 from typing import Any
 
 class Card(models.Model):
@@ -16,13 +16,6 @@ class Card(models.Model):
         ('ELEMENTAL', 'ELEMENTAL'),
         ('QUILBOAR', 'QUILBOAR'),
     ]
-    col_to_attr = {
-        'enchantment_dbfId': 'enchantmentDbfId',
-        'repop_dbfId': 'repopDbfId',
-        'premium_dbfId': 'battlegroundsPremiumDbfId',
-        'normal_dbfId': 'battlegroundsNormalDbfId',
-        'power_dbfId': 'powerDbfId',
-    }
 
     dbfId = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255)
@@ -113,8 +106,8 @@ class Card(models.Model):
     def __getattr__(self, attr: str) -> Any:
         if attr in state_list:
             return attr in self.mechanics
-        if attr in self.col_to_attr:
-            return self.__class__.objects.get(pk=getattr(self, self.col_to_attr[attr]))
+        if attr in dbfId_attr:
+            return self.__class__.objects.get(pk=getattr(self, attr))
         raise AttributeError
 
     @property
@@ -128,9 +121,3 @@ class Card(models.Model):
     @property
     def TYPE(self):
         return Type(self.type)
-
-    @property
-    def power_dbfId(self):
-        if self.powerDbfId:
-            return self.__class__.objects.get(pk=self.powerDbfId)
-        return None

@@ -134,7 +134,7 @@ class Player_board(Board):
             self.cards.sort(key=lambda x: (
                         hasattr(x, 'combat_start'),
                         hasattr(x, 'combat_end'),
-                        x.DEATHRATTLE and not hasattr(x, 'repop_dbfId'),
+                        x.DEATHRATTLE and not hasattr(x, 'repopDbfId'),
                         x.CLEAVE,
                         x.OVERKILL,
 

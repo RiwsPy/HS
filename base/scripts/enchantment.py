@@ -269,7 +269,7 @@ class BGS_104pe(Enchantment):
     def summon_on(self, sequence):
         if sequence.source.controller is self.controller.bob and\
                 sequence.source.race.ELEMENTAL:
-            self.buff(self.enchantment_dbfId,
+            self.buff(self.enchantmentDbfId,
                 attack=self.bonus_value,
                 max_health=self.bonus_value)
 BG21_020pe= BGS_104pe # Ench. de joueur Rejeton de Lumière éclatant
@@ -279,7 +279,7 @@ class TB_BaconShop_HP_068e(add_stat):
     # Emprisonné
     def remove(self):
         super().remove()
-        self.buff(self.enchantment_dbfId, self)
+        self.buff(self.enchantmentDbfId, self)
         self.controller.opponent.hand.append(self)
 
 

@@ -23,7 +23,7 @@ class TB_Bacon_Secrets_08(Spell):
     def die_off(self, sequence: Sequence):
         if sequence.is_ally(self) and self.controller.board.size > 0:
             self.buff(
-                self.enchantment_dbfId,
+                self.enchantmentDbfId,
                 self.controller.board.cards.random_choice()
             )
             self.die()
@@ -42,7 +42,7 @@ class TB_Bacon_Secrets_13(Spell):
     def turn_on(self, sequence: Sequence):
         if self.controller.board.size > 0:
             for minion in self.controller.board.cards:
-                self.buff(self.enchantment_dbfId, minion)
+                self.buff(self.enchantmentDbfId, minion)
             self.die()
 
 
@@ -63,7 +63,7 @@ class TB_Bacon_Secrets_12(Spell):
         if sequence.target is self.controller and\
                 self.in_fight_sequence and\
                 sequence.damage_value >= self.controller.health:
-            self.buff(self.enchantment_dbfId, self.controller)
+            self.buff(self.enchantmentDbfId, self.controller)
             self.die()
 
 
@@ -73,7 +73,7 @@ class TB_Bacon_Secrets_01(Spell):
     def combat_on(self, sequence: Sequence):
         if not self.controller.board.is_full and\
                 sequence.target.controller is self.controller:
-            self.invoc(sequence, self.repop_dbfId)
+            self.invoc(sequence, self.repopDbfId)
             self.die()
 
 
@@ -84,7 +84,7 @@ class TB_Bacon_Secrets_02(Spell):
         if not self.controller.board.is_full and\
                 sequence.target.controller is self.controller:
             for _ in range(3):
-                self.invoc(sequence, self.repop_dbfId)
+                self.invoc(sequence, self.repopDbfId)
             self.die()
 
 
@@ -113,7 +113,7 @@ class TRL_509t(Spell):
             sequence.is_valid = False
         
     def cast(self, sequence: Sequence):
-        self.buff(self.enchantment_dbfId, sequence.target)
+        self.buff(self.enchantmentDbfId, sequence.target)
 
 
 class BGS_Treasures_000(TRL_509t):

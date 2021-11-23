@@ -96,11 +96,11 @@ class Roi_liche:
         if args:
             card = self.hand.create_card_in(args[0])
             card.play()
-            self.buff(self.power.enchantment_dbfId, card)
+            self.buff(self.power.enchantmentDbfId, card)
 
     def turn_2(self, *args, **kwargs):
         self.levelup()
-        self.buff(self.power.enchantment_dbfId, self.board.cards[0])
+        self.buff(self.power.enchantmentDbfId, self.board.cards[0])
 
 class Y_Shaarj:
     def turn_1(self, *args, **kwargs):

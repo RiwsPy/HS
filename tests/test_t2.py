@@ -85,7 +85,7 @@ def test_saute_mouton(reinit_game):
 
     with Sequence('FIGHT', g):
         sheep.die()
-        assert sheep2.attack == sheep2.dbfId.attack + sheep2.enchantment_dbfId.attack
+        assert sheep2.attack == sheep2.dbfId.attack + sheep2.enchantmentDbfId.attack
         assert len(sheep2.entities) == 1
 
     with Sequence('TURN', g):
@@ -97,7 +97,7 @@ def test_saute_mouton(reinit_game):
         p1.board[0].die()
         sheep = p1.board[1]
         assert len(sheep.entities) == 2
-        assert sheep.attack == sheep.dbfId.attack + sheep.enchantment_dbfId.attack*2
+        assert sheep.attack == sheep.dbfId.attack + sheep.enchantmentDbfId.attack*2
 
 def test_gro_boum(reinit_game):
     p1, p2 = g.players
@@ -119,8 +119,8 @@ def test_saurolisque(reinit_game):
         rat = p1.hand.create_card_in(70790) # Rat d'égout
         rat.play()
 
-    assert sau.health == sau.dbfId.health + sau.enchantment_dbfId.max_health
-    assert sau.attack == sau.dbfId.attack + sau.enchantment_dbfId.attack
+    assert sau.health == sau.dbfId.health + sau.enchantmentDbfId.max_health
+    assert sau.attack == sau.dbfId.attack + sau.enchantmentDbfId.attack
 
 def test_yo_oh(reinit_game):
     p1, p2 = g.players
