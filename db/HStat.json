@@ -10646,7 +10646,6 @@
   "max_health": 1,
   "attack": 1,
   "name": "Yarrr !",
-  "aura": true,
   "dbfId": 70472,
   "cardClass": "NEUTRAL",
   "id": "VAN_NEW1_027e",
@@ -10658,7 +10657,6 @@
   "max_health": 2,
   "attack": 2,
   "name": "Yarrr !",
-  "aura": true,
   "dbfId": 62238,
   "cardClass": "NEUTRAL",
   "id": "TB_BaconUps_136e",
@@ -10669,7 +10667,6 @@
  {
   "attack": 2,
   "name": "Mrgglaargl !",
-  "aura": true,
   "dbfId": 535,
   "cardClass": "NEUTRAL",
   "id": "EX1_507e",
@@ -10680,7 +10677,6 @@
  {
   "attack": 4,
   "name": "Mrgglaargl !",
-  "aura": true,
   "dbfId": 57406,
   "cardClass": "NEUTRAL",
   "id": "TB_BaconUps_008e",
@@ -10691,7 +10687,6 @@
  {
   "attack": 1,
   "name": "Mode brise-siège",
-  "aura": true,
   "dbfId": 54842,
   "cardClass": "WARLOCK",
   "id": "EX1_185e",
@@ -10702,7 +10697,6 @@
  {
   "attack": 2,
   "name": "Mode brise-siège",
-  "aura": true,
   "dbfId": 58419,
   "cardClass": "WARLOCK",
   "id": "TB_BaconUps_053e",
@@ -10714,7 +10708,6 @@
   "max_health": 2,
   "attack": 2,
   "name": "Étreinte de Mal’Ganis",
-  "aura": true,
   "dbfId": 2203,
   "cardClass": "WARLOCK",
   "id": "GVG_021e",
@@ -10729,7 +10722,6 @@
   "max_health": 4,
   "attack": 4,
   "name": "Étreinte de Mal’Ganis",
-  "aura": true,
   "dbfId": 58429,
   "cardClass": "WARLOCK",
   "id": "TB_BaconUps_060e",
@@ -10740,7 +10732,6 @@
  {
   "attack": 2,
   "name": "Emprise de Kathra’natir",
-  "aura": true,
   "dbfId": 76567,
   "cardClass": "NEUTRAL",
   "id": "BG21_039e",
@@ -10754,7 +10745,6 @@
  {
   "attack": 4,
   "name": "Emprise de Kathra’natir",
-  "aura": true,
   "dbfId": 76568,
   "cardClass": "NEUTRAL",
   "id": "BG21_039_Ge",
@@ -11455,7 +11445,6 @@
  {
   "attack": 2,
   "duration": 1,
-  "aura": true,
   "name": "Vous brûlerez tous !",
   "dbfId": 61407,
   "cardClass": "NEUTRAL",

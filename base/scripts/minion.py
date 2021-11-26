@@ -600,7 +600,7 @@ class BGS_069(battlecry_buff_myself):
 
     @property
     def enchantmentDbfId(self) -> Card_data:
-        return self.card_db[random.choice(ADAPT_ENCHANTMENT)]
+        return self.all_cards[str(random.choice(ADAPT_ENCHANTMENT))]
 
     @enchantmentDbfId.setter
     def enchantmentDbfId(self, value) -> None:
@@ -1155,15 +1155,15 @@ class BG20_103(Minion):
     def enhance_on(self, sequence: Sequence):
         if sequence.target is self and\
                 sequence.source.dbfId == CardName.BLOOD_GEM_ENCHANTMENT and\
-                self.temp_counter == 0:
+                self.TRIGGER_VISUAL:
             sequence.source.attack += self.bonus_value
             sequence.source.max_health += self.bonus_value
-            self.temp_counter += 1
+            self.TRIGGER_VISUAL = False
 
 
 class BG20_103_G(BG20_103):
     # Brute dos-hirsute premium
-    bonus_value = 4
+    bonus_value = 6
 
 
 class BG20_105(Minion):

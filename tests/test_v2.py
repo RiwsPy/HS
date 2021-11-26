@@ -1,6 +1,5 @@
 from base.enums import *
 from base.entity import Card, Entity
-from base.db_card import CARD_DB
 import pytest
 from base.sequence import Sequence
 from base.db_card import Meta_card_data, Card_data
@@ -8,8 +7,8 @@ from game import Game
 
 
 player_name = 'p1_name'
-hero_name = CARD_DB[CardName.DEFAULT_HERO]
 g = Card(CardName.DEFAULT_GAME, is_test=True)
+hero_name = g.all_cards[CardName.DEFAULT_HERO]
 
 
 def test_enums():
@@ -38,7 +37,7 @@ def test_all_in_bob(reinit_game, monkeypatch):
         assert player.bob.board.size == 3
 
         monkeypatch.setattr('base.player.Player.can_buy_minion', lambda *args, **kwargs: True)
-        crd = player.bob.board[0]
+        crd = player.bob.board.cards[0]
         crd.buy()
         assert player.bob.board.size == 2
         assert len(player.hand.cards) == 1
@@ -69,7 +68,7 @@ def test_game_hand(reinit_game):
 
 def test_minion(reinit_game):
     minion_id = 1915 # Baron
-    entity_data = g.minion_can_collect[minion_id]
+    entity_data = g.minion_can_collect[str(minion_id)]
     assert entity_data != None
 
     for minion in g.hand.entities[entity_data['level']]:
@@ -153,7 +152,7 @@ def test_play_2(reinit_game):
 def test_card_append(reinit_game):
     player = g.players[0]
     player.bob.board.fill_minion()
-    card = player.bob.board[0]
+    card = player.bob.board.cards[0]
     old_owner = card.owner
     old_len_old_owner = len(card.owner.cards)
     new_owner = player.hand
@@ -236,20 +235,21 @@ def test_adjacent_neighbors(reinit_game):
     assert crd_test.adjacent_neighbors() == [crd1, crd2]
 
 def test_card_data(reinit_game):
-    card_data = g.card_db[41245]
+    card_data = g.all_cards['41245']
     crd = g.players[0].hand.create_card_in(41245)
     assert card_data.attack == crd.attack
     assert card_data.level == crd.level
     assert card_data.nb_copy == CARD_NB_COPY[crd.level]
 
 def test_meta_card_data(reinit_game):
-    crd1 = g.card_db[41245]
-    crd2 = g.card_db[475]
+    crd1 = g.all_cards[41245]
+    crd2 = g.all_cards[475]
     crd1.rating = 2
     crd2.rating = 1.1
     meta = Meta_card_data(crd1, crd2)
     meta.sort('rating')
     assert meta == [475, 41245]
     assert type(meta) is Meta_card_data
-    assert type(meta[0]) is Card_data
+    for card in meta:
+        assert type(card) is Card_data
 

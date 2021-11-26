@@ -2,13 +2,12 @@ from game import Game
 import pytest
 from base.entity import Card
 from base.enums import CardName, GOLD_BY_TURN
-from base.db_card import CARD_DB
 from base.sequence import Sequence
 
 
 player_name = 'p1_name'
-hero_name = CARD_DB[CardName.DEFAULT_HERO]
 g = Card(CardName.DEFAULT_GAME, is_test=True)
+hero_name = g.all_cards[CardName.DEFAULT_HERO]
 
 @pytest.fixture()
 def reinit_game(monkeypatch):
@@ -56,7 +55,7 @@ def test_avenge_sequence(reinit_game):
         pote.play()
     with Sequence('FIGHT', g):
         cat.die()
-        assert g.players[0].board[0].attack == g.players[0].board[0].dbfId.attack +1
+        assert g.players[0].board.cards[0].attack == g.players[0].board.cards[0].dbfId.attack +1
 
 def test_frenzy(reinit_game):
     with Sequence('TURN', g):
@@ -90,8 +89,8 @@ def test_reborn(reinit_game):
         assert aco.REBORN is True
         aco.die()
         assert g.players[0].board.size == 1
-        assert g.players[0].board[0].health == 1
-        assert g.players[0].board[0].REBORN is False
+        assert g.players[0].board.cards[0].health == 1
+        assert g.players[0].board.cards[0].REBORN is False
 
 def test_play_error(reinit_game):
     boss1 = g.players[0].hand.create_card_in(72065) # boss écailles-salines

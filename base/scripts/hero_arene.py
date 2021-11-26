@@ -15,7 +15,7 @@ class Default_script:
     def turn_3(self, *args, force=False, **kwargs):
         self.board.cards.sort(key=lambda x: x.dbfId.rating, reverse=True)
         if args and type(args[0]) is str:
-            args = [self.card_db[arg]
+            args = [self.all_cards[arg]
             for arg in args]
         else:
             args = list(args)
@@ -53,7 +53,7 @@ class Special_arene_base_T2_to_T3:
         crd.buy(cost=0)
 
         worst_rating_minion = self.board.cards[-1]
-        worst_rating_minion_rating = self.card_db[worst_rating_minion.dbfId].T1_to_T3_rating
+        worst_rating_minion_rating = self.all_cards[worst_rating_minion.dbfId].T1_to_T3_rating
         if worst_rating_minion_rating < card_2.rating-0.5 or\
                 hasattr(worst_rating_minion, 'sell_on') or\
                 hasattr(worst_rating_minion, 'sell_off'):

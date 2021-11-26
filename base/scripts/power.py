@@ -199,8 +199,8 @@ class TB_BaconShop_HP_087t(Hero_power):
     def turn_off(self, sequence: Sequence):
         # le bonus s'active-t-il deux fois si le board ne contient qu'un seul serviteur ?
         if self.board.size > 0:
-            self.buff(self.enchantmentDbfId, self.board[0])
-            self.buff(self.enchantmentDbfId, self.board[-1])
+            self.buff(self.enchantmentDbfId, self.board.cards[0])
+            self.buff(self.enchantmentDbfId, self.board.cards[-1])
 
 
 class TB_BaconShop_HP_039(Hero_power):
@@ -318,10 +318,12 @@ class TB_BaconShop_HP_053(Hero_power):
         self.temp_counter = 1
 
     def die_off(self, sequence: Sequence):
-        source = sequence.source
         if self.temp_counter == 1 and not sequence.is_ally(self):
             self.temp_counter = 0
-            self.game.hand.give_or_create_in(source.dbfId, self.hand)
+            self.game.hand.give_or_create_in(
+                sequence.source.dbfId,
+                self.hand
+            )
 
 
 class TB_BaconShop_HP_107(Hero_power):
@@ -395,14 +397,14 @@ class TB_BaconShop_HP_061(Hero_power):
     # Aile de mort
     def summon_on(self, sequence: Sequence):
         #TODO gestion début de TURN/FIGHT
-        self.buff(self.enchantmentDbfId, sequence.source)
+        self.buff(self.enchantmentDbfId, sequence.source, aura=True)
 
     def fight_on(self, sequence: Sequence):
         # bonus non cumulable ?
         for minion in self.board.cards:
-            self.buff(self.enchantmentDbfId, minion)
+            self.buff(self.enchantmentDbfId, minion, aura=True)
         for minion in self.board.opponent.cards:
-            self.buff(self.enchantmentDbfId, minion)
+            self.buff(self.enchantmentDbfId, minion, aura=True)
     turn_on= fight_on
 
 

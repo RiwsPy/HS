@@ -1,14 +1,13 @@
 from os import stat
-from db_card import Card_data
-from enums import VERSION, CardName, Race
+from .enums import VERSION, CardName, Race
+from .db_card import Card_data, Meta_card_data, CARD_DB
 import time
 import json
-import stats
-from entity import Entity, Card
+from . import stats
+from .entity import Entity, Card
 from datetime import datetime
 from typing import DefaultDict, Dict
-from sequence import Sequence
-from db_card import Meta_card_data, CARD_DB
+from .sequence import Sequence
 from collections import defaultdict
 
 compo_turn_3 = { # by synergy
@@ -26,23 +25,23 @@ compo_turn_3 = { # by synergy
 class arene:
     def __init__(self, **kwargs) -> None:
         self.debut = time.time()
-        self.type_ban = kwargs['type_ban']
         self.g = Card(
             CardName.DEFAULT_GAME,
-            type_ban=self.type_ban,
+            types_ban=kwargs['types_ban'],
             is_arene=True,
             no_bob=True)
+        self.type_ban = self.g.type_ban
         self.version = self.g.version
         self.method = kwargs['method']
 
         self.db_arene = db_arene(**kwargs)
-        self.p1 = self.g.card_db[kwargs['p1']]
-        self.p2 = self.g.card_db[kwargs['p2']]
+        self.p1 = self.g.all_cards[kwargs['p1']]
+        self.p2 = self.g.all_cards[kwargs['p2']]
         self.retro = kwargs['retro']
 
         self.dic_add = kwargs
-        self.dic_add['p1'] = self.g.card_db[self.dic_add['p1']]['name']
-        self.dic_add['p2'] = self.g.card_db[self.dic_add['p2']]['name']
+        self.dic_add['p1'] = self.g.all_cards[self.dic_add['p1']]['name']
+        self.dic_add['p2'] = self.g.all_cards[self.dic_add['p2']]['name']
 
         self.begin()
 
@@ -88,7 +87,7 @@ class arene:
         stat_data = self.db_arene.search(version=self.version, **dic_add)
         if stat_data:
             for card_dbfId, card_rating in stat_data['rating'].items():
-                crd = self.g.card_db[int(card_dbfId.partition('_')[0])]
+                crd = self.g.all_cards[int(card_dbfId.partition('_')[0])]
                 crd.rating = card_rating
                 cards_test.append(crd)
         else:
@@ -287,7 +286,7 @@ class arene:
                         "p2": CardName.DEFAULT_HERO},
                         method = 'base_T1_to_T3_no_refound')
         for card in cards_T1_to_T3:
-            self.g.card_db[card].T1_to_T3_rating = card.rating
+            self.g.all_cards[card].T1_to_T3_rating = card.rating
 
         cards_T2 = self.load_card_rating(
                         {"method": "base_T3",
@@ -299,7 +298,7 @@ class arene:
         if not cards_T2:
             return
 
-        for card_p1 in [self.g.card_db[64042]]: # card_list
+        for card_p1 in [self.g.all_cards[64042]]: # card_list
             print(f'{card_p1.name} en cours...')
             generator_p2 = stats.card_proba(
                             cards_T2,
@@ -348,7 +347,7 @@ class arene:
                             method = 'base_T2_to_T3')
             # 9.5/5 = 2/2 + 2/4 + 2/5, impact prévisionnel jusqu'au Tour 5
             # TODO: valeur sous-évaluée pour l'anomalie actualisante > conservation_rate
-            ref_rating = self.g.card_db[59670]
+            ref_rating = self.g.all_cards[59670]
             for card in cards_test:
                 card.value = card.rating*9.5/5
 
@@ -383,7 +382,7 @@ class arene:
         """
 
 def ordered_rating(result: Meta_card_data) -> Dict[Card_data, int]:
-    return {str(card_id) + '_' + card_id.name: round(card_id.value, 2)
+    return {f'{int(card_id.dbfId)}' + '_' + card_id.name: round(card_id.value, 2)
         for card_id in sorted(result, key=lambda x: x.value, reverse=True)}
 
 def calc_damage(p1: Entity, p2: Entity) -> int:
@@ -460,6 +459,6 @@ if __name__ == '__main__':
      "p2": CardName.DEFAULT_HERO}))
     """
 
-    arene(method='base_T3', type_ban=0, retro=2,
+    arene(method='base_T3', type_ban=0, retro=3,
         p1=CardName.DEFAULT_HERO,
         p2=CardName.DEFAULT_HERO)

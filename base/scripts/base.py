@@ -54,14 +54,14 @@ class aura_buff_race(Minion):
     def summon_on(self, sequence: Sequence):
         if sequence.is_ally(self) and\
                 sequence.source.race == self.race:
-            self.buff(self.enchantmentDbfId, sequence.source)
+            self.buff(self.enchantmentDbfId, sequence.source, aura=True)
 
     def summon_start(self, sequence: Sequence):
         super().summon_start(sequence)
         if sequence.is_valid:
             for minion in self.controller.board.cards:
                 if minion.race == self.race:
-                    self.buff(self.enchantmentDbfId, minion)
+                    self.buff(self.enchantmentDbfId, minion, aura=True)
 
 
 class battlecry_buff_myself(Minion):

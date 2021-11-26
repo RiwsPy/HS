@@ -42,10 +42,11 @@ class Card_data(int):
     def __repr__(self) -> str:
         return self.name
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr) -> Any:
         return self.data.get(attr)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key) -> Any:
+        print('__get__item', key)
         return getattr(self, str(key))
 
     def __setitem__(self, key, value) -> None:
@@ -80,34 +81,29 @@ class Meta_card_data(Card_list):
         super().sort(key=lambda x: x[attr], reverse=reverse)
 
     def __getitem__(self, value) -> Any:
-        # TODO problème avec random.shuffle si dbfId <= len(self) ??
-        if isinstance(value, str):
-            try:
-                return super().__getitem__(self.index(int(value)))
-            except ValueError:
-                return super().__getitem__(self.index(value))
-
-        if not isinstance(value, int):
+        # TODO problème de compatibilité avec random.shuffle ??
+        if isinstance(value, int):
+            return super().__getitem__(self.index(value))
+        if type(value) is str:
+            return super().__getitem__(self.index(int(value)))
+        if isinstance(value, slice):
             return super().__getitem__(value)
-        try:
-            value = super().__getitem__(self.index(value))
-        except ValueError:
-            #print('Warning', value, 'not in Meta_card_data ret:', super().__getitem__(value))
-            return super().__getitem__(value)
-        else:
-            pass
-            #print('pas warning', value)
-        return value
+        print('strange value', value)
 
-def charge_all_cards() -> Meta_card_data:
+        return super().__getitem__(value)
+
+def charge_all_cards(types_ban=[]) -> Meta_card_data:
+    all_cards = Card.objects.exclude(synergy__in=types_ban)
+
     db = Meta_card_data(Card_data(**card.__dict__)
-        for card in Card.objects.all())
+        for card in all_cards)
 
     for card in db:
         for attr in dbfId_attr:
             if getattr(card, attr, False):
-                card[attr] = db[card[attr]]
+                card[attr] = db[getattr(card, attr)]
 
     return db
 
+# TODO: delete
 CARD_DB = charge_all_cards()

@@ -1,14 +1,13 @@
 import pytest
 from base.entity import Card
 from base.enums import CardName
-from base.db_card import CARD_DB
 from base.sequence import Sequence
 from game import Game
 
 
 player_name = 'p1_name'
-hero_name = CARD_DB[CardName.DEFAULT_HERO]
 g = Card(CardName.DEFAULT_GAME, is_test=True)
+hero_name = g.all_cards[CardName.DEFAULT_HERO]
 
 @pytest.fixture()
 def reinit_game(monkeypatch):
@@ -93,9 +92,8 @@ def test_saute_mouton(reinit_game):
         sheep.play()
 
     with Sequence('FIGHT', g):
-        p1.board[0].die()
-        p1.board[0].die()
-        sheep = p1.board[1]
+        p1.board.cards[0].die()
+        p1.board.cards[0].die()
         assert len(sheep.entities) == 2
         assert sheep.attack == sheep.dbfId.attack + sheep.enchantmentDbfId.attack*2
 

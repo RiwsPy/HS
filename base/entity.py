@@ -4,13 +4,12 @@ from .utils import Card_list, controller, game, my_zone
 from .action import attack
 from .scripts import hero_arene, minion_arene
 from .void import Void
-from .db_card import CARD_DB, Card_data
+from .db_card import CARD_DB, Card_data, Meta_card_data
 from .sequence import Sequence
+from typing import Any
+from card.models import Card as dbCard
 
 Void = Void()
-
-def card_db():
-    return CARD_DB
 
 
 def khadgar_aura(function):
@@ -56,17 +55,11 @@ class Entity:
             if data is not None:
                 setattr(self, key, data)
 
-        #self.dbfId = CARD_DB[str(dbfId)]#Card_data(**db)
-
-    def __getitem__(self, attr):
-        if isinstance(attr, str):
-            return getattr(self, attr)
-
-        return self.entities[attr]
+    def __getitem__(self, attr) -> Any:
+        return getattr(self, attr)
 
     def __setitem__(self, attr: str, value) -> None:
-        if isinstance(attr, str):
-            setattr(self, attr, value)
+        setattr(self, attr, value)
 
     def __iter__(self, *args):
         next_entities = Card_list()
@@ -98,8 +91,8 @@ class Entity:
         pass
 
     @property
-    def card_db(self):
-        return CARD_DB
+    def all_cards(self) -> Meta_card_data:
+        return self.game.all_cards
 
     @property
     def level(self) -> int:
@@ -410,7 +403,7 @@ class Minion(Entity):
 
             # MODULAR > Sequence ??
             if self.MODULAR and sequence.position is not None:
-                target = self.controller.board[sequence.position]
+                target = self.controller.board.cards[sequence.position]
                 if target.race.MECHANICAL:
                     sequence.modular_target = target
             #
@@ -796,9 +789,6 @@ class Spell(Entity):
 class Card:
     def __new__(cls, dbfId, **kwargs):
         from .scripts import event
+        ok = dbCard.objects.filter(pk=int(dbfId)) # retro3 base_T1 > 37s > 53s
         self = getattr(event, str(CARD_DB[dbfId].id))
         return self(dbfId, **kwargs)
-
-
-if __name__ == "__main__":
-    pass

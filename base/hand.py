@@ -1,6 +1,6 @@
 from .enums import Type, LEVEL_MAX, HAND_SIZE, CardName, Zone
 from .entity import Entity
-from typing import Generator
+from typing import Generator, Any
 from itertools import chain
 from .utils import Card_list
 from .sequence import Sequence
@@ -84,6 +84,9 @@ class Bob_hand(Entity):
             Card_list(),],
             **kwargs)
 
+    def __getitem__(self, value) -> Any:
+        return self.entities[value]
+
     def append(self, entity: Entity, **kwargs) -> None:
         """
             Try to add card to bob's hand, remove it from the current owner (if any)
@@ -160,15 +163,16 @@ class Bob_hand(Entity):
         return card_id
 
     def search(self, dbfId: int) -> Entity:
-        if dbfId in self.game.minion_can_collect:
-            card_lvl = self.card_db[dbfId]['level']
+        card_lvl = self.all_cards[dbfId].techLevel
+        if card_lvl:
             for entity in self.entities[card_lvl]:
                 if entity.dbfId == dbfId:
                     return entity
         return None
 
     def give_or_create_in(self, dbfId: int, new_owner) -> Entity:
-        dbfId_data = self.card_db[dbfId]
+        dbfId_data = self.all_cards[dbfId]
+
         if dbfId_data.level:
             card_id = self.search(dbfId) or self.create_card(dbfId)
             if card_id is None:

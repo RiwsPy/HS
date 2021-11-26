@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from base.enums import CARD_NB_COPY, state_list, Race, Type, Zone, dbfId_attr
+from base.enums import CARD_NB_COPY, state_list, Race, Type, dbfId_attr
 from typing import Any
 
 class Card(models.Model):
@@ -51,14 +51,11 @@ class Card(models.Model):
     battlegroundsHero= models.BooleanField(default=False)
     remain_use= models.PositiveSmallIntegerField(null=True)
     avenge_counter= models.PositiveSmallIntegerField(null=True)
-    #bonus_value= models.IntegerField(null=True)
     duration= models.IntegerField(null=True)
-    aura= models.BooleanField(default=False)
     battlegroundsDarkmoonPrizeTurn= models.PositiveSmallIntegerField(null=True)
     minion_cost= models.PositiveSmallIntegerField(null=True)
     roll_cost= models.PositiveSmallIntegerField(default=0)
     levelup_cost_mod= models.PositiveSmallIntegerField(default=0)
-    #zone_type= models.CharField(max_length=30, default="DEFAULT")
     phase= models.CharField(max_length=30, null=True)
 
     spellSchool= models.CharField(max_length=30, default='')

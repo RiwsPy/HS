@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from base.db_card import CARD_DB
+from base.db_card import charge_all_cards
 from base.utils import Card_list, db_arene
 from base.enums import Race, Type, NB_PRESENT_TYPE, VERSION, CardName
 import random
@@ -17,7 +17,8 @@ from base.sequence import Sequence
 
 class Game(Entity):
     default_attr = {
-        "test": False,
+        #"test": False,
+        "type": Type("GAME"),
         "is_arene": False,
         'no_bob': False,
         'version': VERSION,
@@ -26,20 +27,19 @@ class Game(Entity):
         'is_test': False,
     }
 
-    def __init__(self, *args, types_ban=[], **attr):
-        # ban les types avant la création de game ?
-        super().__init__(CardName.DEFAULT_GAME, **attr)
+    def __init__(self, *args, types_ban=[], **kwargs):
+        for attr, value in {**self.default_attr, **kwargs}.items():
+            setattr(self, attr, value)
 
         self.reinit()
 
-        types_ban = types_ban or self.determine_ban_type()
-        all_cards = CARD_DB
-        for type_ban in types_ban:
-            all_cards = all_cards.exclude(synergy=Race(type_ban))
+        if not types_ban and not self.is_test and not self.is_arene:
+            types_ban = self.determine_ban_type()
+
+        all_cards = charge_all_cards(types_ban)
 
         self.type_ban = sum(Race(race).hex for race in types_ban)
-
-        self.craftable_cards = all_cards
+        self.cards = all_cards
         self.craftable_heroes = all_cards.filter(battlegroundsHero=True)
         self.minion_can_collect = all_cards.exclude(techLevel=None)
 
@@ -64,6 +64,10 @@ class Game(Entity):
         self.players = Card_list()
         self.fields = Card_list()
 
+    @property
+    def all_cards(self) -> Meta_card_data:
+        return self.cards
+
     def party_begin(self, *players, hero_p1=0, hero_p2=0) -> None:
         #TODO: Players are assigned opponents for the first round when the game begins before the heroes are chosen.
         #TODO: Players will not face the same player, or Kel'Thuzad, more than once in every 3 combat rounds (unless there are 2 players remaining).
@@ -83,13 +87,13 @@ class Game(Entity):
 
             if self.is_arene:
                 if nb == 0 and hero_p1:
-                    hero_chosen = CARD_DB[hero_p1]
+                    hero_chosen = self.all_cards[hero_p1]
                 elif nb == 1 and hero_p2:
-                    hero_chosen = CARD_DB[hero_p2]
+                    hero_chosen = self.all_cards[hero_p2]
                 else:
-                    hero_chosen = CARD_DB[CardName.DEFAULT_HERO]
+                    hero_chosen = self.all_cards[CardName.DEFAULT_HERO]
             elif nb == 0 and hero_p1:
-                hero_chosen = CARD_DB[hero_p1]
+                hero_chosen = self.all_cards[hero_p1]
             else:
                 hero_chosen = self.choose_champion(random_craftable_heroes[nb*4:nb*4+4],
                     pr=f'Choix du héros pour {player_name} :')
@@ -168,6 +172,22 @@ if __name__ == "__main__":
     g = Card(CardName.DEFAULT_GAME, is_test=True)
     g.party_begin('p1_name', 'p2_name', hero_p1=63601)
     p1, p2 = g.players
+
+    """
+    from base.arene import arene
+    arene(method='base_T1', types_ban=[], retro=4,
+        p1=CardName.DEFAULT_HERO,
+        p2=CardName.DEFAULT_HERO)
+    """
+
+    p1 = g.players[0]
+    old_hand_len = g.hand.size
+    with Sequence('TURN', g):
+        g.hand.give_or_create_in(65658, p1.hand) # Acolyte de C'thun
+        assert p1.hand.size == 1
+        assert g.hand.size == old_hand_len - len(g.players)*3 - 3
+
+
 
     with Sequence('TURN', g):
         cha = p1.hand.create_card_in(41245) # Chasseur rochecave

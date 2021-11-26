@@ -1,14 +1,13 @@
 import pytest
 from base.entity import Card
 from base.enums import CardName, ADAPT_ENCHANTMENT
-from base.db_card import CARD_DB
 from base.sequence import Sequence
 from game import Game
 
 
 player_name = 'p1_name'
-hero_name = CARD_DB[CardName.DEFAULT_HERO]
 g = Card(CardName.DEFAULT_GAME, is_test=True)
+hero_name = g.all_cards[CardName.DEFAULT_HERO]
 
 @pytest.fixture()
 def reinit_game(monkeypatch):

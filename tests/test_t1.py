@@ -2,13 +2,12 @@ import pytest
 from base.entity import Card
 from game import Game
 from base.enums import CardName
-from base.db_card import CARD_DB
 from base.sequence import Sequence
 
 
 player_name = 'p1_name'
-hero_name = CARD_DB[CardName.DEFAULT_HERO]
 g = Card(CardName.DEFAULT_GAME, is_test=True)
+hero_name = g.all_cards[CardName.DEFAULT_HERO]
 
 @pytest.fixture()
 def reinit_game(monkeypatch):
@@ -36,7 +35,7 @@ def test_elemenplus(reinit_game):
 
     crd.sell()
     assert g.players[0].hand.size == 1
-    assert g.players[0].hand[0].dbfId == 64040
+    assert g.players[0].hand.cards[0].dbfId == 64040
 
 def test_micromomie(reinit_game):
     with Sequence('TURN', g):
@@ -57,7 +56,7 @@ def test_bronzecouenne(reinit_game):
 
     crd.sell()
     assert g.players[0].hand.size == 2
-    assert g.players[0].hand[0].dbfId == CardName.BLOOD_GEM
+    assert g.players[0].hand.cards[0].dbfId == CardName.BLOOD_GEM
 
 def test_tisse_colere(reinit_game):
     with Sequence('TURN', g):
@@ -75,7 +74,7 @@ def test_forban(reinit_game):
     with Sequence('FIGHT', g):
         forb.die()
         assert g.players[0].board.size == 1
-        assert g.players[0].board[0].dbfId == 62213
+        assert g.players[0].board.cards[0].dbfId == 62213
 
 def test_hyene(reinit_game):
     with Sequence('TURN', g):
@@ -85,8 +84,8 @@ def test_hyene(reinit_game):
         cat.play()
     with Sequence('FIGHT', g):
         cat.die()
-        assert g.players[0].board[0].attack == 4
-        assert g.players[0].board[0].max_health == 3
+        assert g.players[0].board.cards[0].attack == 4
+        assert g.players[0].board.cards[0].max_health == 3
 
 def test_chromaile(reinit_game):
     with Sequence('TURN', g):
