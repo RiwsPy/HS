@@ -92,6 +92,7 @@ class Meta_card_data(Card_list):
 
         return super().__getitem__(value)
 
+
 def charge_all_cards(types_ban=[]) -> Meta_card_data:
     all_cards = Card.objects.exclude(synergy__in=types_ban)
 

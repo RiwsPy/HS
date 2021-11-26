@@ -50,30 +50,25 @@ def test_all_in_bob(reinit_game, monkeypatch):
 
 def test_game_hand(reinit_game):
     entity_level = 1
-    entity = g.hand[entity_level][0]
-    id = entity.dbfId
-    assert entity.type == Type.MINION
-    assert entity.level == entity_level
-    assert isinstance(entity, Entity)
-    assert len(g.hand.cards.filter(dbfId=id)) == CARD_NB_COPY[entity_level]
+    for entity in g.hand[entity_level]:
+        assert entity.type == Type.MINION
+        assert entity.level == entity_level
+        assert isinstance(entity, Card_data)
+    assert len(g.hand.cards.filter(dbfId=entity.dbfId)) == CARD_NB_COPY[entity_level]
     for card in g.hand.cards:
         assert card.synergy.hex & g.type_ban == 0
-    nb = 0
-    for card_id in g.minion_can_collect:
-        if card_id.level == entity_level:
-            nb += 1
-    assert len(g.hand.cards_of_tier_max(
-            tier_max=entity_level, tier_min=entity_level)) == \
+    nb = len(g.minion_can_collect.filter(level=entity_level))
+    assert len(g.hand[entity_level]) == \
                 CARD_NB_COPY[entity_level]*nb
 
 def test_minion(reinit_game):
     minion_id = 1915 # Baron
-    entity_data = g.minion_can_collect[str(minion_id)]
+    entity_data = g.minion_can_collect[minion_id]
     assert entity_data != None
 
     for minion in g.hand.entities[entity_data['level']]:
         if minion == minion_id:
-            for data, value in entity_data.data:
+            for data, value in entity_data.items():
                 assert getattr(minion, data) == value
             break
 

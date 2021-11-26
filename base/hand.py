@@ -1,3 +1,4 @@
+from base.db_card import Meta_card_data
 from .enums import Type, LEVEL_MAX, HAND_SIZE, CardName, Zone
 from .entity import Entity
 from typing import Generator, Any
@@ -75,13 +76,13 @@ class Bob_hand(Entity):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(CardName.DEFAULT_HAND, entities=[
-            Card_list(),
-            Card_list(),
-            Card_list(),
-            Card_list(),
-            Card_list(),
-            Card_list(),
-            Card_list(),],
+            Meta_card_data(),
+            Meta_card_data(),
+            Meta_card_data(),
+            Meta_card_data(),
+            Meta_card_data(),
+            Meta_card_data(),
+            Meta_card_data()],
             **kwargs)
 
     def __getitem__(self, value) -> Any:
@@ -99,30 +100,31 @@ class Bob_hand(Entity):
         for ent in entity.entities[::-1]:
             self.append(ent)
         if entity.from_bob:
-            self.create_card_in(entity.dbfId)
+            self.entities[entity.level].append(entity.dbfId)
 
     def remove(self, entity: Entity) -> None:
         """
             Remove one card from bob's hand
         """
-        self.entities[entity.level].remove(entity)
+        if isinstance(entity, int):
+            entity = self.all_cards[entity]
+        self.entities[entity.level].remove(entity.dbfId)
 
-    def discard(self, dbfId: int) -> Entity:
-        """
-            Take out one card with ``dbfId`` of bob's hand
-            Only used by statistical algorithms
-            *param key: card_key_number to remove
-            *type key: str
-            *return: card_id (or None if ``key`` doesn't exist)
-            *rtype: entity.Card
-        """
-        entity = self.search(dbfId)
-        if entity:
-            self.remove(entity)
-        return entity
+    def remove_and_create(self, dbfId: int) -> Entity:
+        try:
+            self.remove(dbfId)
+        except ValueError:
+            return self.create_card(dbfId)
+        else:
+            return self.create_card(dbfId, from_bob=True)
+
+    @property
+    def cards(self) -> Card_list:
+        return self.cards_of_tier_max()
 
     def __len__(self) -> int:
         return len(self.cards)
+    size = __len__
 
     def __iter__(self) -> Generator:
         yield from (i for i in self.cards)
@@ -133,10 +135,6 @@ class Bob_hand(Entity):
             Returns a boolean indicating if it is possible to add a card to bob's hand
         """
         return False
-
-    @property
-    def size(self) -> int:
-        return len(self.cards)
 
     def cards_of_tier_max(self, tier_max=LEVEL_MAX, tier_min=1) -> Card_list:
         """
@@ -149,48 +147,30 @@ class Bob_hand(Entity):
         """
         return Card_list(*chain(*self.entities[tier_min:tier_max+1]))
 
-    @property
-    def cards(self) -> Card_list:
-        return self.cards_of_tier_max()
-
-    def create_card_in(self, dbfId: int, position=None, **kwargs) -> Entity:
+    def create_card_in(self, dbfId: int, position=None, **kwargs) -> None:
         """
             Create a copy of each card in ``entities_id`` parameter to bob's hand
         """
-        card_id = self.create_card(dbfId, **kwargs, from_bob=True)
-        card_id.owner = self
-        self.entities[card_id.level].append(card_id)
-        return card_id
-
-    def search(self, dbfId: int) -> Entity:
-        card_lvl = self.all_cards[dbfId].techLevel
-        if card_lvl:
-            for entity in self.entities[card_lvl]:
-                if entity.dbfId == dbfId:
-                    return entity
+        dbfId_data = self.all_cards[dbfId]
+        self.entities[dbfId_data.level].append(dbfId_data)
         return None
 
     def give_or_create_in(self, dbfId: int, new_owner) -> Entity:
         dbfId_data = self.all_cards[dbfId]
 
         if dbfId_data.level:
-            card_id = self.search(dbfId) or self.create_card(dbfId)
-            if card_id is None:
-                card_id = new_owner.create_card_in(dbfId)
-            else:
-                # TODO: test
-                new_owner.append(card_id)
-        elif dbfId_data.battlegroundsPremiumDbfId: # plain cant_collect card
+            in_bob = dbfId in self.cards
+            if in_bob:
+                self.remove(dbfId)
+            card_id = new_owner.create_card_in(dbfId, from_bob=in_bob)
+        else:
             card_id = new_owner.create_card_in(dbfId)
-        else: # golden card
-            card_id = new_owner.create_card_in(dbfId)
+
             normal_dbfId = dbfId_data.battlegroundsNormalDbfId
             if normal_dbfId:
                 for _ in range(3):
-                    plain_card = self.discard(normal_dbfId)
-                    if plain_card:
-                        card_id.cards.append(plain_card)
-                    else:
-                        break
+                    card_id.cards.append(
+                        self.remove_and_create(normal_dbfId)
+                    )
 
         return card_id
