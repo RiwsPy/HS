@@ -40,8 +40,8 @@ class arene:
         self.retro = kwargs['retro']
 
         self.dic_add = kwargs
-        self.dic_add['p1'] = self.g.all_cards[self.dic_add['p1']]['name']
-        self.dic_add['p2'] = self.g.all_cards[self.dic_add['p2']]['name']
+        self.dic_add['p1'] = self.g.all_cards[self.dic_add['p1']].name
+        self.dic_add['p2'] = self.g.all_cards[self.dic_add['p2']].name
 
         self.begin()
 

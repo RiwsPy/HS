@@ -4,11 +4,11 @@ import random
 from .entity import Entity
 from typing import List, Generator
 from .sequence import Sequence
+from .zone import Zone as ZoneEntity
 
 
-class Board(Entity):
+class Board(ZoneEntity):
     default_attr = {
-        'type': Type.ZONE,
         'zone_type': Zone.PLAY,
         'next_opponent': None, # adversaire rencontré après un end_turn
     }
@@ -21,8 +21,8 @@ class Board(Entity):
         self.cards_save = []
         self.entities_save = []
 
-    def __iter__(self) -> Generator:
-        yield from (i for i in self.cards)
+    #def __iter__(self) -> Generator:
+    #    yield from (i for i in self.cards)
 
     def purge(self):
         self.cards = Board_Card_list()
@@ -30,14 +30,6 @@ class Board(Entity):
     @property
     def opponent(self):
         return self.owner.opponent.board
-
-    @property
-    def size(self) -> int:
-        return len(self.cards)
-
-    @property
-    def size_without_dormant(self) -> int:
-        return len(self.cards.exclude(DORMANT=True))
 
     @property
     def level(self) -> int:
@@ -59,7 +51,7 @@ class Board(Entity):
             if getattr(enchantment, 'aura', False):
                 enchantment.remove()
 
-    def append(self, entity: Entity, position=None) -> None:
+    def append(self, entity: Entity, position=None, **kwargs) -> None:
         # TODO : problème de positionnement en cas de repop multiple
         # faire pop avant le minion d'après ou en dernier en cas d'inexistance ?
         if position is None:
@@ -69,25 +61,19 @@ class Board(Entity):
             if position != entity.position:
                 del self.cards[self.cards.index(entity)]
                 self.cards.insert(position, entity)
-            return True
-
-        if self.can_add_card(entity):
+        elif self.can_add_card(entity):
             super().append(entity)
             self.cards.insert(position, entity)
+        else:
+            raise BoardAppendError
 
     def create_card_in(self, dbfId: int, position=None, **kwargs) -> Entity:
         """
             Create card and append it in self
         """
         card_id = self.create_card(dbfId, **kwargs)
-        if self.can_add_card(card_id):
-            self.append(card_id, position=position)
-            return card_id
-        return None
-
-    @property
-    def is_full(self) -> bool:
-        return self.size >= self.MAX_SIZE
+        self.append(card_id, position=position)
+        return card_id
 
     def can_add_card(self, card_id) -> bool:
         return card_id.type.MINION and not self.is_full
@@ -164,7 +150,7 @@ class Bob_board(Board):
         self.drain_minion()
 
     def roll(self, sequence: Sequence) -> None:
-        self.drain_all_minion()
+        self.drain_minion(freeze=True)
         self.fill_minion()
 
     def freeze(self) -> None:
@@ -173,18 +159,20 @@ class Bob_board(Board):
             for minion in self.cards:
                 minion.FREEZE = not is_freeze
 
-    def drain_minion(self) -> None:
-        for minion in self.cards.exclude(FREEZE=True, DORMANT=True):
-            self.owner.hand.append(minion)
+    def drain_minion(self, freeze=False, dormant=False) -> None:
+        cards = self.cards
+        if not dormant:
+            cards = cards.exclude(DORMANT=True)
+        if not freeze:
+            cards = cards.exclude(FREEZE=True)
 
-    def drain_all_minion(self) -> None:
-        for minion in self.cards.exclude(DORMANT=True):
+        for minion in cards:
             self.owner.hand.append(minion)
 
     def fill_minion(self, nb_card_to_play=0, entity_list=Card_list()) -> None:
         #TODO? Sequence REFRESH ??
         nb_card_to_play = (nb_card_to_play or \
-            self.owner.opponent.nb_card_by_roll) - self.size_without_dormant
+            self.owner.opponent.nb_card_by_roll) - len(self.cards.exclude(DORMANT=True))
         entity_list = (entity_list or self.owner.local_hand).shuffle()
         while nb_card_to_play >= 1 and not self.is_full:
             nb_card_to_play -= 1
@@ -205,9 +193,7 @@ class Bob_board(Board):
 
 
 class Graveyard(Board):
-    MAX_SIZE = 9999
     default_attr = {
-        'type': Type.ZONE,
         'zone_type': Zone.GRAVEYARD,
     }
 
@@ -234,6 +220,13 @@ class Secret_board(Board):
         return [entity.dbfId for entity in self.cards]
 
     def can_add_card(self, entity: Entity) -> bool:
-        return entity.type == Type.SPELL and\
-            entity.SECRET and not self.is_full and\
+        return entity.SECRET and not self.is_full and\
             entity.dbfId not in self.dbfId_list
+
+
+class BoardAppendError(Exception):
+    def __init__(self, msg: str):
+        super().__init__(msg)
+
+    def __str__(self):
+        return "Exception: the card can't be added."

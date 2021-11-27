@@ -66,7 +66,7 @@ def test_minion(reinit_game):
     entity_data = g.minion_can_collect[minion_id]
     assert entity_data != None
 
-    for minion in g.hand.entities[entity_data['level']]:
+    for minion in g.hand.entities[entity_data.level]:
         if minion == minion_id:
             for data, value in entity_data.items():
                 assert getattr(minion, data) == value
@@ -127,7 +127,7 @@ def test_play(reinit_game):
 
 def test_play_2(reinit_game):
     player = g.players[0]
-    card = player.hand.create_card_in(70143) # tranchebauge
+    card = player.draw(70143) # tranchebauge
     assert card.dbfId == 70143
     assert card.owner == player.hand
     assert card in player.hand.cards
@@ -136,9 +136,9 @@ def test_play_2(reinit_game):
     assert card in player.board.cards
     assert len(player.hand.cards) == 1
     assert card.can_attack
-    card = player.hand.create_card_in(976) # chasse-marée
+    card = player.draw(976) # chasse-marée
     card.play()
-    card = player.hand.create_card_in(976) # chasse-marée
+    card = player.draw(976) # chasse-marée
     card.play()
     g.active_action()
     lst = player.board.cards.exclude_hex(card, race=Race('ALL').hex-Race('MURLOC').hex)
@@ -160,7 +160,7 @@ def test_card_append(reinit_game):
 
 def test_entity_reset(reinit_game):
     player = g.players[0]
-    crd = player.hand.create_card_in(70143) # géomancien
+    crd = player.draw(70143) # géomancien
 
     assert crd.attack == crd.dbfId.attack
     crd.attack += 2
@@ -191,9 +191,9 @@ def test_append_action(reinit_game):
 
 def test_fight_1_1(reinit_game):
     with Sequence('TURN', g):
-        crd = g.players[0].hand.create_card_in(40425) # chat tigré
+        crd = g.players[0].draw(40425) # chat tigré
         crd.play()
-        crd = g.players[1].hand.create_card_in(40425)
+        crd = g.players[1].draw(40425)
         crd.play()
 
     Sequence('FIGHT', g).start_and_close()
@@ -205,11 +205,11 @@ def test_fight_1_1(reinit_game):
 def test_aura_1(reinit_game):
     player1 = g.players[0]
     with Sequence('TURN', g):
-        crd = player1.hand.create_card_in(61061) # Forban
+        crd = player1.draw(61061) # Forban
         crd.play()
         assert crd.attack == crd.dbfId.attack
 
-        crd2 = player1.hand.create_card_in(680) # Capitaine des mers du sud
+        crd2 = player1.draw(680) # Capitaine des mers du sud
         crd2.play()
         g.active_action()
         assert crd2.attack == crd2.dbfId.attack
@@ -231,7 +231,7 @@ def test_adjacent_neighbors(reinit_game):
 
 def test_card_data(reinit_game):
     card_data = g.all_cards['41245']
-    crd = g.players[0].hand.create_card_in(41245)
+    crd = g.players[0].draw(41245)
     assert card_data.attack == crd.attack
     assert card_data.level == crd.level
     assert card_data.nb_copy == CARD_NB_COPY[crd.level]

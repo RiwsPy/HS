@@ -61,7 +61,7 @@ class BGS_200(Minion):
 
     @repeat_effect
     def deathrattle(self, sequence: Sequence):
-        self.controller.hand.create_card_in(CardName.COIN)
+        self.controller.draw(CardName.COIN)
 
 
 class TB_BaconUps_256(BGS_200):
@@ -87,9 +87,9 @@ class BGS_046(Minion):
     def attack_end(self, sequence: Sequence):
         # n'est pas une découverte à 1 car peut se découvrir lui-même
         if not sequence.target.is_alive:
-            minion = self.controller.bob.local_hand.random_choice()
-            if minion:
-                self.controller.hand.append(minion)
+            self.controller.draw(
+                self.controller.deck.random_choice()
+            )
 
 
 class TB_BaconUps_132(BGS_046):

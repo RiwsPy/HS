@@ -272,7 +272,7 @@ class BGS_115(Minion):
 
     @repeat_effect
     def sell_end(self, sequence: Sequence):
-        self.controller.hand.create_card_in(64040)
+        self.controller.draw(64040)
 
 
 class TB_BaconUps_156(Minion):
@@ -286,7 +286,7 @@ class BG20_301(Minion):
 
     @repeat_effect
     def sell_end(self, sequence: Sequence):
-        self.controller.hand.create_card_in(CardName.BLOOD_GEM)
+        self.controller.draw(CardName.BLOOD_GEM)
 
 
 class BG20_301_G(BG20_301):
@@ -300,7 +300,7 @@ class BG20_100(Minion):
 
     @repeat_effect
     def battlecry(self, sequence: Sequence):
-        self.controller.hand.create_card_in(CardName.BLOOD_GEM)
+        self.controller.draw(CardName.BLOOD_GEM)
 
 
 class BG20_100_G(BG20_100):
@@ -621,11 +621,12 @@ class BGS_020(Minion):
     @repeat_effect
     def battlecry(self, sequence: Sequence):
         if self.my_zone.cards.filter(race='MURLOC').exclude(self):
-            minion_id = self.discover(
-                self.controller.bob.local_hand.filter(race='MURLOC'),
-                nb=3)
-            if minion_id:
-                self.controller.hand.append(minion_id)
+            self.controller.draw(
+                self.discover(
+                    self.controller.deck.filter(race='MURLOC'),
+                    nb=3
+                )
+            )
 
 
 class TB_BaconUps_089(BGS_020):
@@ -639,10 +640,11 @@ class BGS_123(Minion):
 
     @repeat_effect
     def battlecry(self, sequence: Sequence):
-        minion_id = self.discover(
-            self.controller.bob.local_hand.filter(race='ELEMENTAL'),
-            nb=1)
-        self.controller.hand.append(minion_id)
+        self.controller.draw(
+            self.discover(
+                self.controller.deck.filter(race='ELEMENTAL'),
+                nb=1)
+        )
 
 
 class TB_BaconUps_162(BGS_123):
@@ -811,11 +813,14 @@ class BGS_122(Minion):
 
     @repeat_effect
     def battlecry(self, sequence: Sequence):
-        minion_id = self.discover(
-            self.controller.bob.local_hand.filter(race='ELEMENTAL'),
+        minion_dbfId = self.discover(
+            self.controller.deck.filter(race='ELEMENTAL'),
             nb=1)
-        self.controller.bob.board.append(minion_id)
-        if minion_id in self.controller.bob.board.cards:
+        try:
+            minion_id = self.controller.bob.board.create_card_in(minion_dbfId)
+        except BoardAppendError:
+            pass
+        else:
             minion_id.FREEZE = True
 
 
@@ -873,7 +878,7 @@ class BGS_121(deathrattle_repop):
         super().deathrattle(sequence)
         for repop in sequence._repops:
             # les cartes sont-elles retirées de la main de bob ?
-            self.controller.hand.create_card_in(repop)
+            self.controller.draw(repop.dbfId)
 
     @property
     def repopDbfId(self) -> int:
@@ -884,7 +889,7 @@ class BGS_121(deathrattle_repop):
         TODO: Gentle Djinni firstly summons an elemental, and only then puts a copy of it in hand. Therefore, if Djinni's deathrattle triggers more than once, but there is not enough space on board to summon another minion, the player will not receive a second and subsequent copy of elemental.
         : le gain ne se fait que si le repop à lieu
         """
-        return random.choice(self.controller.bob.local_hand.filter(race='ELEMENTAL').exclude(self.dbfId)).dbfId
+        return random.choice(self.controller.deck.filter(race='ELEMENTAL').exclude(self.dbfId)).dbfId
 
 class TB_BaconUps_165(BGS_121):
     # Gentil djinn premium
@@ -1131,7 +1136,7 @@ class BG20_101(Minion):
 
     @repeat_effect
     def frenzy(self, sequence: Sequence):
-        self.controller.hand.create_card_in(CardName.BLOOD_GEM)
+        self.controller.draw(CardName.BLOOD_GEM)
 
 
 class BG20_101_G(BG20_101):
@@ -1172,7 +1177,7 @@ class BG20_105(Minion):
 
     @repeat_effect
     def battlecry(self, sequence: Sequence):
-        self.controller.hand.create_card_in(CardName.BLOOD_GEM)
+        self.controller.draw(CardName.BLOOD_GEM)
     deathrattle = battlecry
 
 
@@ -1224,7 +1229,7 @@ class BG20_201_G(BG20_201):
 class BG20_104(Minion):
     # Cogneur
     def combat_end(self, sequence: Sequence):
-        self.controller.hand.create_card_in(CardName.BLOOD_GEM)
+        self.controller.draw(CardName.BLOOD_GEM)
 BG20_104_G= BG20_104 # Cogneur premium
 
 
@@ -1310,7 +1315,7 @@ class BG20_206(Minion):
         for _ in range(sequence.gold_spend):
             self.quest_value += 1
             if self.quest_value % self.mod_quest_value == 0:
-                self.controller.hand.create_card_in(CardName.BLOOD_GEM)
+                self.controller.draw(CardName.BLOOD_GEM)
 
 
 class BG20_206_G(BG20_206):
@@ -1322,8 +1327,8 @@ class BG20_206_G(BG20_206):
         for _ in range(sequence.gold_spend):
             self.quest_value += 1
             if self.quest_value % self.mod_quest_value == 0:
-                self.controller.hand.create_card_in(CardName.BLOOD_GEM)
-                self.controller.hand.create_card_in(CardName.BLOOD_GEM)
+                self.controller.draw(CardName.BLOOD_GEM)
+                self.controller.draw(CardName.BLOOD_GEM)
 
 
 class BG20_203(Minion):
@@ -1332,7 +1337,7 @@ class BG20_203(Minion):
         if sequence.source.race.QUILBOAR and\
                 sequence.is_ally(self) and\
                 self.TRIGGER_VISUAL:
-            self.controller.hand.create_card_in(CardName.BLOOD_GEM)
+            self.controller.draw(CardName.BLOOD_GEM)
             self.TRIGGER_VISUAL = False
 
 
@@ -1342,8 +1347,8 @@ class BG20_203_G(BG20_203):
         if sequence.source.race.QUILBOAR and\
                 sequence.is_ally(self) and\
                 self.TRIGGER_VISUAL:
-            self.controller.hand.create_card_in(CardName.BLOOD_GEM)
-            self.controller.hand.create_card_in(CardName.BLOOD_GEM)
+            self.controller.draw(CardName.BLOOD_GEM)
+            self.controller.draw(CardName.BLOOD_GEM)
             self.TRIGGER_VISUAL = False
 
 
@@ -1716,7 +1721,7 @@ class BG21_017(Minion):
     def turn_off(self, sequence: Sequence):
         have_another_pirate = self.owner.cards.filter(race='PIRATE').exclude(self)
         if have_another_pirate:
-            self.controller.hand.create_card_in(CardName.COIN)
+            self.controller.draw(CardName.COIN)
 
 
 class BG21_017_G(BG21_017):
@@ -1754,7 +1759,7 @@ class BG21_037(Minion):
     @repeat_effect
     def loss_shield_off(self, sequence: Sequence):
         if sequence.is_ally(self):
-            self.controller.hand.create_card_in(CardName.BLOOD_GEM)
+            self.controller.draw(CardName.BLOOD_GEM)
 
 
 class BG21_037_G(BG21_037):
@@ -1833,8 +1838,9 @@ class BG21_007(Minion):
 
     @repeat_effect
     def avenge(self, sequence: Sequence):
-        minion = random.choice(self.controller.bob.local_hand.filter(race='DEMON'))
-        self.controller.hand.append(minion)
+        self.controller.draw(
+            self.controller.deck.filter(race='DEMON').random_choice()
+        )
 
 
 class BG21_007_G(BG21_007):
@@ -1861,8 +1867,8 @@ class BG21_038(Minion):
     @repeat_effect
     def avenge(self, sequence: Sequence):
         # TODO: à tester, probablement non fonctionnel
-        self.controller.hand.append(
-            self.controller.bob.local_hand.filter(BATTLECRY=True).random_choice()
+        self.controller.draw(
+            self.controller.deck.filter(BATTLECRY=True).random_choice()
         )
 
 
@@ -2136,9 +2142,8 @@ class BG21_019(Minion):
     def turn_on(self, sequence: Sequence):
         self.quest_value += 1
         if self.quest_value % self.mod_quest_value == 0:
-            minion = self.controller.bob.hand.cards.random_choice()
-            self.controller.hand.append(minion)
-            #TODO: SET PREMIUM
+            minion_data = self.game.deck.exclude(battlegroundsPremiumDbfId=None).random_choice()
+            self.controller.draw(minion_data.battlegroundsPremiumDbfId)
 
 
 class BG21_019_G(BG21_019):

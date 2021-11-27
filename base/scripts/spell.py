@@ -13,7 +13,10 @@ class TB_BaconShop_HP_008a(Spell):
 class TB_BaconShop_HP_047t(Spell):
     # Carte de recrutement
     def cast(self, sequence: Sequence):
-        self.controller.discover(self, nb=3, lvl_min=self.quest_value, lvl_max=self.quest_value)
+        card_id = self.discover(
+            self.game.hand.filter(level=self.quest_value),
+            nb=1)
+        self.controller.draw(card_id)
 TB_BaconShop_HP_101t2= TB_BaconShop_HP_047t # Trophée
 TB_BaconShop_Triples_01= TB_BaconShop_HP_047t # Récompense de triple
 

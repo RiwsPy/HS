@@ -298,6 +298,43 @@ class Entity:
                         target.FRENZY = False
                         Sequence('FRENZY', target).start_and_close()
 
+    def discover(
+            self,
+            card_list: Card_list,
+            nb: int = 3,
+            player: 'Entity' = None,
+            remove: bool = True
+        ) -> Card_data:
+        # TODO: Warning, problem if the card is moving during the discover
+        # toutes les découvertes sont retirées du pool
+
+        """
+            Entité source, son dbfId est exclu de la découverte
+            Card_list sur laquelle effectuer les recherches
+            player qui choisit la carte
+            nombre de carte dans la découverte
+        """
+        if nb <= 0:
+            return None
+
+        list_card_choice = Card_list()
+        for card in card_list.exclude(self.dbfId).shuffle():
+            if card not in list_card_choice:
+                list_card_choice.append(card)
+                if remove:
+                    self.game.hand.remove(card)
+                if nb <= 1:
+                    break
+                nb -= 1
+
+        chosen_card = list_card_choice.choice(player or self.controller)
+
+        if remove:
+            for card in list_card_choice:
+                self.game.hand.create_card_in(card)
+
+        return chosen_card
+
     @khadgar_aura
     def invoc(self, sequence: Sequence, repopDbfId: int) -> 'Entity':
         minion_id = self.create_card(repopDbfId)
@@ -369,7 +406,7 @@ class Minion(Entity):
                             position=self.position
                         ).start_and_close()
         elif self.is_premium:
-            self.controller.hand.create_card_in(
+            self.controller.draw(
                 CardName.TRIPLE_REWARD,
                 quest_value=min(self.controller.level+1, LEVEL_MAX))
 
@@ -466,37 +503,6 @@ class Minion(Entity):
                 enchant = Card(**entity.__dict__)
                 self.append(enchant)
                 enchant.apply()
-
-    def discover(
-            self,
-            card_list: Card_list,
-            nb: int = 3,
-            player: 'Entity' = None
-        ) -> Entity:
-        # TODO: Warning, problem if the card is moving during the discover
-        # toutes les découvertes sont retirées du pool
-
-        """
-            Entité source, son dbfId est exclu de la découverte
-            Card_list sur laquelle effectuer les recherches
-            player qui choisit la carte
-            nombre de carte dans la découverte
-        """
-        if nb <= 0:
-            return None
-
-        list_card_choice = Card_list()
-        exclude_dbfId = {self.dbfId}
-
-        for card in card_list.shuffle():
-            if card.dbfId not in exclude_dbfId:
-                list_card_choice.append(card)
-                if nb <= 1:
-                    break
-                nb -= 1
-                exclude_dbfId.add(card.dbfId)
-
-        return list_card_choice.choice(player or self.controller)
 
     def replace(self, substitute: 'Entity') -> None:
         # TODO: un minion gelé puis remplacé doit pouvoir rester gelé
@@ -789,6 +795,6 @@ class Spell(Entity):
 class Card:
     def __new__(cls, dbfId, **kwargs):
         from .scripts import event
-        ok = dbCard.objects.filter(pk=int(dbfId)) # retro3 base_T1 > 37s > 53s
+        #ok = dbCard.objects.filter(pk=int(dbfId)) # retro3 base_T1 > 37s > 53s
         self = getattr(event, str(CARD_DB[dbfId].id))
         return self(dbfId, **kwargs)

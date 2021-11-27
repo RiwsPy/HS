@@ -62,6 +62,10 @@ class Player(Entity):
             self.health = min(self.health, value)
 
     @property
+    def deck(self):
+        return self.bob.local_hand
+
+    @property
     def is_alive(self):
         return self.health > 0
 
@@ -192,6 +196,12 @@ class Player(Entity):
             self.card_by_roll_mod +
             self.power.card_by_roll_mod)
 
+    def draw(self, dbfId: int, **kwargs) -> Entity:
+        try:
+            return self.game.deck.give_or_create_in(dbfId, self.hand, **kwargs)
+        except IndexError:
+            print('Draw impossible: ', dbfId)
+            return None
 
 
 class Bob(Player):
@@ -236,6 +246,7 @@ class Bob(Player):
     @property
     def local_hand(self) -> Card_list:
         return self.hand.cards_of_tier_max(tier_max=self.level, tier_min=1)
+    deck= local_hand
 
     @property
     def nb_card_by_refresh(self) -> int:
@@ -255,3 +266,6 @@ class Bob(Player):
     def die(self, *args, **kwargs) -> None:
         pass
     summon_on= die
+
+    def draw(self, dbfId: int) -> None:
+        return None

@@ -21,12 +21,12 @@ def reinit_game(monkeypatch):
 def test_murozond(reinit_game):
     p1, p2 = g.players
     with Sequence('TURN', g):
-        crd = p1.hand.create_card_in(60637) # Murozond
+        crd = p1.draw(60637) # Murozond
         crd.play()
     assert p1.hand.size == 0
     Sequence('FIGHT', g).start_and_close()
     with Sequence('TURN', g):
-        crd = p2.hand.create_card_in(60637) # Murozond
+        crd = p2.draw(60637) # Murozond
         crd.play()
         assert p2.hand.size == 1
         assert p2.hand.cards[0].dbfId == 60637

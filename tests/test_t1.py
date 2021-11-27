@@ -18,7 +18,7 @@ def reinit_game(monkeypatch):
     g.party_begin(player_name, 'p2_name')
 
 def test_chat(reinit_game):
-    crd = g.players[0].hand.create_card_in(40426) # Chat de gouttière
+    crd = g.players[0].draw(40426) # Chat de gouttière
     assert g.players[0].hand.size == 1
 
     crd.play()
@@ -27,7 +27,7 @@ def test_chat(reinit_game):
 
 
 def test_elemenplus(reinit_game):
-    crd = g.players[0].hand.create_card_in(64038) # Element Plus
+    crd = g.players[0].draw(64038) # Element Plus
     assert g.players[0].hand.size == 1
 
     crd.play()
@@ -39,16 +39,16 @@ def test_elemenplus(reinit_game):
 
 def test_micromomie(reinit_game):
     with Sequence('TURN', g):
-        crd1 = g.players[0].hand.create_card_in(53445)
+        crd1 = g.players[0].draw(53445)
         crd1.play()
-        crd2 = g.players[0].hand.create_card_in(53445)
+        crd2 = g.players[0].draw(53445)
         crd2.play()
 
     assert crd1.attack == crd1.dbfId.attack +1
     assert crd2.attack == crd2.dbfId.attack +1
 
 def test_bronzecouenne(reinit_game):
-    crd = g.players[0].hand.create_card_in(70147) # Element Plus
+    crd = g.players[0].draw(70147) # Element Plus
     assert g.players[0].hand.size == 1
 
     crd.play()
@@ -60,8 +60,8 @@ def test_bronzecouenne(reinit_game):
 
 def test_tisse_colere(reinit_game):
     with Sequence('TURN', g):
-        tisse = g.players[0].hand.create_card_in(59670) # Tisse-colère
-        demon = g.players[0].hand.create_card_in(74910) # Diablotin dégoûtant
+        tisse = g.players[0].draw(59670) # Tisse-colère
+        demon = g.players[0].draw(74910) # Diablotin dégoûtant
         tisse.play()
         demon.play()
         assert tisse.attack == tisse.dbfId.attack + 2
@@ -69,7 +69,7 @@ def test_tisse_colere(reinit_game):
 
 def test_forban(reinit_game):
     with Sequence('TURN', g):
-        forb = g.players[0].hand.create_card_in(61061) # Forban
+        forb = g.players[0].draw(61061) # Forban
         forb.play()
     with Sequence('FIGHT', g):
         forb.die()
@@ -78,9 +78,9 @@ def test_forban(reinit_game):
 
 def test_hyene(reinit_game):
     with Sequence('TURN', g):
-        hye = g.players[0].hand.create_card_in(1281) # Hyène charognarde
+        hye = g.players[0].draw(1281) # Hyène charognarde
         hye.play()
-        cat = g.players[0].hand.create_card_in(40426) # Forban
+        cat = g.players[0].draw(40426) # Forban
         cat.play()
     with Sequence('FIGHT', g):
         cat.die()
@@ -89,15 +89,15 @@ def test_hyene(reinit_game):
 
 def test_chromaile(reinit_game):
     with Sequence('TURN', g):
-        chro = g.players[0].hand.create_card_in(74659) # chromaile évolutive
+        chro = g.players[0].draw(74659) # chromaile évolutive
         chro.play()
         g.players[0].levelup()
         assert chro.attack == 2
 
 
 def test_chasseur_rochecave(reinit_game):
-    mur1 = g.players[0].hand.create_card_in(41245)
-    mur2 = g.players[0].hand.create_card_in(41245)
+    mur1 = g.players[0].draw(41245)
+    mur2 = g.players[0].draw(41245)
     mur1.play()
     mur2.play()
     assert mur2.attack == mur2.dbfId.attack
@@ -109,11 +109,11 @@ def test_chasseur_rochecave(reinit_game):
 
 def test_poisson(reinit_game):
     with Sequence('TURN', g):
-        fish = g.players[0].hand.create_card_in(67213) # Poisson
+        fish = g.players[0].draw(67213) # Poisson
         fish.play()
-        fish2 = g.players[0].hand.create_card_in(67213) # Poisson
+        fish2 = g.players[0].draw(67213) # Poisson
         fish2.play()
-        forb = g.players[0].hand.create_card_in(61061) # Forban
+        forb = g.players[0].draw(61061) # Forban
         forb.play()
 
     with Sequence('FIGHT', g):

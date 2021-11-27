@@ -47,6 +47,7 @@ class Card_data(int):
 
     def __getitem__(self, key) -> Any:
         print('__get__item', key)
+        raise IndexError
         return getattr(self, str(key))
 
     def __setitem__(self, key, value) -> None:
@@ -78,19 +79,28 @@ class Meta_card_data(Card_list):
         """
             sort IN place.
         """
-        super().sort(key=lambda x: x[attr], reverse=reverse)
+        super().sort(key=lambda x: getattr(x, attr), reverse=reverse)
 
     def __getitem__(self, value) -> Any:
         # TODO problème de compatibilité avec random.shuffle ??
-        if isinstance(value, int):
-            return super().__getitem__(self.index(value))
-        if type(value) is str:
-            return super().__getitem__(self.index(int(value)))
-        if isinstance(value, slice):
+        if type(value) is str and value.isdigit():
+            value = int(value)
+        elif isinstance(value, slice):
             return super().__getitem__(value)
+
+        if isinstance(value, int):
+            try:
+                return super().__getitem__(self.index(value))
+            except ValueError:
+                print('Meta_card_data __getitem__: unknow', value)
+                return None
+
         print('strange value', value)
 
-        return super().__getitem__(value)
+        try:
+            return super().__getitem__(value)
+        except IndexError:
+            return None
 
 
 def charge_all_cards(types_ban=[]) -> Meta_card_data:

@@ -5,8 +5,9 @@ from typing import Generator, Any
 from itertools import chain
 from .utils import Card_list
 from .sequence import Sequence
+from .zone import Zone as ZoneEntity
 
-class Player_hand(Entity):
+class Player_hand(ZoneEntity):
     default_attr = {
         'zone_type': Zone.HAND,
     }
@@ -27,23 +28,12 @@ class Player_hand(Entity):
         # + entity.die() if can't be added ?
         # voir commentaire si une carte ne peut être ajoutée dans la main avec le pouvoir de Maiev
 
-    @property
-    def size(self) -> int:
-        return len(self.cards)
-
     def remove(self, entity: Entity) -> None:
         super().remove(entity)
         try:
             self.cards.remove(entity)
         except ValueError:
             pass
-
-    @property
-    def is_full(self) -> bool:
-        """
-            Returns a boolean indicating if it is possible to add a card to player's hand
-        """
-        return self.size >= self.MAX_SIZE
 
     def auto_play(self) -> None:
         self.cards.sort(
@@ -68,11 +58,10 @@ class Player_hand(Entity):
         if self.size > 0:
             self.auto_play()
 
-class Bob_hand(Entity):
+class Bob_hand(ZoneEntity):
     default_attr = {
 
     }
-    MAX_SIZE = 9999
 
     def __init__(self, **kwargs) -> None:
         super().__init__(CardName.DEFAULT_HAND, entities=[
@@ -106,7 +95,7 @@ class Bob_hand(Entity):
         """
             Remove one card from bob's hand
         """
-        if isinstance(entity, int):
+        if type(entity) is int:
             entity = self.all_cards[entity]
         self.entities[entity.level].remove(entity.dbfId)
 
@@ -122,19 +111,8 @@ class Bob_hand(Entity):
     def cards(self) -> Card_list:
         return self.cards_of_tier_max()
 
-    def __len__(self) -> int:
-        return len(self.cards)
-    size = __len__
-
     def __iter__(self) -> Generator:
         yield from (i for i in self.cards)
-
-    @property
-    def is_full(self) -> bool:
-        """
-            Returns a boolean indicating if it is possible to add a card to bob's hand
-        """
-        return False
 
     def cards_of_tier_max(self, tier_max=LEVEL_MAX, tier_min=1) -> Card_list:
         """
@@ -153,18 +131,19 @@ class Bob_hand(Entity):
         """
         dbfId_data = self.all_cards[dbfId]
         self.entities[dbfId_data.level].append(dbfId_data)
-        return None
 
-    def give_or_create_in(self, dbfId: int, new_owner) -> Entity:
+    def give_or_create_in(self, dbfId: int, new_owner, **kwargs) -> Entity:
         dbfId_data = self.all_cards[dbfId]
+        if dbfId_data is None:
+            return None
 
         if dbfId_data.level:
             in_bob = dbfId in self.cards
             if in_bob:
                 self.remove(dbfId)
-            card_id = new_owner.create_card_in(dbfId, from_bob=in_bob)
+            card_id = new_owner.create_card_in(dbfId, from_bob=in_bob, **kwargs)
         else:
-            card_id = new_owner.create_card_in(dbfId)
+            card_id = new_owner.create_card_in(dbfId, **kwargs)
 
             normal_dbfId = dbfId_data.battlegroundsNormalDbfId
             if normal_dbfId:

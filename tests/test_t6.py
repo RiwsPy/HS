@@ -20,9 +20,9 @@ def reinit_game(monkeypatch):
 def test_amalgadon(reinit_game):
     p1 = g.players[0]
     with Sequence('TURN', g):
-        aml = p1.hand.create_card_in(61444)
+        aml = p1.draw(61444)
         aml.play()
-        aml2 = p1.hand.create_card_in(61444)
+        aml2 = p1.draw(61444)
         aml2.play()
 
         assert len(aml.entities) == 0

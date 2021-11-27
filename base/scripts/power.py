@@ -1,8 +1,10 @@
+from base.db_card import Meta_card_data
 from base.entity import Hero_power
 import random
 from base.enums import BOARD_SIZE, Race, Type, CardName, AKAZAM_SECRETS, LEVEL_MAX
 from base.utils import repeat_effect
 from base.sequence import Sequence
+from base.board import BoardAppendError
 
 
 class use_power_on_my_minion(Hero_power):
@@ -20,7 +22,7 @@ class TB_BaconShop_HP_049(Hero_power):
     # Baz'hial
     def use_power(self, sequence: Sequence):
         self.damage(self.owner, 2)
-        self.hand.create_card_in(CardName.COIN)
+        selfcontroller.draw(CardName.COIN)
 
 
 class TB_BaconShop_HP_044(Hero_power):
@@ -29,8 +31,8 @@ class TB_BaconShop_HP_044(Hero_power):
         if self.nb_turn < 3:
             self.owner.gold = 0
         elif self.nb_turn == 3:
-            self.hand.create_card_in(59604, quest_value=3)
-            self.hand.create_card_in(59604, quest_value=3)
+            self.controller.draw(59604, quest_value=3)
+            self.controller.draw(59604, quest_value=3)
 
 
 class TB_BaconShop_HP_033(Hero_power):
@@ -95,21 +97,30 @@ class TB_BaconShop_HP_072(Hero_power):
 
     def use_power(self, sequence: Sequence):
         self.cost = self.dbfId.cost
-        self.owner.discover(self, nb=1, typ=Race.PIRATE, lvl_max=self.level)
+        self.controller.draw(
+            self.discover(
+                self.controller.deck.filter(race='PIRATE'),
+                nb=1
+            )
+        )
 
 
 class TB_BaconShop_HP_064(Hero_power):
     # Alexstrasa
     def levelup_off(self, sequence: Sequence):
-        if self.owner.level == 5:
-            self.owner.discover(self, nb=3, typ=Race.DRAGON, lvl_max=6)
-            self.owner.discover(self, nb=3, typ=Race.DRAGON, lvl_max=6)
+        if self.controller.level == 5:
+            for _ in range(2):
+                self.controller.draw(
+                    self.discover(
+                        self.game.hand.cards.filter(race='DRAGON'),
+                        nb=3)
+                )
 
 
 class TB_BaconShop_HP_082(Hero_power):
     # Omu
     def levelup_off(self, sequence: Sequence):
-        self.owner.gold += 2
+        self.controller.gold += 2
 
 
 class TB_BaconShop_HP_063(Hero_power):
@@ -157,7 +168,7 @@ class TB_BaconShop_HP_036(Hero_power):
 class TB_BaconShop_HP_047(Hero_power):
     # Elise
     def levelup_off(self, sequence: Sequence):
-        self.hand.create_card_in(60265, quest_value=self.owner.level)
+        self.controller.draw(60265, quest_value=self.owner.level)
 
 
 class TB_BaconShop_HP_088(Hero_power):
@@ -320,10 +331,7 @@ class TB_BaconShop_HP_053(Hero_power):
     def die_off(self, sequence: Sequence):
         if self.temp_counter == 1 and not sequence.is_ally(self):
             self.temp_counter = 0
-            self.game.hand.give_or_create_in(
-                sequence.source.dbfId,
-                self.hand
-            )
+            self.controller.draw(sequence.source.dbfId)
 
 
 class TB_BaconShop_HP_107(Hero_power):
@@ -348,7 +356,7 @@ class TB_BaconShop_HP_048(Hero_power):
         if self.is_enabled and sequence.source.BATTLECRY:
             self.quest_value += 1
             if self.quest_value % 5 == 0:
-                self.hand.create_card_in(2949)
+                self.controller.draw(2949)
                 self.dec_remain_use()
 
 
@@ -357,7 +365,7 @@ class TB_BaconShop_HP_028(Hero_power):
     # TODO: à simplifier
     def use_power(self):
         bob = self.owner.bob
-        bob.board.drain_all_minion()
+        bob.board.drain_minion(freeze=True)
         self.board.fill_minion(
             nb_card_to_play = self.owner.nb_card_by_refresh - 1)
 
@@ -374,12 +382,12 @@ class TB_BaconShop_HP_038(Hero_power):
 
     @repeat_effect
     def use_power(self, sequence: Sequence):
-        self.hand.create_card_in(random.choice([53215, 65230]))
+        self.controller.draw(random.choice([53215, 65230]))
 
     def turn_off(self, sequence: Sequence):
         if not self.is_enabled:
-            for entity in self.game.entities.filter(type=Type.HERO).exclude(self):
-                entity.hand.create_card_in(53215)
+            for player in self.game.players.exclude(self):
+                player.draw(53215)
 
 
 class TB_BaconShop_HP_042(Hero_power):
@@ -462,7 +470,7 @@ class BG20_HERO_103p(Hero_power):
 
     @repeat_effect
     def levelup_off(self, sequence: Sequence):
-        self.hand.create_card_in(CardName.BLOOD_GEM)
+        self.controller.draw(CardName.BLOOD_GEM)
 
 
 class BG20_HERO_102p(Hero_power):
@@ -557,7 +565,16 @@ class TB_BaconShop_HP_106(Hero_power):
 
 class TB_BaconShop_HP_057(Hero_power):
     # Sir Finley
-    pass
+    def turn_on(self, sequence: Sequence):
+        if self.nb_turn == 1:
+            power_id = self.discover(
+                Meta_card_data(
+                    hero.powerDbfId 
+                    for hero in self.game.craftable_heroes
+                ),
+                remove=False
+            )
+            self.change(power_id.dbfId)
 
 
 class TB_BaconShop_HP_075(Hero_power):
@@ -581,10 +598,14 @@ class TB_BaconShop_HP_103(Hero_power):
         if self.temp_counter:
             card = self.game.hand.cards_of_tier_max(
                     tier_max=self.owner.level,
-                    tier_min=self.owner.level).random_choice()
-            minion = self.board.create_card_in(card.dbfId)
-            if minion in self.board.cards:
-                self.hand.append(card)
+                    tier_min=self.owner.level
+                    ).random_choice()
+            try:
+                self.board.create_card_in(card)
+            except BoardAppendError:
+                pass
+            else:
+                self.controller.draw(card)
 
 
 class TB_BaconShop_HP_065t2(Hero_power):
@@ -596,7 +617,7 @@ class TB_BaconShop_HP_065t2(Hero_power):
 class TB_BaconShop_HP_022(Hero_power):
     # Carniflore
     def use_power(self, sequence: Sequence):
-        self.hand.create_card_in(76964)
+        self.controller.draw(76964)
 
 
 class TB_BaconShop_HP_056(Hero_power):
@@ -679,7 +700,7 @@ class TB_BaconShop_HP_101(Hero_power):
     def quest_value(self, value) -> None:
         self._quest_value = value
         if self._quest_value % 3 == 0 and self._quest_value > 0:
-            self.hand.create_card_in(64484, quest_value=self.owner.level)
+            self.controller.draw(64484, quest_value=self.owner.level)
 
 
 class TB_BaconShop_HP_077(Hero_power):

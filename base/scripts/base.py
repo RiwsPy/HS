@@ -1,6 +1,7 @@
 from base.entity import Minion, Enchantment
 from base.sequence import Sequence
 from base.utils import repeat_effect
+from base.board import BoardAppendError
 
 class minion_without_script(Minion):
     pass
@@ -28,8 +29,11 @@ class deathrattle_repop(Minion):
     @repeat_effect
     def deathrattle(self, sequence: Sequence):
         for _ in range(self.nb_repop):
-            repop_id = self.invoc(sequence, self.repopDbfId)
-            if repop_id:
+            try:
+                repop_id = self.invoc(sequence, self.repopDbfId)
+            except BoardAppendError:
+                pass
+            else:
                 sequence._repops.append(repop_id)
 
 

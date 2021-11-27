@@ -148,9 +148,10 @@ class Card_list(list):
         return shuffle_copy
 
     def random_choice(self):
-        if self:
+        try:
             return random.choice(self)
-        return None
+        except IndexError:
+            return None
 
     def choice(self, player, pr: str = '') -> Any:
         choice_list = self.exclude(DORMANT=True)
