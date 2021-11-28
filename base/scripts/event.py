@@ -1,13 +1,12 @@
-from .minion import *
 from .power import *
 from .spell import *
-from .minion_ban import *
 from .enchantment import *
 from base.board import Board, Bob_board, Graveyard, Secret_board, Player_board
 from game import Game
 from base.player import Player, Bob
 from base.field import Field
 from base.entity import Card
+from .minions import *
 
 class no_method:
     pass
