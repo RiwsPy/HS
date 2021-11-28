@@ -183,6 +183,11 @@ class Board_Card_list(Card_list):
         except IndexError:
             return None
 
+    def append(self, card):
+        super().append(card)
+        if getattr(self, 'owner', None):
+            self.owner.owner.check_triple()
+
 class db_arene(dict):
     filename = 'db/arene_minion.json'
 

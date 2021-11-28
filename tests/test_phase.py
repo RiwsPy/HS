@@ -246,6 +246,23 @@ def test_discover(reinit_game):
 def test_draw(reinit_game):
     p1 = g.players[0]
     old_len_game_cards = len(g.hand.cards)
-    p1.draw(60028)
+    p1.draw(60028) # Guetteur primaileron
     assert p1.hand.size == 1
     assert old_len_game_cards == len(g.hand.cards)+1
+
+def test_triple(reinit_game):
+    p1 = g.players[0]
+    id = p1.draw(976)
+    id.play()
+    id = p1.draw(976)
+    id.play()
+    p1.draw(976)
+    for card in p1.hand.cards + p1.board.cards:
+        assert card.dbfId != 976
+    assert p1.hand.cards.filter(dbfId=id.dbfId.battlegroundsPremiumDbfId)
+    p1.hand.cards[0].play()
+    assert p1.hand.cards.filter(dbfId=59604)
+    assert p1.hand.cards[0].quest_value == p1.level+1
+    p1.hand.cards[0].play()
+    assert p1.hand.cards[0].level == p1.level+1
+

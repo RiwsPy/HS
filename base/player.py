@@ -205,6 +205,30 @@ class Player(Entity):
             print('Draw impossible: ', dbfId)
             return None
 
+    def check_triple(self) -> None:
+        if self.in_fight_sequence or self.type == Type.BOB:
+            return None
+
+        dbfId_number = defaultdict(list)
+        for card in self.board.cards + self.hand.cards:
+            if card.dbfId.battlegroundsPremiumDbfId is None:
+                continue
+
+            dbfId_number[card.dbfId].append(card)
+
+            if len(dbfId_number[card.dbfId]) >= 3:
+                print('triple !!!')
+                card_id = self.create_card(card.dbfId.battlegroundsPremiumDbfId)
+                for card in dbfId_number[card.dbfId]:
+                    card_id.cards.append(card)
+                    card_id.entities.extend(card.entities)
+                    card.my_zone.remove(card)
+                dbfId_number[card.dbfId] = dbfId_number[card.dbfId][3:]
+                card_id.calc_stat_from_scratch(heal=True)
+                self.hand.append(card_id)
+
+
+
 
 class Bob(Player):
     default_attr = {

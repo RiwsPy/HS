@@ -230,7 +230,7 @@ def test_adjacent_neighbors(reinit_game):
     assert crd_test.adjacent_neighbors() == [crd1, crd2]
 
 def test_card_data(reinit_game):
-    card_data = g.all_cards['41245']
+    card_data = g.all_cards[41245]
     crd = g.players[0].draw(41245)
     assert card_data.attack == crd.attack
     assert card_data.level == crd.level

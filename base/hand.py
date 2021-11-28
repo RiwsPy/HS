@@ -3,7 +3,7 @@ from .enums import Type, LEVEL_MAX, HAND_SIZE, CardName, Zone
 from .entity import Entity
 from typing import Generator, Any
 from itertools import chain
-from .utils import Card_list
+from .utils import Card_list, Board_Card_list
 from .sequence import Sequence
 from .zone import Zone as ZoneEntity
 
@@ -15,7 +15,8 @@ class Player_hand(ZoneEntity):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(CardName.DEFAULT_HAND, **{**self.default_attr, **kwargs})
-        self.cards = Card_list()
+        self.cards = Board_Card_list()
+        self.cards.owner = self
 
     def append(self, entity: Entity, **kwargs) -> None:
         """

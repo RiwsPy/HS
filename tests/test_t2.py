@@ -61,7 +61,7 @@ def test_defense_robuste(reinit_game):
     with Sequence('TURN', g):
         rob = p1.draw(70162)
         rob.play()
-        p1.buff(CardName.BLOOD_GEM_ENCHANTMENT, rob)
+        p1.buff(rob, CardName.BLOOD_GEM_ENCHANTMENT)
         assert rob.attack == rob.dbfId.attack +1
         assert rob.DIVINE_SHIELD == True
 
@@ -86,14 +86,14 @@ def test_saute_mouton(reinit_game):
         assert len(sheep2.entities) == 1
 
     with Sequence('TURN', g):
-        sheep = p1.draw(72042) # Saute-mouton
-        sheep.play()
+        sau = p1.draw(62162) # Saurolisque
+        sau.play()
 
     with Sequence('FIGHT', g):
         p1.board.cards[0].die()
         p1.board.cards[0].die()
-        assert len(sheep.entities) == 2
-        assert sheep.attack == sheep.dbfId.attack + sheep.enchantmentDbfId.attack*2
+        assert len(sau.entities) == 2
+        assert sau.attack == sau.dbfId.attack + sau.enchantmentDbfId.attack*2
 
 def test_gro_boum(reinit_game):
     p1, p2 = g.players

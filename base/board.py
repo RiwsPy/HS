@@ -26,6 +26,7 @@ class Board(ZoneEntity):
 
     def purge(self):
         self.cards = Board_Card_list()
+        self.cards.owner = self
 
     @property
     def opponent(self):
