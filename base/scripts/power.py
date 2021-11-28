@@ -733,3 +733,30 @@ class BG20_HERO_202p(Hero_power):
     def turn_on(self, sequence: Sequence):
         self.buff(self.controller)
 
+
+class BG21_HERO_000p(Hero_power):
+    # Conviction rang 1
+    nb_target = 1
+    def use_power(self, sequence: Sequence):
+        targets = self.controller.board.cards.shuffle()
+        for target in targets[:self.nb_target]:
+            self.buff(target)
+
+    def levelup_off(self, sequence: Sequence):
+        if self.controller.level >= 3:
+            self.change(73943)
+
+
+class BG21_HERO_000p2(BG21_HERO_000p):
+    # Conviction rang 2
+    nb_target = 3
+    def levelup_off(self, sequence: Sequence):
+        if self.controller.level >= 5:
+            self.change(73944)
+
+
+class BG21_HERO_000p3(BG21_HERO_000p):
+    # Conviction rang 3
+    nb_target = 5
+    def levelup_off(self, sequence: Sequence):
+        pass

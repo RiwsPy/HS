@@ -168,3 +168,125 @@ class BG20_GEM(TRL_509t):
                 -x.attack,
                 ))
         return sorted_board[0]
+
+
+class BG20_HERO_666p_t1a(Spell):
+    # Sceau des Enfers
+    damage_value = 2
+    def fight_on(self, sequence: Sequence):
+        if self.owner.board.opponent.size > 0:
+            for target in self.owner.board.opponent.cards.shuffle()[:3]:
+                self.damage(target, self.damage_value)
+            self.die()
+
+class BG20_HERO_666p_t1b(BG20_HERO_666p_t1a):
+    # Sceau des Enfers
+    damage_value = 4
+
+class BG20_HERO_666p_t1c(BG20_HERO_666p_t1a):
+    # Sceau des Enfers
+    damage_value = 8
+
+class BG20_HERO_666p_t1d(BG20_HERO_666p_t1a):
+    # Sceau des Enfers
+    damage_value = 16
+
+
+class BG20_HERO_666p_t1a(Spell):
+    # Griffes de la Terreur
+    bonus_value = 4
+    def play_start(self, sequence: Sequence):
+        minion = self.controller.field.cards.choice(self.controller)
+        if minion:
+            sequence.add_target(minion)
+        else:
+            sequence.is_valid = False
+        
+    def cast(self, sequence: Sequence):
+        self.buff(
+            sequence.target,
+            attack=self.bonus_value,
+            max_health=self.bonus_value
+        )
+
+
+class BG20_HERO_666p_t1b(BG20_HERO_666p_t1a):
+    # Griffes de la Terreur magiques
+    bonus_value = 8
+
+
+class BG20_HERO_666p_t1c(BG20_HERO_666p_t1a):
+    # Griffes de la Terreur rares
+    bonus_value = 16
+
+
+class BG20_HERO_666p_t1d(BG20_HERO_666p_t1a):
+    # Griffes de la Terreur uniques
+    def cast(self, sequence: Sequence):
+        self.buff(
+            sequence.target,
+            attack=sequence.target.attack,
+            max_health=sequence.target.max_health
+        )
+
+class BG20_HERO_666p_t4a(Spell):
+    # Cornes de magma
+    def play_start(self, sequence: Sequence):
+        minion = self.controller.field.cards.choice(self.controller)
+        if minion:
+            sequence.add_target(minion)
+        else:
+            sequence.is_valid = False
+        
+    def cast(self, sequence: Sequence):
+        self.buff(sequence.target)
+
+BG20_HERO_666p_t4b= BG20_HERO_666p_t4a # Cornes de magma magiques
+BG20_HERO_666p_t4c= BG20_HERO_666p_t4a # Cornes de magma rares
+
+class BG20_HERO_666p_t4d(BG20_HERO_666p_t4a):
+    # Cornes de magma uniques
+    def cast(self, sequence: Sequence):
+        self.create_card(self.game.deck[77347].enchantmentDbfId).buff(sequence.target)
+        self.create_card(self.game.deck[77348].enchantmentDbfId).buff(sequence.target)
+        self.create_card(self.game.deck[77351].enchantmentDbfId).buff(sequence.target)
+
+
+class BG20_HERO_666p_t5a(Spell):
+    bonus_value = 2
+    def cast(self, sequence: Sequence):
+        for minion in self.owner.board.cards:
+            self.buff(
+                minion,
+                attack=self.bonus_value
+            )
+
+class BG20_HERO_666p_t5b(BG20_HERO_666p_t5a):
+    bonus_value = 4
+
+class BG20_HERO_666p_t5c(BG20_HERO_666p_t5a):
+    bonus_value = 8
+
+class BG20_HERO_666p_t5d(BG20_HERO_666p_t5a):
+    bonus_value = 16
+
+
+class BG20_HERO_666p_t6a(Spell):
+    nb_repop = 1
+    def fight_off(self, sequence: Sequence):
+        # TODO: fight_off ?
+        if self.owner.board.size == 0:
+            for _ in range(self.nb_repop):
+                self.owner.board.create_card_in(
+                    self.owner.deck.filter(race='DEMON').random_choice()
+                )
+            self.die()
+
+class BG20_HERO_666p_t6b(BG20_HERO_666p_t6a):
+    nb_repop = 2
+
+class BG20_HERO_666p_t6c(BG20_HERO_666p_t6a):
+    nb_repop = 3
+
+class BG20_HERO_666p_t6d(BG20_HERO_666p_t6a):
+    nb_repop = 4

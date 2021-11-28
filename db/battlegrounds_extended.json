@@ -433,7 +433,6 @@
 "59604":{"name":"Récompense de triple", "synergy":"NONE"},
 "70136":{"name":"Gemme de sang", "enchantmentDbfId":72191, "synergy":"NONE"},
 
-
 "58505":{"name":"Matrice d’autodéfense", "synergy":"NONE"},
 "58509":{"name":"Rédemption", "synergy":"NONE"},
 "58507":{"name":"Venger", "enchantmentDbfId":1812, "synergy":"NONE"},
@@ -442,6 +441,27 @@
 "58512":{"name":"Bloc de glace", "enchantmentDbfId":-58512, "synergy":"NONE"},
 "58502":{"name":"Portrait caché", "synergy":"NONE"},
 "70114":{"name":"Esprit combatif", "enchantmentDbfId":70115, "synergy":"NONE"},
+
+"77435":{"name":"Sceau des Enfers", "synergy":"NONE"},
+"77436":{"name":"Sceau des Enfers magique", "synergy":"NONE"},
+"77437":{"name":"Sceau des Enfers rare", "synergy":"NONE"},
+"77438":{"name":"Sceau des Enfers unique", "synergy":"NONE"},
+"77341":{"name":"Griffes de la Terreur", "synergy":"NONE", "enchantmentDbfId":77342},
+"77344":{"name":"Griffes de la Terreur magiques", "synergy":"NONE", "enchantmentDbfId":77342},
+"77345":{"name":"Griffes de la Terreur rares", "synergy":"NONE", "enchantmentDbfId":77342},
+"77346":{"name":"Griffes de la Terreur uniques", "synergy":"NONE", "enchantmentDbfId":77342},
+"77347":{"name":"Cornes de magma", "synergy":"NONE", "enchantmentDbfId":77919},
+"77348":{"name":"Cornes de magma magiques", "synergy":"NONE", "enchantmentDbfId":79438},
+"77351":{"name":"Cornes de magma rares", "synergy":"NONE", "enchantmentDbfId":79439},
+"77353":{"name":"Cornes de magma uniques", "synergy":"NONE"},
+"77518":{"name":"Sabots des Enfers", "synergy":"NONE", "enchantmentDbfId":77519},
+"77520":{"name":"Sabots des Enfers magiques", "synergy":"NONE", "enchantmentDbfId":77519},
+"77521":{"name":"Sabots des Enfers rares", "synergy":"NONE", "enchantmentDbfId":77519},
+"77522":{"name":"Sabots des Enfers uniques", "synergy":"NONE", "enchantmentDbfId":77519},
+"77523":{"name":"Pierre d’âme noire", "synergy":"NONE"},
+"77524":{"name":"Pierre d’âme noire magique", "synergy":"NONE"},
+"77526":{"name":"Pierre d’âme noire rare", "synergy":"NONE"},
+"77527":{"name":"Pierre d’âme noire unique", "synergy":"NONE"},
 
 
 "57110":{"name":"Bob", "synergy":"NONE", "powerDbfId":-1},
@@ -511,6 +531,7 @@
 "68129":{"name":"Guff Totem-Runique", "synergy":"NONE", "powerDbfId":68130},
 "71916":{"name":"Mutanus le Dévoreur", "synergy":"NONE", "powerDbfId":71914},
 "71908":{"name":"Maître Nguyen", "synergy":"NONE", "powerDbfId":71909},
+"73940":{"name":"Cariel Roame", "synergy":"NONE", "powerDbfId":73941},
 
 
 "62193": {"max_health":2, "attack":2, "name":"Or raflé"},
@@ -741,6 +762,13 @@
 "71915": {"name":"Crachat reçu"},
 "63161": {"attack":2, "name":"Fidèles lieutenants"},
 "71910": {"name":"Pouvoir héroïque changeant"},
+"73942": {"max_health":1, "attack":1, "name":"Béni"},
+"77342": {"max_health":0, "attack":0, "name":"Griffes terrifiantes", "duration":1},
+"77919": {"mechanics":["WINDFURY"], "name":"Cornes furieuses", "duration":1},
+"79438": {"mechanics":["REBORN"], "name":"Cornes résistantes", "duration":1},
+"79439": {"mechanics":["DIVINE_SHIELD"], "name":"Cornes durcies", "duration":1},
+"77519": {"attack":0, "name":"Sabots infernaux", "duration":1},
+
 
 "48546": {"mechanics":["DEATHRATTLE"], "name":"Menace répliquante", "repopDbfId":48842},
 "60294": {"mechanics":["DEATHRATTLE"], "name":"Menace répliquante", "repopDbfId":58377},
@@ -836,6 +864,11 @@
 "68130": {"name": "Équilibre naturel", "hero_script": "Default_script"},
 "71914": {"name": "Dévoration", "hero_script": "Default_script"},
 "71909": {"name": "Pouvoir du maelström", "enchantmentDbfId":71910, "hero_script": "Default_script"},
+"73941": {"name": "Conviction rang 1", "enchantmentDbfId":73942, "hero_script": "Default_script"},
+"73943": {"name": "Conviction rang 2", "enchantmentDbfId":73942, "hero_script": "Default_script"},
+"73944": {"name": "Conviction rang 3", "enchantmentDbfId":73942, "hero_script": "Default_script"},
+
+
 
 "-12":{"type":"GAME", "id":"Game"},
 "-13":{"type":"ZONE", "synergy":"NONE", "phase":"NONE"},

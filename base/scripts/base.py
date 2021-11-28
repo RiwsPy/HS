@@ -3,8 +3,6 @@ from base.sequence import Sequence
 from base.utils import repeat_effect
 from base.board import BoardAppendError
 
-class minion_without_script(Minion):
-    pass
 
 class battlecry_select_one_minion_and_buff_it(Minion):
     # buff battlecry, only minions of the same synergy can be targeted

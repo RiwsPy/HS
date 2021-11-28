@@ -8408,6 +8408,263 @@
   "type": "SPELL"
  },
  {
+  "name": "Sceau des Enfers",
+  "synergy": "NONE",
+  "dbfId": 77435,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t1a",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Début du combat :</b> inflige 2 points de dégâts à 3 serviteurs adverses aléatoires.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Sceau des Enfers magique",
+  "synergy": "NONE",
+  "dbfId": 77436,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t1b",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Début du combat :</b> inflige 4 points de dégâts à 3 serviteurs adverses aléatoires.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Sceau des Enfers rare",
+  "synergy": "NONE",
+  "dbfId": 77437,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t1c",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Début du combat :</b> inflige 8 points de dégâts à 3 serviteurs adverses aléatoires.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Sceau des Enfers unique",
+  "synergy": "NONE",
+  "dbfId": 77438,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t1d",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Début du combat :</b> inflige 16 points de dégâts à 3 serviteurs adverses aléatoires.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Griffes de la Terreur",
+  "synergy": "NONE",
+  "enchantmentDbfId": 77342,
+  "dbfId": 77341,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t3a",
+  "set": "BATTLEGROUNDS",
+  "text": "Donne +4/+4 à un serviteur allié pour le prochain combat uniquement.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Griffes de la Terreur magiques",
+  "synergy": "NONE",
+  "enchantmentDbfId": 77342,
+  "dbfId": 77344,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t3b",
+  "set": "BATTLEGROUNDS",
+  "text": "Donne +8/+8 à un serviteur allié pour le prochain combat uniquement.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Griffes de la Terreur rares",
+  "synergy": "NONE",
+  "enchantmentDbfId": 77342,
+  "dbfId": 77345,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t3c",
+  "set": "BATTLEGROUNDS",
+  "text": "Donne +16/+16 à un serviteur allié pour le prochain combat uniquement.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Griffes de la Terreur uniques",
+  "synergy": "NONE",
+  "enchantmentDbfId": 77342,
+  "dbfId": 77346,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t3d",
+  "set": "BATTLEGROUNDS",
+  "text": "Double l’ATQ et les PV d’un serviteur allié pour le prochain combat uniquement.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Cornes de magma",
+  "synergy": "NONE",
+  "enchantmentDbfId": 77919,
+  "dbfId": 77347,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t4a",
+  "referencedTags": [
+   "WINDFURY"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "Confère <b>Furie des vents</b> à un serviteur allié pour le prochain combat uniquement.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Cornes de magma magiques",
+  "synergy": "NONE",
+  "enchantmentDbfId": 79438,
+  "dbfId": 77348,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t4b",
+  "referencedTags": [
+   "REBORN"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "Confère <b>Réincarnation</b> à un serviteur allié pour le prochain combat uniquement.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Cornes de magma rares",
+  "synergy": "NONE",
+  "enchantmentDbfId": 79439,
+  "dbfId": 77351,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t4c",
+  "referencedTags": [
+   "DIVINE_SHIELD"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "Confère <b>Bouclier divin</b> à un serviteur allié pour le prochain combat uniquement.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Cornes de magma uniques",
+  "synergy": "NONE",
+  "dbfId": 77353,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t4d",
+  "referencedTags": [
+   "DIVINE_SHIELD",
+   "REBORN",
+   "WINDFURY"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "Confère <b>Furie des vents</b>, <b>Réincarnation</b> et <b>Bouclier divin</b> à un serviteur allié pour le prochain combat uniquement.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Sabots des Enfers",
+  "synergy": "NONE",
+  "enchantmentDbfId": 77519,
+  "dbfId": 77518,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t5a",
+  "set": "BATTLEGROUNDS",
+  "text": "Donne +2 ATQ à vos serviteurs pour le prochain combat uniquement.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Sabots des Enfers magiques",
+  "synergy": "NONE",
+  "enchantmentDbfId": 77519,
+  "dbfId": 77520,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t5b",
+  "set": "BATTLEGROUNDS",
+  "text": "Donne +4 ATQ à vos serviteurs pour le prochain combat uniquement.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Sabots des Enfers rares",
+  "synergy": "NONE",
+  "enchantmentDbfId": 77519,
+  "dbfId": 77521,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t5c",
+  "set": "BATTLEGROUNDS",
+  "text": "Donne +8 ATQ à vos serviteurs pour le prochain combat uniquement.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Sabots des Enfers uniques",
+  "synergy": "NONE",
+  "enchantmentDbfId": 77519,
+  "dbfId": 77522,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t5d",
+  "set": "BATTLEGROUNDS",
+  "text": "Donne +16 ATQ à vos serviteurs pour le prochain combat uniquement.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Pierre d’âme noire",
+  "synergy": "NONE",
+  "dbfId": 77523,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t6a",
+  "mechanics": [
+   "SECRET"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Secret :</b> une fois que votre dernier serviteur meurt, invoque un Démon aléatoire.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Pierre d’âme noire magique",
+  "synergy": "NONE",
+  "dbfId": 77524,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t6b",
+  "mechanics": [
+   "SECRET"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Secret :</b> une fois que votre dernier serviteur meurt, invoque 2 Démons aléatoires.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Pierre d’âme noire rare",
+  "synergy": "NONE",
+  "dbfId": 77526,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t6c",
+  "mechanics": [
+   "SECRET"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Secret :</b> une fois que votre dernier serviteur meurt, invoque 3 Démons aléatoires.",
+  "type": "SPELL"
+ },
+ {
+  "name": "Pierre d’âme noire unique",
+  "synergy": "NONE",
+  "dbfId": 77527,
+  "cardClass": "WARRIOR",
+  "cost": 0,
+  "id": "BG20_HERO_666p_t6d",
+  "mechanics": [
+   "SECRET"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Secret :</b> une fois que votre dernier serviteur meurt, invoque 4 Démons aléatoires.",
+  "type": "SPELL"
+ },
+ {
   "name": "Bob le barman",
   "synergy": "NONE",
   "powerDbfId": -1,
@@ -9199,6 +9456,18 @@
   "cardClass": "NEUTRAL",
   "health": 40,
   "id": "BG20_HERO_202",
+  "set": "BATTLEGROUNDS",
+  "type": "HERO"
+ },
+ {
+  "name": "Cariel Roame",
+  "synergy": "NONE",
+  "powerDbfId": 73941,
+  "dbfId": 73940,
+  "battlegroundsHero": true,
+  "cardClass": "PALADIN",
+  "health": 40,
+  "id": "BG21_HERO_000",
   "set": "BATTLEGROUNDS",
   "type": "HERO"
  },
@@ -11583,6 +11852,79 @@
   "type": "ENCHANTMENT"
  },
  {
+  "max_health": 1,
+  "attack": 1,
+  "name": "Béni",
+  "dbfId": 73942,
+  "cardClass": "NEUTRAL",
+  "id": "BG21_HERO_000pe",
+  "set": "BATTLEGROUNDS",
+  "text": "+1/+1.",
+  "type": "ENCHANTMENT"
+ },
+ {
+  "max_health": 0,
+  "attack": 0,
+  "name": "Griffes terrifiantes",
+  "duration": 1,
+  "dbfId": 77342,
+  "cardClass": "WARRIOR",
+  "id": "BG20_HERO_666p_t3_e",
+  "set": "BATTLEGROUNDS",
+  "text": "+{0}/+{1} pour le prochain combat uniquement.",
+  "type": "ENCHANTMENT"
+ },
+ {
+  "mechanics": [
+   "WINDFURY"
+  ],
+  "name": "Cornes furieuses",
+  "duration": 1,
+  "dbfId": 77919,
+  "cardClass": "WARRIOR",
+  "id": "BG20_HERO_666p_t4a_e",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Furie des vents</b> pour le prochain combat uniquement.",
+  "type": "ENCHANTMENT"
+ },
+ {
+  "mechanics": [
+   "REBORN"
+  ],
+  "name": "Cornes résistantes",
+  "duration": 1,
+  "dbfId": 79438,
+  "cardClass": "WARRIOR",
+  "id": "BG20_HERO_666p_t4a_e2",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Réincarnation</b> pour le prochain combat uniquement.",
+  "type": "ENCHANTMENT"
+ },
+ {
+  "mechanics": [
+   "DIVINE_SHIELD"
+  ],
+  "name": "Cornes durcies",
+  "duration": 1,
+  "dbfId": 79439,
+  "cardClass": "WARRIOR",
+  "id": "BG20_HERO_666p_t4a_e3",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Bouclier divin</b> pour le prochain combat uniquement.",
+  "type": "ENCHANTMENT"
+ },
+ {
+  "attack": 0,
+  "name": "Sabots infernaux",
+  "duration": 1,
+  "dbfId": 77519,
+  "cardClass": "WARRIOR",
+  "id": "BG20_HERO_666p_t5_e",
+  "set": "BATTLEGROUNDS",
+  "text": "+0 ATQ pour le prochain combat uniquement.",
+  "type": "ENCHANTMENT"
+ },
+ {
   "mechanics": [
    "MODULAR",
    "DEATHRATTLE"
@@ -12751,6 +13093,42 @@
   "id": "BG20_HERO_202p",
   "set": "BATTLEGROUNDS",
   "text": "<b>Effet passif</b>\nAu début de chaque tour, choisissez parmi 2 nouveaux pouvoirs héroïques.",
+  "type": "HERO_POWER"
+ },
+ {
+  "name": "Conviction rang 1",
+  "enchantmentDbfId": 73942,
+  "hero_script": "Default_script",
+  "dbfId": 73941,
+  "cardClass": "PALADIN",
+  "cost": 1,
+  "id": "BG21_HERO_000p",
+  "set": "BATTLEGROUNDS",
+  "text": "Donne +1/+1 à un serviteur allié aléatoire. <i>(S’améliore au niveau de taverne 3.)</i>",
+  "type": "HERO_POWER"
+ },
+ {
+  "name": "Conviction rang 2",
+  "enchantmentDbfId": 73942,
+  "hero_script": "Default_script",
+  "dbfId": 73943,
+  "cardClass": "PALADIN",
+  "cost": 1,
+  "id": "BG21_HERO_000p2",
+  "set": "BATTLEGROUNDS",
+  "text": "Donne +1/+1 à trois serviteurs alliés aléatoires. <i>(S’améliore au niveau de taverne 5.)</i>",
+  "type": "HERO_POWER"
+ },
+ {
+  "name": "Conviction rang 3",
+  "enchantmentDbfId": 73942,
+  "hero_script": "Default_script",
+  "dbfId": 73944,
+  "cardClass": "PALADIN",
+  "cost": 1,
+  "id": "BG21_HERO_000p3",
+  "set": "BATTLEGROUNDS",
+  "text": "Donne +1/+1 à cinq serviteurs alliés aléatoires.",
   "type": "HERO_POWER"
  },
  {

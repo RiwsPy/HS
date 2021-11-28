@@ -210,6 +210,13 @@ BGS_104e1= add_stat # Festin de taverne
 BG21_020e= add_stat # Ébloui
 BGS_045e= add_stat # Souffle froid
 TB_BaconUps_115e= add_stat # Souffle froid premium
+BG21_HERO_000pe= add_stat # Béni
+BG20_HERO_666p_t3_e= add_stat # Griffes terrifiantes
+BG20_HERO_666p_t4a_e= add_stat # Cornes furieuses
+BG20_HERO_666p_t4a_e2= add_stat # Cornes résistantes
+BG20_HERO_666p_t4a_e3= add_stat # Cornes durcies
+BG20_HERO_666p_t5_e= add_stat # Sabots infernaux
+
 
 class TB_BaconShop_HP_069e(add_stat):
     # Fidèles lieutenants
@@ -320,5 +327,12 @@ class POISSON(Enchantment):
     def apply(self):
         self.owner.DEATHRATTLE = True
         setattr(self, 'deathrattle', self.deathrattle_met)
+
+
+
+class UNG_999t2e(deathrattle_repop):
+    # Spores vivantes
+    nb_repop = 2
+
 
 
