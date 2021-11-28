@@ -252,14 +252,17 @@ def test_draw(reinit_game):
 
 def test_triple(reinit_game):
     p1 = g.players[0]
-    id = p1.draw(976)
+    id = p1.draw(68469)
     id.play()
-    id = p1.draw(976)
+    id = p1.draw(68469)
     id.play()
-    p1.draw(976)
+    ench_data = g.all_cards[60644]
+    p1.buff(id, 60644)
+    p1.draw(68469)
     for card in p1.hand.cards + p1.board.cards:
-        assert card.dbfId != 976
+        assert card.dbfId != 68469
     assert p1.hand.cards.filter(dbfId=id.dbfId.battlegroundsPremiumDbfId)
+    assert p1.hand.cards[0].attack == p1.hand.cards[0].dbfId.attack + ench_data.attack
     p1.hand.cards[0].play()
     assert p1.hand.cards.filter(dbfId=59604)
     assert p1.hand.cards[0].quest_value == p1.level+1

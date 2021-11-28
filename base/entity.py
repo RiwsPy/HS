@@ -668,13 +668,6 @@ class Enchantment(Entity):
         'source': Void,
     }
 
-    buff_attr_add = {
-        'attack',  # : int
-        'max_health',  # : int
-        'health',  # int
-        'mechanics',  # list
-    }
-
     def __init__(self, dbfId, **kwargs):
         super().__init__(dbfId, **kwargs)
 

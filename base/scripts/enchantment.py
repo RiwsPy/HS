@@ -329,10 +329,3 @@ class POISSON(Enchantment):
         setattr(self, 'deathrattle', self.deathrattle_met)
 
 
-
-class UNG_999t2e(deathrattle_repop):
-    # Spores vivantes
-    nb_repop = 2
-
-
-

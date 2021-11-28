@@ -217,11 +217,11 @@ class Player(Entity):
             dbfId_number[card.dbfId].append(card)
 
             if len(dbfId_number[card.dbfId]) >= 3:
-                print('triple !!!')
                 card_id = self.create_card(card.dbfId.battlegroundsPremiumDbfId)
                 for card in dbfId_number[card.dbfId]:
                     card_id.cards.append(card)
-                    card_id.entities.extend(card.entities)
+                    for entity in card.entities:
+                        card_id.append(entity)
                     card.my_zone.remove(card)
                 dbfId_number[card.dbfId] = dbfId_number[card.dbfId][3:]
                 card_id.calc_stat_from_scratch(heal=True)
