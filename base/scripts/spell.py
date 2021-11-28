@@ -25,10 +25,7 @@ class TB_Bacon_Secrets_08(Spell):
     # Vengeance
     def die_off(self, sequence: Sequence):
         if sequence.is_ally(self) and self.controller.board.size > 0:
-            self.buff(
-                self.enchantmentDbfId,
-                self.controller.board.cards.random_choice()
-            )
+            self.buff(self.controller.board.cards.random_choice())
             self.die()
 
 
@@ -45,7 +42,7 @@ class TB_Bacon_Secrets_13(Spell):
     def turn_on(self, sequence: Sequence):
         if self.controller.board.size > 0:
             for minion in self.controller.board.cards:
-                self.buff(self.enchantmentDbfId, minion)
+                self.buff(minion)
             self.die()
 
 
@@ -66,7 +63,7 @@ class TB_Bacon_Secrets_12(Spell):
         if sequence.target is self.controller and\
                 self.in_fight_sequence and\
                 sequence.damage_value >= self.controller.health:
-            self.buff(self.enchantmentDbfId, self.controller)
+            self.buff(self.controller)
             self.die()
 
 
@@ -116,7 +113,7 @@ class TRL_509t(Spell):
             sequence.is_valid = False
         
     def cast(self, sequence: Sequence):
-        self.buff(self.enchantmentDbfId, sequence.target)
+        self.buff(sequence.target)
 
 
 class BGS_Treasures_000(TRL_509t):

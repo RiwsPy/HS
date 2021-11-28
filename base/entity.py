@@ -125,11 +125,10 @@ class Entity:
         self.entities.append(entity)
 
     def remove(self, entity: 'Entity') -> None:
-        if entity.owner.type >= Type.GAME:
-            try:
-                entity.owner.entities.remove(entity)
-            except ValueError:
-                pass
+        try:
+            entity.owner.entities.remove(entity)
+        except ValueError:
+            pass
 
     def create_card_in(self, dbfId: int, position=None, **kwargs) -> 'Entity':
         """
@@ -144,7 +143,8 @@ class Entity:
         card_id.owner = self.controller
         return card_id
 
-    def buff(self, enchantmentDbfId: int, target: 'Entity', **kwargs) -> None:
+    def buff(self, target: 'Entity', enchantmentDbfId: int = 0, **kwargs) -> None:
+        enchantmentDbfId = enchantmentDbfId or self.enchantmentDbfId
         if target:
             Sequence(
                 'ENHANCE',
@@ -459,7 +459,6 @@ class Minion(Entity):
             return None
 
         self.buff(
-            self.enchantmentDbfId,
             modular_target,
             attack=self.attack,
             max_health=self.health,

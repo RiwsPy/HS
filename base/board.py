@@ -177,9 +177,6 @@ class Bob_board(Board):
         while nb_card_to_play >= 1 and not self.is_full:
             nb_card_to_play -= 1
             card_id = self.game.hand.give_or_create_in(entity_list[nb_card_to_play], self)
-            #card_id = entity_list[nb_card_to_play]
-            #card_id.owner = self.controller
-            #self.game.hand.remove(card_id)
             card_id.summon()
 
     def fill_minion_temporal(self) -> None:

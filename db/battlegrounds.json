@@ -1059,6 +1059,39 @@
  },
  {
   "battlegroundsHero": true,
+  "cardClass": "NEUTRAL",
+  "dbfId": 71908,
+  "health": 40,
+  "id": "BG20_HERO_202",
+  "name": "Maître Nguyen",
+  "set": "BATTLEGROUNDS",
+  "type": "HERO"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "dbfId": 71909,
+  "hideCost": true,
+  "id": "BG20_HERO_202p",
+  "name": "Pouvoir du maelström",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nAu début de chaque tour, choisissez parmi 2 nouveaux pouvoirs héroïques.",
+  "type": "HERO_POWER"
+ },
+ {
+  "cardClass": "NEUTRAL",
+  "dbfId": 71910,
+  "id": "BG20_HERO_202pe",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "name": "Pouvoir héroïque changeant",
+  "set": "BATTLEGROUNDS",
+  "text": "À chaque tour, se transforme en un pouvoir héroïque aléatoire.",
+  "type": "ENCHANTMENT"
+ },
+ {
+  "battlegroundsHero": true,
   "cardClass": "DRUID",
   "dbfId": 68129,
   "health": 40,

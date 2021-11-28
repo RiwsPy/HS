@@ -20,7 +20,7 @@ class battlecry_select_one_minion_and_buff_it(Minion):
 
     @repeat_effect
     def battlecry(self, sequence: Sequence):
-        self.buff(self.enchantmentDbfId, sequence.target)
+        self.buff(sequence.target)
 
 
 class deathrattle_repop(Minion):
@@ -51,21 +51,21 @@ class battlecry_select_all_and_buff_them(Minion):
     def battlecry(self, sequence: Sequence):
         minions = self.controller.board.cards.filter_hex(race=self.synergy).exclude(self)
         for minion in minions:
-            self.buff(self.enchantmentDbfId, minion)
+            self.buff(minion)
 
 
 class aura_buff_race(Minion):
     def summon_on(self, sequence: Sequence):
         if sequence.is_ally(self) and\
                 sequence.source.race == self.race:
-            self.buff(self.enchantmentDbfId, sequence.source, aura=True)
+            self.buff(sequence.source, aura=True)
 
     def summon_start(self, sequence: Sequence):
         super().summon_start(sequence)
         if sequence.is_valid:
             for minion in self.controller.board.cards:
                 if minion.race == self.race:
-                    self.buff(self.enchantmentDbfId, minion, aura=True)
+                    self.buff(minion, aura=True)
 
 
 class battlecry_buff_myself(Minion):
@@ -73,7 +73,7 @@ class battlecry_buff_myself(Minion):
 
     @repeat_effect
     def battlecry(self, sequence: Sequence):
-        self.buff(self.enchantmentDbfId, self)
+        self.buff(self)
 
 
 buff_attr_add = {

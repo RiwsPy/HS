@@ -31,7 +31,8 @@ class Player(Entity):
             **kwargs)
 
         self.pseudo = pseudo
-        self.health = self.max_health
+        self.max_health = self.health
+        #self.health = self.max_health
         if self.dbfId != CardName.BOB:
             self.hand = Player_hand()
             self.append(self.hand)
@@ -63,6 +64,7 @@ class Player(Entity):
 
     @property
     def deck(self):
+        # player.deck returns local_hand but game.deck returns all_cards in hand
         return self.bob.local_hand
 
     @property

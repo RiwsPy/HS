@@ -3789,6 +3789,7 @@
  {
   "name": "Nécrolyte",
   "synergy": "QUILBOAR",
+  "enchantmentDbfId": 72191,
   "dbfId": 70151,
   "attack": 3,
   "battlegroundsPremiumDbfId": 70152,
@@ -3809,6 +3810,7 @@
  {
   "name": "Nécrolyte",
   "synergy": "QUILBOAR",
+  "enchantmentDbfId": 72191,
   "dbfId": 70152,
   "attack": 6,
   "battlegroundsNormalDbfId": 70151,
@@ -3828,6 +3830,7 @@
  {
   "name": "Porte-bannière huran",
   "synergy": "QUILBOAR",
+  "enchantmentDbfId": 72191,
   "dbfId": 70144,
   "attack": 1,
   "battlegroundsPremiumDbfId": 70146,
@@ -3847,6 +3850,7 @@
  {
   "name": "Porte-bannière huran",
   "synergy": "QUILBOAR",
+  "enchantmentDbfId": 72191,
   "dbfId": 70146,
   "attack": 2,
   "battlegroundsNormalDbfId": 70144,
@@ -7914,6 +7918,7 @@
  {
   "name": "Charlga",
   "synergy": "QUILBOAR",
+  "enchantmentDbfId": 72191,
   "dbfId": 70165,
   "attack": 4,
   "battlegroundsPremiumDbfId": 70166,
@@ -7934,6 +7939,7 @@
  {
   "name": "Charlga",
   "synergy": "QUILBOAR",
+  "enchantmentDbfId": 72191,
   "dbfId": 70166,
   "attack": 8,
   "battlegroundsNormalDbfId": 70165,
@@ -8404,7 +8410,6 @@
  {
   "name": "Bob le barman",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": -1,
   "dbfId": 57110,
   "cardClass": "NEUTRAL",
@@ -8433,7 +8438,6 @@
  {
   "name": "BaconPHhero",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": -1,
   "dbfId": 56298,
   "cardClass": "NEUTRAL",
@@ -8445,7 +8449,6 @@
  {
   "name": "A. F. Kah",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 59891,
   "dbfId": 57944,
   "battlegroundsHero": true,
@@ -8458,7 +8461,6 @@
  {
   "name": "Aile de mort",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 61406,
   "dbfId": 60369,
   "battlegroundsHero": true,
@@ -8471,7 +8473,6 @@
  {
   "name": "Alexstrasza",
   "synergy": "DRAGON",
-  "max_health": 40,
   "powerDbfId": 61517,
   "dbfId": 61488,
   "battlegroundsHero": true,
@@ -8484,7 +8485,6 @@
  {
   "name": "Al’Akir",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 64402,
   "dbfId": 64403,
   "battlegroundsHero": true,
@@ -8497,7 +8497,6 @@
  {
   "name": "Aranna Cherchétoile",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 61915,
   "dbfId": 61910,
   "battlegroundsHero": true,
@@ -8510,7 +8509,6 @@
  {
   "name": "Baz’hial la liche",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 60285,
   "dbfId": 58044,
   "battlegroundsHero": true,
@@ -8523,7 +8521,6 @@
  {
   "name": "Capitaine Double-Crochet",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 62267,
   "dbfId": 62266,
   "battlegroundsHero": true,
@@ -8536,7 +8533,6 @@
  {
   "name": "Capitaine Eudora",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 62250,
   "dbfId": 62242,
   "battlegroundsHero": true,
@@ -8549,7 +8545,6 @@
  {
   "name": "Cap’taine céleste Kragg",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 62269,
   "dbfId": 62268,
   "battlegroundsHero": true,
@@ -8562,7 +8557,6 @@
  {
   "name": "Carniflore",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 58028,
   "dbfId": 58027,
   "battlegroundsHero": true,
@@ -8575,7 +8569,6 @@
  {
   "name": "Chenvaa’la",
   "synergy": "ELEMENTAL",
-  "max_health": 40,
   "powerDbfId": 64476,
   "dbfId": 64475,
   "battlegroundsHero": true,
@@ -8588,7 +8581,6 @@
  {
   "name": "C’Thun",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 66246,
   "dbfId": 58535,
   "battlegroundsHero": true,
@@ -8601,7 +8593,6 @@
  {
   "name": "Daryl le Danseur",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 59860,
   "dbfId": 59806,
   "battlegroundsHero": true,
@@ -8614,7 +8605,6 @@
  {
   "name": "Dinodompteur Brann",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 60218,
   "dbfId": 60214,
   "battlegroundsHero": true,
@@ -8627,7 +8617,6 @@
  {
   "name": "Edwin VanCleef",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 57567,
   "dbfId": 57633,
   "battlegroundsHero": true,
@@ -8640,7 +8629,6 @@
  {
   "name": "Élise Cherchétoile",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 60217,
   "dbfId": 60213,
   "battlegroundsHero": true,
@@ -8653,7 +8641,6 @@
  {
   "name": "Fongimancien Flurgl",
   "synergy": "MURLOC",
-  "max_health": 40,
   "powerDbfId": 60448,
   "dbfId": 60372,
   "battlegroundsHero": true,
@@ -8666,7 +8653,6 @@
  {
   "name": "Gardienne de la forêt Omu",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 63605,
   "dbfId": 63604,
   "battlegroundsHero": true,
@@ -8679,7 +8665,6 @@
  {
   "name": "George le Déchu",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 57562,
   "dbfId": 57929,
   "battlegroundsHero": true,
@@ -8692,7 +8677,6 @@
  {
   "name": "Grisebranche",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 67554,
   "dbfId": 67553,
   "battlegroundsHero": true,
@@ -8705,7 +8689,6 @@
  {
   "name": "Illidan Hurlorage",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 61851,
   "dbfId": 57634,
   "battlegroundsHero": true,
@@ -8718,7 +8701,6 @@
  {
   "name": "Jandice Barov",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 63607,
   "dbfId": 63601,
   "battlegroundsHero": true,
@@ -8731,7 +8713,6 @@
  {
   "name": "Kael’thas Haut-Soleil",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 61917,
   "dbfId": 61912,
   "battlegroundsHero": true,
@@ -8744,7 +8725,6 @@
  {
   "name": "Le Recousu",
   "synergy": "NONE",
-  "max_health": 55,
   "powerDbfId": 59399,
   "dbfId": 59397,
   "battlegroundsHero": true,
@@ -8757,7 +8737,6 @@
  {
   "name": "Le conservateur",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 59201,
   "dbfId": 59203,
   "battlegroundsHero": true,
@@ -8770,7 +8749,6 @@
  {
   "name": "Le grand Akazamzarak",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 58022,
   "dbfId": 58021,
   "battlegroundsHero": true,
@@ -8783,7 +8761,6 @@
  {
   "name": "Le roi des rats",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 63127,
   "dbfId": 57893,
   "battlegroundsHero": true,
@@ -8796,7 +8773,6 @@
  {
   "name": "Le roi-liche",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 58040,
   "dbfId": 58024,
   "battlegroundsHero": true,
@@ -8809,7 +8785,6 @@
  {
   "name": "M. Bigglesworth",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 63320,
   "dbfId": 63319,
   "battlegroundsHero": true,
@@ -8822,7 +8797,6 @@
  {
   "name": "Maiev Chantelombre",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 61919,
   "dbfId": 61914,
   "battlegroundsHero": true,
@@ -8835,7 +8809,6 @@
  {
   "name": "Malygos",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 60378,
   "dbfId": 61490,
   "battlegroundsHero": true,
@@ -8848,7 +8821,6 @@
  {
   "name": "Millhouse Tempête-de-Mana",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 60405,
   "dbfId": 60366,
   "battlegroundsHero": true,
@@ -8861,7 +8833,6 @@
  {
   "name": "Millificent Tempête-de-Mana",
   "synergy": "MECHANICAL",
-  "max_health": 40,
   "powerDbfId": 57949,
   "dbfId": 57946,
   "battlegroundsHero": true,
@@ -8874,7 +8845,6 @@
  {
   "name": "Neunœil le pirate",
   "synergy": "PIRATE",
-  "max_health": 40,
   "powerDbfId": 62243,
   "dbfId": 57947,
   "battlegroundsHero": true,
@@ -8887,7 +8857,6 @@
  {
   "name": "Nécrorateur Noirépine",
   "synergy": "QUILBOAR",
-  "max_health": 40,
   "powerDbfId": 71459,
   "dbfId": 71458,
   "battlegroundsHero": true,
@@ -8900,7 +8869,6 @@
  {
   "name": "Nozdormu",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 61491,
   "dbfId": 61489,
   "battlegroundsHero": true,
@@ -8913,7 +8881,6 @@
  {
   "name": "N’Zoth",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 66484,
   "dbfId": 66483,
   "battlegroundsHero": true,
@@ -8926,7 +8893,6 @@
  {
   "name": "Prince du mal Rafaam",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 60381,
   "dbfId": 60362,
   "battlegroundsHero": true,
@@ -8939,7 +8905,6 @@
  {
   "name": "Pyraride",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 59832,
   "dbfId": 59831,
   "battlegroundsHero": true,
@@ -8952,7 +8917,6 @@
  {
   "name": "Ragnaros, seigneur du feu",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 64424,
   "dbfId": 57892,
   "battlegroundsHero": true,
@@ -8965,7 +8929,6 @@
  {
   "name": "Rakanishu",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 64401,
   "dbfId": 64400,
   "battlegroundsHero": true,
@@ -8978,7 +8941,6 @@
  {
   "name": "Reno Jackson",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 60216,
   "dbfId": 60212,
   "battlegroundsHero": true,
@@ -8991,7 +8953,6 @@
  {
   "name": "Roi Mukla",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 59815,
   "dbfId": 59814,
   "battlegroundsHero": true,
@@ -9004,7 +8965,6 @@
  {
   "name": "Seigneur Barov",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 63600,
   "dbfId": 63602,
   "battlegroundsHero": true,
@@ -9017,7 +8977,6 @@
  {
   "name": "Seigneur Jaraxxus",
   "synergy": "DEMON",
-  "max_health": 40,
   "powerDbfId": 59808,
   "dbfId": 59807,
   "battlegroundsHero": true,
@@ -9030,7 +8989,6 @@
  {
   "name": "Silas Sombrelune",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 64481,
   "dbfId": 64480,
   "battlegroundsHero": true,
@@ -9043,7 +9001,6 @@
  {
   "name": "Sindragosa",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 57945,
   "dbfId": 58435,
   "battlegroundsHero": true,
@@ -9056,7 +9013,6 @@
  {
   "name": "Sir Finley Mrrgglton",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 60450,
   "dbfId": 60211,
   "battlegroundsHero": true,
@@ -9069,7 +9025,6 @@
  {
   "name": "Tess Grisetête",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 63162,
   "dbfId": 60367,
   "battlegroundsHero": true,
@@ -9082,7 +9037,6 @@
  {
   "name": "Tickatus",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 67357,
   "dbfId": 67356,
   "battlegroundsHero": true,
@@ -9095,7 +9049,6 @@
  {
   "name": "Toki l’Infinie",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 58537,
   "dbfId": 58534,
   "battlegroundsHero": true,
@@ -9108,7 +9061,6 @@
  {
   "name": "Seigneur Saurcroc",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 71455,
   "dbfId": 71454,
   "battlegroundsHero": true,
@@ -9121,7 +9073,6 @@
  {
   "name": "Souveraine Cire-Reine",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 59863,
   "dbfId": 57924,
   "battlegroundsHero": true,
@@ -9134,7 +9085,6 @@
  {
   "name": "Vol’jin",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 71464,
   "dbfId": 71463,
   "battlegroundsHero": true,
@@ -9147,7 +9097,6 @@
  {
   "name": "Xyrella",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 70957,
   "dbfId": 70956,
   "battlegroundsHero": true,
@@ -9160,7 +9109,6 @@
  {
   "name": "Yogg-Saron, la fin de l’espoir",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 59826,
   "dbfId": 59805,
   "battlegroundsHero": true,
@@ -9173,7 +9121,6 @@
  {
   "name": "Ysera",
   "synergy": "DRAGON",
-  "max_health": 40,
   "powerDbfId": 61408,
   "dbfId": 60370,
   "battlegroundsHero": true,
@@ -9186,7 +9133,6 @@
  {
   "name": "Y’Shaarj",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 66197,
   "dbfId": 66196,
   "battlegroundsHero": true,
@@ -9199,7 +9145,6 @@
  {
   "name": "Zéphrys le Grand",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 64486,
   "dbfId": 64485,
   "battlegroundsHero": true,
@@ -9212,7 +9157,6 @@
  {
   "name": "Kurtrus Chutecendre",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 74632,
   "dbfId": 74631,
   "battlegroundsHero": true,
@@ -9225,7 +9169,6 @@
  {
   "name": "Guff Totem-Runique",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 68130,
   "dbfId": 68129,
   "battlegroundsHero": true,
@@ -9238,13 +9181,24 @@
  {
   "name": "Mutanus le Dévoreur",
   "synergy": "NONE",
-  "max_health": 40,
   "powerDbfId": 71914,
   "dbfId": 71916,
   "battlegroundsHero": true,
   "cardClass": "NEUTRAL",
   "health": 40,
   "id": "BG20_HERO_301",
+  "set": "BATTLEGROUNDS",
+  "type": "HERO"
+ },
+ {
+  "name": "Maître Nguyen",
+  "synergy": "NONE",
+  "powerDbfId": 71909,
+  "dbfId": 71908,
+  "battlegroundsHero": true,
+  "cardClass": "NEUTRAL",
+  "health": 40,
+  "id": "BG20_HERO_202",
   "set": "BATTLEGROUNDS",
   "type": "HERO"
  },
@@ -11617,6 +11571,18 @@
   "type": "ENCHANTMENT"
  },
  {
+  "name": "Pouvoir héroïque changeant",
+  "dbfId": 71910,
+  "cardClass": "NEUTRAL",
+  "id": "BG20_HERO_202pe",
+  "mechanics": [
+   "TRIGGER_VISUAL"
+  ],
+  "set": "BATTLEGROUNDS",
+  "text": "À chaque tour, se transforme en un pouvoir héroïque aléatoire.",
+  "type": "ENCHANTMENT"
+ },
+ {
   "mechanics": [
    "MODULAR",
    "DEATHRATTLE"
@@ -12772,6 +12738,19 @@
   "id": "BG20_HERO_301p",
   "set": "BATTLEGROUNDS",
   "text": "Retire un serviteur allié. Crache ses caractéristiques sur un autre. Vous gagnez 1 pièce d’or.",
+  "type": "HERO_POWER"
+ },
+ {
+  "name": "Pouvoir du maelström",
+  "enchantmentDbfId": 71910,
+  "hero_script": "Default_script",
+  "dbfId": 71909,
+  "cardClass": "NEUTRAL",
+  "cost": 0,
+  "hideCost": true,
+  "id": "BG20_HERO_202p",
+  "set": "BATTLEGROUNDS",
+  "text": "<b>Effet passif</b>\nAu début de chaque tour, choisissez parmi 2 nouveaux pouvoirs héroïques.",
   "type": "HERO_POWER"
  },
  {

@@ -95,8 +95,10 @@ class Bob_hand(ZoneEntity):
         """
             Remove one card from bob's hand
         """
-        if type(entity) is int:
+        if isinstance(entity, int):
             entity = self.all_cards[entity]
+        else:
+            print('BOB board remove entity ??')
         self.entities[entity.level].remove(entity.dbfId)
 
     def remove_and_create(self, dbfId: int) -> Entity:
@@ -104,8 +106,7 @@ class Bob_hand(ZoneEntity):
             self.remove(dbfId)
         except ValueError:
             return self.create_card(dbfId)
-        else:
-            return self.create_card(dbfId, from_bob=True)
+        return self.create_card(dbfId, from_bob=True)
 
     @property
     def cards(self) -> Card_list:
@@ -130,11 +131,13 @@ class Bob_hand(ZoneEntity):
             Create a copy of each card in ``entities_id`` parameter to bob's hand
         """
         dbfId_data = self.all_cards[dbfId]
-        self.entities[dbfId_data.level].append(dbfId_data)
+        if dbfId_data.level:
+            self.entities[dbfId_data.level].append(dbfId_data)
 
     def give_or_create_in(self, dbfId: int, new_owner, **kwargs) -> Entity:
-        dbfId_data = self.all_cards[dbfId]
-        if dbfId_data is None:
+        try:
+            dbfId_data = self.all_cards[dbfId]
+        except ValueError:
             return None
 
         if dbfId_data.level:

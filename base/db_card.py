@@ -83,7 +83,9 @@ class Meta_card_data(Card_list):
 
     def __getitem__(self, value) -> Any:
         # TODO problème de compatibilité avec random.shuffle ??
-        if type(value) is str and value.isdigit():
+        if type(value) is Card_data:
+            return value
+        elif type(value) is str and value.isdigit():
             value = int(value)
         elif isinstance(value, slice):
             return super().__getitem__(value)
@@ -93,14 +95,11 @@ class Meta_card_data(Card_list):
                 return super().__getitem__(self.index(value))
             except ValueError:
                 print('Meta_card_data __getitem__: unknow', value)
-                return None
+                raise ValueError
 
-        print('strange value', value)
+        print('strange value', value, type(value))
 
-        try:
-            return super().__getitem__(value)
-        except IndexError:
-            return None
+        return super().__getitem__(value)
 
 
 def charge_all_cards(types_ban=[]) -> Meta_card_data:
