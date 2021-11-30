@@ -289,8 +289,7 @@ class Entity:
                     real_damage = seq.damage_value - target.armor 
                     target.armor = max(0, -real_damage)
                     target.health -= real_damage
-                    if target.type == Type.MINION: # TODO: delete IS_POISONED
-                        target.IS_POISONED &= self.POISONOUS
+                    target.IS_POISONED &= self.POISONOUS # TODO: delete IS_POISONED
                     if not target.is_alive:
                         if target.health < 0 and overkill:
                             Sequence('OVERKILL', self).start_and_close()
@@ -305,8 +304,6 @@ class Entity:
             player: 'Entity' = None,
             remove: bool = True
         ) -> Card_data:
-        # TODO: Warning, problem if the card is moving during the discover
-        # toutes les découvertes sont retirées du pool
 
         """
             Entité source, son dbfId est exclu de la découverte
@@ -361,7 +358,7 @@ class Minion(Entity):
         self._max_health = self.health
 
     def __repr__(self) -> str:
-        return f'{self.name}'
+        return f'{self.name} {self.attack}-{self.health}'
 
     @property
     def max_health(self) -> int:
@@ -413,10 +410,8 @@ class Minion(Entity):
     def die(self, sequence=None, **kwargs):
         if sequence is None:
             kwargs['position'] = self.position
-            # le avenge/reborn s'active avant le die_off ?
             with Sequence('DIE', self, **kwargs) as seq:
                 if seq.is_valid:
-                    # TODO: la position du reborn est erronée si repop sur le deathrattle
                     Sequence('DEATHRATTLE', self, **kwargs).start_and_close()
                     Sequence('AVENGE', self, **kwargs).start_and_close()
                     Sequence('REBORN', self, **kwargs).start_and_close()
@@ -625,14 +620,25 @@ class Minion(Entity):
     def loss_shield_start(self, sequence: Sequence) -> None:
         sequence.is_valid = self.DIVINE_SHIELD
 
-    def set_premium(self) -> None:
+    def set_premium(self) -> 'Entity':
         if hasattr(self, 'battlegroundsPremiumDbfId') is False:
             return None
         # TODO: l'origine de la carte est erroné si
         # une nouvelle carte ne remplace pas l'ancienne
         # Dans ce cas, des informations utiles peuvent être perdues
+        # d'après les observations en date du 30/11/2021, une nouvelle carte est créée
         golden_card = Card(self.battlegroundsPremiumDbfId)
         # self.dbfId = golden_card.dbfId
+        owner = self.owner
+        position = self.position
+        self.owner.remove(self)
+        card_id = Card(self.battlegroundsPremiumDbfId)
+        card_id.cards.append(self)
+        for entity in self.entities:
+            card_id.append(entity)
+            entity.apply()
+        owner.append(card_id, position=position)
+        return card_id
 
     def clone(self) -> Entity:
         clone_card = self.create_card(self.dbfId)
@@ -663,6 +669,7 @@ class Enchantment(Entity):
     """
     # TODO: fusion des enchantements de dbfId identiques ?
     # > gène la rétroactivité des bonus
+    # > pas de rétroactivité des bonus
     default_attr = {
         'aura': False,
         'source': Void,
@@ -670,10 +677,9 @@ class Enchantment(Entity):
 
     def __init__(self, dbfId, **kwargs):
         super().__init__(dbfId, **kwargs)
-
         if not hasattr(self, 'duration'):
             if self.source.in_fight_sequence:
-                self.duration = self.source.nb_turn + 1
+                self.duration = 0
             else:
                 self.duration = MAX_TURN
         elif self.duration == -1:
@@ -683,11 +689,11 @@ class Enchantment(Entity):
 
     @property
     def is_over(self) -> bool:
-        return self.duration <= self.nb_turn
+        return self.duration <= self.nb_turn and self.duration != 0
 
     def enhance_start(self, sequence: Sequence) -> None:
         target = sequence.target
-        if target is None or target.DORMANT or self.duration <= target.nb_turn:
+        if target is None or target.DORMANT or self.duration <= target.nb_turn and self.duration != 0:
             sequence.is_valid = False
             return None
 

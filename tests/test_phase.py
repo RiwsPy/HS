@@ -269,3 +269,27 @@ def test_triple(reinit_game):
     p1.hand.cards[0].play()
     assert p1.hand.cards[0].level == p1.level+1
 
+def test_set_premium(reinit_game):
+    # Phase I
+    p1 = g.players[0]
+    card = p1.draw(68469)
+    premium_id = card.set_premium()
+    assert card.dbfId == 68469
+    assert premium_id.dbfId == card.battlegroundsPremiumDbfId
+    assert premium_id.battlegroundsNormalDbfId == card.dbfId
+
+    # Phase II
+    premium_id.play()
+    card1 = p1.draw(68469)
+    card2 = p1.draw(68469)
+    card1.play()
+    card2.play()
+    p1.buff(card1, 72191) # gemme de sang
+    assert card1.position == 1
+    assert card1.entities
+    card1_premium = card1.set_premium()
+    assert card1_premium.position == 1
+    assert p1.board.cards == [premium_id, card1_premium, card2]
+    assert card1 in card1_premium.cards
+    assert card1_premium.entities
+    assert card1_premium.attack == card1_premium.dbfId.attack + g.all_cards[72191].attack
