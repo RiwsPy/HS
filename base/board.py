@@ -53,8 +53,6 @@ class Board(ZoneEntity):
                 enchantment.remove()
 
     def append(self, entity: Entity, position=None, **kwargs) -> None:
-        # TODO : problème de positionnement en cas de repop multiple
-        # faire pop avant le minion d'après ou en dernier en cas d'inexistance ?
         if position is None:
             position = self.MAX_SIZE
 
@@ -95,6 +93,11 @@ class Player_board(Board):
         pass
         #self.next_opponent = ??
 
+    #def fight_on(self, sequence):
+    #    for entity in self.cards:
+    #        entity.calc_stat_from_scratch(heal=True)
+
+
     def fight_off(self, sequence):
         # l'ordre d'exécution des scripts change au fil des tours
         # cela peut avoir pour origine une non sauvegarde de entities
@@ -103,13 +106,19 @@ class Player_board(Board):
         self.entities = self.entities_save[-1][:]
         for card in self.entities:
             card.owner = self
+        for entity in self.cards:
+            for enchant in entity.entities:
+                if enchant.type == Type.ENCHANTMENT and\
+                        enchant.duration == 0:
+                    enchant.remove()
+            entity.calc_stat_from_scratch(heal=True)
 
     def turn_off(self, sequence):
-        self.cards_save.append(self.cards[:])
-        self.entities_save.append(self.entities[:])
         #if self.is_bot:
         if True:
             self.auto_placement_card()
+        self.cards_save.append(self.cards[:])
+        self.entities_save.append(self.entities[:])
 
     def auto_placement_card(self) -> None:
         """

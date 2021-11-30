@@ -1,6 +1,6 @@
 from os import stat
 from .enums import VERSION, CardName, Race
-from .db_card import Card_data, Meta_card_data, CARD_DB
+from .db_card import Card_data, Meta_card_data
 import time
 import json
 from . import stats
@@ -9,22 +9,13 @@ from datetime import datetime
 from typing import DefaultDict, Dict
 from .sequence import Sequence
 from collections import defaultdict
+from .db_card import Card_list
 
-compo_turn_3 = { # by synergy
-    Race('NONE'): (CARD_DB[38797], CARD_DB[38797], CARD_DB[64040]), # rejeton, rejeton, goutte d'eau
-    Race('BEAST'): (CARD_DB[70790], CARD_DB[62162]), # rat d'égoût, saurolisque
-    Race('DEMON'): (CARD_DB[59937], CARD_DB[59186]), # emprisonneur, surveillant Nathrezim
-    Race('DRAGON'): (CARD_DB[61029], CARD_DB[72072], CARD_DB[64040]), # gardien des glyphes, contrebandier dragonnet, goutte d'eau
-    Race('ELEMENTAL'): (CARD_DB[64056], CARD_DB[64296], CARD_DB[64040]), # élémentaire de fête, roche en fusion, goutte
-    Race('MECHANICAL'): (CARD_DB[49279], CARD_DB[49279]), # groboum, groboum
-    Race('MURLOC'): (CARD_DB[1063], CARD_DB[736], CARD_DB[68469]), # chef de guerre, vieux troubloeil, éclaireur #
-    Race('PIRATE'): (CARD_DB[61060], CARD_DB[680]), # yo-ho, capitaine des mers du sud
-    Race('QUILBOAR'): (CARD_DB[70143], CARD_DB[70162]), # Géomancien, défense robuste
-}
 
 class arene:
     def __init__(self, **kwargs) -> None:
         self.debut = time.time()
+        self.types_ban=kwargs['types_ban']
         self.g = Card(
             CardName.DEFAULT_GAME,
             types_ban=kwargs['types_ban'],
@@ -92,6 +83,7 @@ class arene:
                 cards_test.append(crd)
         else:
             print(f'Retro {dic_add["retro"]} de {method} introuvable.')
+            raise AttributeError
 
         return cards_test
 
@@ -99,19 +91,21 @@ class arene:
         g = self.g
         NB_FIGHT = 10
         ret = defaultdict(int)
-        for race, compo1 in compo_turn_3.items():
+        compo_turn_3 = self.compo_turn_3()
+        for compo1 in compo_turn_3.values():
             for compo2 in compo_turn_3.values():
+                g.party_begin('p1_name', 'p2_name', hero_p1=p1, hero_p2=p2)
+                j1, j2 = g.players
+                j1.level = 2
+                j2.level = 2
+                with Sequence('TURN', g):
+                    j1.power.active_script_arene(*compo1, force=True)
+                    j2.power.active_script_arene(*compo2, force=True)
+
                 for _ in range(NB_FIGHT):
-                    g.party_begin('p1_name', 'p2_name', hero_p1=p1, hero_p2=p2)
-                    j1, j2 = g.players
-                    j1.level = 2
-                    j2.level = 2
-                    with Sequence('TURN', g):
-                        j1.power.active_script_arene(*compo1, force=True)
-                        j2.power.active_script_arene(*compo2, force=True)
                     Sequence('FIGHT', g).start_and_close()
 
-                    ret[compo1] += calc_damage(j1, j2)
+                ret[compo1] += calc_damage(j1, j2)
 
         for compo, value in ret.items():
             print(compo, value)
@@ -128,27 +122,25 @@ class arene:
         g = self.g
         NB_FIGHT = 10
         for card_p1 in card_list:
-            generator_p2 = stats.card_proba(
-                            card_list,
-                            player_level=1,
-                            exclude_card=[card_p1])
-            card_p1.value = 0
-
-            for card_p2, proba_apparition_p2 in generator_p2:
+            g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+            j1, j2 = g.players
+            with Sequence('TURN', g):
+                j1.power.active_script_arene(card_p1)
+            for card_p2, proba_apparition_p2 in stats.card_proba_game(g, j2):
                 print(card_p1.name, card_p2.name, proba_apparition_p2)
-                for _ in range(NB_FIGHT):
-                    g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
-                    j1, j2 = g.players
-                    for _ in range(2):
-                        with Sequence('TURN', g):
-                            j1.power.active_script_arene(card_p1)
-                            j2.power.active_script_arene(card_p2)
+                g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+                j1, j2 = g.players
+                for _ in range(2):
+                    with Sequence('TURN', g):
+                        j1.power.active_script_arene(card_p1)
+                        j2.power.active_script_arene(card_p2)
 
+                    for _ in range(NB_FIGHT):
                         Sequence('FIGHT', g).start_and_close()
 
-                    card_p1.value += \
-                        calc_damage(j1, j2)*proba_apparition_p2
-                    card_p1.counter += proba_apparition_p2
+                card_p1.value += \
+                    calc_damage(j1, j2)*proba_apparition_p2/NB_FIGHT
+                card_p1.counter += proba_apparition_p2
 
     def base_T3(self, cards_test, p1, p2):
         cards_test = cards_test or self.g.minion_can_collect.filter_maxmin_level(level_max=2)
@@ -160,35 +152,56 @@ class arene:
         g = self.g
         NB_FIGHT = 3
 
+        compo_turn_3 = self.compo_turn_3()
+
+        for card_p1 in card_list:
+            g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+            j1, j2 = g.players
+            with Sequence('TURN', g):
+                j1.power.active_script_arene(card_p1)
+                j1.level = 2
+            for card_p1_2, proba_c2 in stats.card_proba_game(g, j1):
+                for compo in compo_turn_3.values():
+                    print(card_p1.name, card_p1_2.name)
+                    g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+                    j1, j2 = g.players
+                    Sequence('TURN', g).start_and_close()
+                    with Sequence('TURN', g):
+                        j1.power.active_script_arene()
+                        j2.power.active_script_arene()
+                    with Sequence('TURN', g):
+                        j1.power.active_script_arene(card_p1, card_p1_2, force=True)
+                        j2.power.active_script_arene(*compo, force=True)
+                    for _ in range(NB_FIGHT):
+                        Sequence('FIGHT', g).start_and_close()
+
+                    card_p1.counter += proba_c2
+                    card_p1.value += calc_damage(j1, j2)*proba_c2/NB_FIGHT
+
+    def compo_turn_3(self):
+        compo_turn_3 = { # by synergy
+            Race('NONE'): (38797, 38797, 64040), # rejeton, rejeton, goutte d'eau
+            Race('BEAST'): (70790, 62162), # rat d'égoût, saurolisque
+            Race('DEMON'): (59937, 59186), # emprisonneur, surveillant Nathrezim
+            Race('DRAGON'): (61029, 72072, 64040), # gardien des glyphes, contrebandier dragonnet, goutte d'eau
+            Race('ELEMENTAL'): (64056, 64296, 64040), # élémentaire de fête, roche en fusion, goutte
+            Race('MECHANICAL'): (49279, 49279), # groboum, groboum
+            Race('MURLOC'): (1063, 736, 68469), # chef de guerre, vieux troubloeil, éclaireur #
+            Race('PIRATE'): (61060, 680), # yo-ho, capitaine des mers du sud
+            Race('QUILBOAR'): (70143, 70162), # Géomancien, défense robuste
+        }
         for synergy in compo_turn_3.copy():
             if synergy & self.g.type_ban:
                 del compo_turn_3[synergy]
 
-        for card_p1 in card_list:
-            generator_p2_2 = stats.card_proba(
-                            card_list,
-                            player_level=2,
-                            exclude_card=[card_p1])
-            for card_p1_2, proba_c2 in generator_p2_2:
-                for compo in compo_turn_3.values():
-                    print(card_p1.name, card_p1_2.name)
-                    for _ in range(NB_FIGHT):
-                        g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
-                        j1, j2 = g.players
-                        Sequence('TURN', g).start_and_close()
-                        with Sequence('TURN', g):
-                            j1.power.active_script_arene()
-                            j2.power.active_script_arene()
-                        with Sequence('TURN', g):
-                            j1.power.active_script_arene(card_p1, card_p1_2, force=True)
-                            j2.power.active_script_arene(*compo, force=True)
-                        Sequence('FIGHT', g).start_and_close()
-
-                        card_p1.counter += proba_c2
-                        card_p1.value += calc_damage(j1, j2)*proba_c2
+        for race, compo in compo_turn_3.items():
+            compo_turn_3[race] = tuple(
+                    self.g.all_cards[minion]
+                    for minion in compo
+            )
+        return compo_turn_3
 
 
-    """
     def base_T1_to_T3_no_refound(self, cards_test, p1, p2):
         cards_test = cards_test or self.g.minion_can_collect.filter(level=1)
         self.fight_base_T1_to_T3_no_refound(cards_test, p1, p2)
@@ -198,51 +211,49 @@ class arene:
     def fight_base_T1_to_T3_no_refound(self, card_list, hero_p1, hero_p2):
         g = self.g
         NB_FIGHT = 3
+        compo_turn_3 = self.compo_turn_3()
 
-        for synergy in compo_turn_3.copy():
-            if synergy & self.g.type_ban:
-                del compo_turn_3[synergy]
         #cards_T2 = self.g.minion_can_collect.filter_maxmin_level(level_max=2)
         cards_T2 = self.load_card_rating(
                         {"method": "base_T3",
-                        "type_ban": self.type_ban,
-                        "retro": 1,
-                        "p1": CardName.DEFAULT_HERO,
-                        "p2": CardName.DEFAULT_HERO},
+                        "types_ban": self.types_ban,
+                        "retro": 2,
+                        "p1": self.g.all_cards[CardName.DEFAULT_HERO].name,
+                        "p2": self.g.all_cards[CardName.DEFAULT_HERO].name},
                         method = 'base_T3')
         if not cards_T2:
             return
 
         for card_p1 in card_list:
-            generator_p2 = stats.card_proba(
-                            cards_T2,
-                            player_level=2,
-                            exclude_card=[card_p1])
-            for card_p1_2, proba_c2 in generator_p2:
+            g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+            j1, j2 = g.players
+            with Sequence('TURN', g):
+                j1.power.active_script_arene(card_p1)
+                j1.level = 2
+
+            print(card_p1, 'en cours...')
+            for card_p1_2, proba_c2 in stats.card_proba_game(g, j1):
                 for compo in compo_turn_3.values():
-                    for _ in range(NB_FIGHT):
-                        g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
-                        j1, j2 = g.players
-                        g.begin_turn()
+                    g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+                    j1, j2 = g.players
+                    with Sequence('TURN', g):
                         j1.power.active_script_arene(card_p1)
-                        g.end_turn()
-                        g.begin_turn()
+
+                    with Sequence('TURN', g):
                         j1.power.active_script_arene()
                         j2.power.active_script_arene()
-                        g.end_turn()
-                        # retrait de l'impact de l'homoncule
-                        j1.health = j1.max_health
-                        j2.health = j2.max_health
-                        j1.hand.all_in_bob()
-                        g.begin_turn()
+
+                    j1.hand.all_in_bob()
+                    j2.hand.all_in_bob()
+                    with Sequence('TURN', g):
                         j1.power.active_script_arene(card_p1_2, force=True)
                         j2.power.active_script_arene(*compo, force=True)
-                        g.end_turn()
-                        g.fight_on()
-                        g.fight_off()
 
-                        card_p1.counter += proba_c2
-                        card_p1.value += calc_damage(j1, j2)*proba_c2
+                    for _ in range(NB_FIGHT):
+                        Sequence('FIGHT', g).start_and_close()
+
+                    card_p1.counter += proba_c2
+                    card_p1.value += calc_damage(j1, j2)*proba_c2/NB_FIGHT
 
     def base_T2_to_T3(self, cards_test, p1, p2):
         cards_test = cards_test or self.g.minion_can_collect.filter(level=1)
@@ -250,10 +261,10 @@ class arene:
 
         cards_list = self.load_card_rating(
                 {"method": "base_T3",
-                "type_ban": self.type_ban,
+                "types_ban": self.types_ban,
                 "retro": 2,
-                "p1": CardName.DEFAULT_HERO,
-                "p2": CardName.DEFAULT_HERO},
+                "p1": self.g.all_cards[CardName.DEFAULT_HERO].name,
+                "p2": self.g.all_cards[CardName.DEFAULT_HERO].name},
                 method = 'base_T3')
 
         # mousse du pont
@@ -272,78 +283,81 @@ class arene:
     def fight_base_T2_to_T3(self, card_list, hero_p1, hero_p2):
         g = self.g
         NB_FIGHT = 1
+        compo_turn_3 = self.compo_turn_3()
 
-        for synergy in compo_turn_3.copy():
-            if synergy & self.g.type_ban:
-                del compo_turn_3[synergy]
         #cards_T2 = self.g.minion_can_collect.filter_maxmin_level(level_max=2)
-
-        cards_T1_to_T3 = self.load_card_rating(
-                        {"method": "base_T1_to_T3_no_refound",
-                        "type_ban": self.type_ban,
-                        "retro": 0,
-                        "p1": CardName.DEFAULT_HERO,
-                        "p2": CardName.DEFAULT_HERO},
-                        method = 'base_T1_to_T3_no_refound')
-        for card in cards_T1_to_T3:
-            self.g.all_cards[card].T1_to_T3_rating = card.rating
-
         cards_T2 = self.load_card_rating(
                         {"method": "base_T3",
-                        "type_ban": self.type_ban,
+                        "types_ban": self.types_ban,
                         "retro": 2,
-                        "p1": CardName.DEFAULT_HERO,
-                        "p2": CardName.DEFAULT_HERO},
+                        "p1": self.g.all_cards[CardName.DEFAULT_HERO].name,
+                        "p2": self.g.all_cards[CardName.DEFAULT_HERO].name},
                         method = 'base_T3')
         if not cards_T2:
             return
 
-        for card_p1 in [self.g.all_cards[64042]]: # card_list
+        cards_T1_to_T3 = self.load_card_rating(
+                        {"method": "base_T1_to_T3_no_refound",
+                        "types_ban": self.types_ban,
+                        "retro": 0,
+                        "p1": self.g.all_cards[CardName.DEFAULT_HERO].name,
+                        "p2": self.g.all_cards[CardName.DEFAULT_HERO].name},
+                        method = 'base_T1_to_T3_no_refound')
+        for card in cards_T1_to_T3:
+            self.g.all_cards[card].T1_to_T3_rating = card.rating
+
+        esp = stats.esperance_2_cards(cards_T2, card_by_roll=4, nb_roll=0)
+        esp2 = stats.esperance_2_cards(cards_T2, card_by_roll=4, nb_roll=2)
+        diff_esp = ((esp2-esp)*5+(esp2-esp)*4)/(10+5+4)
+        # ~ 0.473 : si la seconde carte n'apporte pas une plus-value supérieure à cette
+        # valeur, alors il faut mieux conserver son T1 et roll deux fois au tour3
+
+        for card_p1 in card_list: # card_list
+            g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+            j1, j2 = g.players
+            with Sequence('TURN', g):
+                j1.power.active_script_arene(card_p1)
+                j1.level = 2
+
             print(f'{card_p1.name} en cours...')
-            generator_p2 = stats.card_proba(
-                            cards_T2,
-                            player_level=2,
-                            exclude_card=[card_p1])
-            for card_p1_2, proba_c2 in generator_p2:
-                generator_p2_2 = stats.card_proba(
-                                cards_T2,
-                                player_level=2,
-                                exclude_card=[card_p1, card_p1_2])
-                for card_p1_3, proba_c3 in generator_p2_2:
+            for card_p1_2, proba_c2 in stats.card_proba_game(g, j1):
+                print('card_p2', card_p1_2, proba_c2)
+                g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+                j1, j2 = g.players
+                with Sequence('TURN', g):
+                    j1.power.active_script_arene(card_p1, card_p1_2)
+                    j1.level = 2
+                for card_p1_3, proba_c3 in stats.card_proba_game(g, j1):
                     for compo in compo_turn_3.values():
-                        for _ in range(NB_FIGHT):
-                            g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
-                            j1, j2 = g.players
-                            j1.power.hero_script = 'Special_arene_base_T2_to_T3'
-                            g.begin_turn()
+                        g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+                        j1, j2 = g.players
+                        j1.power.hero_script = 'Special_arene_base_T2_to_T3'
+                        with Sequence('TURN', g):
                             j1.power.active_script_arene(card_p1)
-                            g.end_turn()
-                            g.begin_turn()
+
+                        with Sequence('TURN', g):
                             j1.power.active_script_arene()
                             j2.power.active_script_arene()
-                            g.end_turn()
-                            # retrait de l'impact de l'homoncule
-                            j1.health = j1.max_health
-                            j2.health = j2.max_health
-                            g.begin_turn()
-                            j1.power.active_script_arene(card_p1_2, card_p1_3)
-                            j2.power.active_script_arene(*compo, force=True)
-                            g.end_turn()
-                            g.fight_on()
-                            g.fight_off()
 
-                            card_p1.counter += proba_c2*proba_c3
-                            card_p1.value += calc_damage(j1, j2)*proba_c2*proba_c3
+                        with Sequence('TURN', g):
+                            j1.power.active_script_arene(card_p1_2, card_p1_3, diff_esp=diff_esp)
+                            j2.power.active_script_arene(*compo, force=True, diff_esp=diff_esp)
 
+                        for _ in range(NB_FIGHT):
+                            with Sequence('FIGHT', g):
+                                pass
+
+                        card_p1.counter += proba_c2*proba_c3
+                        card_p1.value += calc_damage(j1, j2)*proba_c2*proba_c3/NB_FIGHT
 
     def base_T1_to_T3_extended(self, cards_test, p1, p2):
         if self.retro == 0:
             cards_test = self.load_card_rating(
                             {"method": "base_T2_to_T3",
-                            "type_ban": self.type_ban,
+                            "types_ban": self.types_ban,
                             "retro": 0,
-                            "p1": CardName.DEFAULT_HERO,
-                            "p2": CardName.DEFAULT_HERO},
+                            "p1": self.g.all_cards[CardName.DEFAULT_HERO].name,
+                            "p2": self.g.all_cards[CardName.DEFAULT_HERO].name},
                             method = 'base_T2_to_T3')
             # 9.5/5 = 2/2 + 2/4 + 2/5, impact prévisionnel jusqu'au Tour 5
             # TODO: valeur sous-évaluée pour l'anomalie actualisante > conservation_rate
@@ -353,10 +367,10 @@ class arene:
 
             cards_test = self.load_card_rating(
                             {"method": "base_T1",
-                            "type_ban": self.type_ban,
+                            "types_ban": self.types_ban,
                             "retro": 2,
-                            "p1": CardName.DEFAULT_HERO,
-                            "p2": CardName.DEFAULT_HERO},
+                            "p1": self.g.all_cards[CardName.DEFAULT_HERO].name,
+                            "p2": self.g.all_cards[CardName.DEFAULT_HERO].name},
                             method = 'base_T1')
 
             for card in cards_test:
@@ -370,16 +384,15 @@ class arene:
 
             cards_test = self.load_card_rating(
                             {"method": "base_T2_to_T3",
-                            "type_ban": self.type_ban,
+                            "types_ban": self.types_ban,
                             "retro": 0,
-                            "p1": CardName.DEFAULT_HERO,
-                            "p2": CardName.DEFAULT_HERO},
+                            "p1": self.g.all_cards[CardName.DEFAULT_HERO].name,
+                            "p2": self.g.all_cards[CardName.DEFAULT_HERO].name},
                             method = 'base_T2_to_T3')
             for card in cards_test:
                 card.value += card.rating*9.5/5
 
         return cards_test, 1
-        """
 
 def ordered_rating(result: Meta_card_data) -> Dict[Card_data, int]:
     return {f'{int(card_id.dbfId)}' + '_' + card_id.name: round(card_id.value, 2)

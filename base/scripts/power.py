@@ -589,12 +589,8 @@ class TB_BaconShop_HP_103(Hero_power):
         self.temp_counter = 1
 
     def fight_on(self, sequence: Sequence):
-        # TODO: carte retirée de la main de Bob ?
         if self.temp_counter:
-            card = self.game.hand.cards_of_tier_max(
-                    tier_max=self.owner.level,
-                    tier_min=self.owner.level
-                    ).random_choice()
+            card = self.controller.deck.random_choice()
             try:
                 self.board.create_card_in(card)
             except BoardAppendError:

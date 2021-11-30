@@ -52,8 +52,6 @@ class Sequence:
             return self.source
         elif self.source.type == Type.HERO:
             return self.source
-        elif self.source.my_zone.zone_type is None:
-            return self.board.owner.field
         else: # sometimes, self.source doesn't have a controller
             return self.source.controller.field
 

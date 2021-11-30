@@ -143,7 +143,7 @@ class BGS_078(Minion):
 
         if minions_with_deathrattle:
             target = random.choice(minions_with_deathrattle)
-            Sequence('DEATHRATTLE', target).start_and_close()
+            Sequence('DEATHRATTLE', target, position=target.position).start_and_close()
 
 
 class TB_BaconUps_135(BGS_078):

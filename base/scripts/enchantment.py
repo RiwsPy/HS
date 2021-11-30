@@ -223,6 +223,7 @@ class TB_BaconShop_HP_069e(add_stat):
     def apply(self):
         super().apply()
         self.owner.combat()
+        self.remove()
 
 
 class BG21_040e(Enchantment):
@@ -285,9 +286,10 @@ BG21_020pe= BGS_104pe # Ench. de joueur Rejeton de Lumière éclatant
 class TB_BaconShop_HP_068e(add_stat):
     # Emprisonné
     def remove(self):
+        source = self.source
         super().remove()
         self.buff(self)
-        self.controller.opponent.hand.append(self)
+        source.controller.hand.append(self)
 
 
 class UNG_999t2e(add_stat):

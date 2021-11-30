@@ -1,5 +1,5 @@
 from collections import defaultdict
-from .db_card import Meta_card_data
+from .db_card import Meta_card_data, Card_list
 import math
 from operator import itemgetter
 from typing import Generator, Tuple, List
@@ -73,6 +73,46 @@ def card_proba(card_list, player_level=LEVEL_MAX, rating_type='', exclude_card=[
     if ret == 0:
         print(f'Warning : ret value == 0, {cumul_proba}, {nb_card_in_bob}, {proba}')
 
+def card_proba_game(game, player, rating_type='') -> Tuple[str, int]:
+    # proba d'obtention de chaque carte pour le P2, sachant que P1 a acheté exclude_card
+    # card_list contient le dbfId des cartes à prendre en compte
+    # cas d'égalité entre 101 et 105 : [[100], [101, 105], [107]]
+    bob_hand = player.deck
+    nb_card_in_bob = len(bob_hand)
+    cumul_proba = 1
+    ret = 0
+    proba = 0
+    cards = ordered_card_rating(
+            game.minion_can_collect.filter_maxmin_level(level_max=player.level),
+            rating_type=rating_type)
+    for card_id in cards:
+        nb_exemplaire = 0
+        for card in card_id:
+            nb_exemplaire += bob_hand.count(card.dbfId)
+        proba = \
+            cumul_proba *(1 - \
+            hypgeo(0,
+                player.bob.nb_card_by_refresh,\
+                nb_exemplaire,
+                nb_card_in_bob))
+
+        nb_card_in_bob -= nb_exemplaire
+        cumul_proba -= proba
+
+        if proba == 1:
+            for card in card_id:
+                yield card, bob_hand.count(card.dbfId)/len(bob_hand)
+        else:
+            ret = proba / len(card_id) or cumul_proba / len(card_id)
+            for card in card_id:
+                yield card, ret
+
+            #if abs(cumul_proba) > 0.001:
+            #    print(f'proba cumul check : {cumul_proba}')
+            if ret == 0:
+                print(f'Warning : ret value == 0, {cumul_proba}, {nb_card_in_bob}, {proba}')
+
+
 def card_proba_equi(card_list, player_level=LEVEL_MAX, exclude_card=[]) -> Tuple[str, int]:
     nb_card_in_bob = nb_collectible_card_of_tier_max(card_list, tier_max=player_level) - len(exclude_card)
 
@@ -81,6 +121,14 @@ def card_proba_equi(card_list, player_level=LEVEL_MAX, exclude_card=[]) -> Tuple
             yield card, \
                 (card.nb_copy - exclude_card.count(card)) \
                 / nb_card_in_bob
+
+def card_proba_equi_game(game, player) -> Tuple[str, int]:
+    bob_hand = player.deck
+    nb_card_in_bob = len(bob_hand)
+
+    for card_data in game.minion_can_collect.filter_maxmin_level(level_max=player.level):
+        yield card_data, \
+            bob_hand.count(card_data) / nb_card_in_bob
 
 def card_proba_nozdormu(card_list, player_level=LEVEL_MAX, exclude_card=[]):
     nb_card_in_bob = nb_collectible_card_of_tier_max(card_list, tier_max=player_level) - len(exclude_card)
@@ -113,11 +161,10 @@ def card_proba_nozdormu(card_list, player_level=LEVEL_MAX, exclude_card=[]):
 
 
 def nb_collectible_card_of_tier_max(card_list, tier_max=LEVEL_MAX, tier_min=1) -> int:
-    result = 0
-    for card_dbfId in card_list:
-        if tier_min <= card_dbfId.level <= tier_max:
-            result += card_dbfId.nb_copy
-    return result
+    return sum([card_dbfId.nb_copy
+        for card_dbfId in card_list
+            if tier_min <= card_dbfId.level <= tier_max]
+        )
 
 def ordered_card_rating(data: Meta_card_data, rating_type='') -> Generator:
     """
@@ -169,6 +216,9 @@ def esperance_1_card(card_list, card_by_roll=3, nb_roll=0, _esperance_min=None):
 
 def esperance_2_cards(card_list, card_by_roll=3, nb_roll=0, _esperance_min=None):
     # 2 cartes parmi 3+ cartes
+    if card_by_roll < 2:
+        return None
+
     card_list.sort('rating')
 
     combin_cumul = 0
@@ -176,11 +226,11 @@ def esperance_2_cards(card_list, card_by_roll=3, nb_roll=0, _esperance_min=None)
     nb_card_checked = 0
     for nb, cote_min in enumerate(card_list):
         for cote_max in card_list[nb:]: # cote_max >= cote_min
-            if cote_min.rating == cote_max.rating:
+            if cote_min == cote_max:
                 nb_combin = combin(cote_max.nb_copy, card_by_roll)
                 if nb_card_checked:
-                    for nb in range(1, card_by_roll-1):
-                        nb_combin += combin(cote_max.nb_copy, card_by_roll-nb)*combin(nb_card_checked, nb)
+                    for ot in range(1, card_by_roll-1):
+                        nb_combin += combin(cote_max.nb_copy, card_by_roll-ot)*combin(nb_card_checked, ot)
             else:
                 nb_combin = cote_max.nb_copy*combin(cote_min.nb_copy, card_by_roll-1)
                 if nb_card_checked:
@@ -200,7 +250,7 @@ def esperance_2_cards(card_list, card_by_roll=3, nb_roll=0, _esperance_min=None)
         esperance = esperance_2_cards(card_list, card_by_roll=card_by_roll, nb_roll=nb_roll-1, _esperance_min=esperance)
 
     if combin_cumul != combin(nb_card_checked, card_by_roll):
-        print('esperance_2_cards ERROR combin_cumul')
+        print(f'esperance_2_cards ERROR combin_cumul {combin_cumul} / {combin(nb_card_checked, card_by_roll)}')
 
     return esperance
 
@@ -219,7 +269,7 @@ def esperance_2_cards_with_free_roll(card_list, card_by_roll=3):
     nb_card_checked = 0
     for nb, cote_min in enumerate(card_list):
         for cote_max in card_list[nb:]: # cote_max >= cote_min
-            if cote_min.rating == cote_max.rating:
+            if cote_min == cote_max:
                 nb_combin = combin(cote_max.nb_copy, card_by_roll)
                 if nb_card_checked:
                     for nb in range(1, card_by_roll-1):
@@ -257,7 +307,7 @@ def esperance_2_cards_with_free_roll(card_list, card_by_roll=3):
     taux_de_conservation_du_roll = nb_combin_conservation/combin(nb_card_checked, card_by_roll)
 
     if combin_cumul != combin(nb_card_checked, card_by_roll):
-        print(f'esperance_2_cards ERROR combin_cumul {combin_cumul} / {combin(nb_card_checked, card_by_roll)}')
+        print(f'esperance_2_cards with free roll ERROR combin_cumul {combin_cumul} / {combin(nb_card_checked, card_by_roll)}')
 
     return esperance, taux_de_conservation_du_roll, esp_moy
 

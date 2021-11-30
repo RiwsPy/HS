@@ -221,6 +221,7 @@ class Player(Entity):
                 for card in dbfId_number[card.dbfId]:
                     card_id.cards.append(card)
                     for entity in card.entities:
+                        # TODO gestion enchantment Xyrella ou Vol'Jin ?
                         card_id.append(entity)
                     card.my_zone.remove(card)
                 dbfId_number[card.dbfId] = dbfId_number[card.dbfId][3:]

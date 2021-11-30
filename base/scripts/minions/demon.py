@@ -197,7 +197,7 @@ class BGS_059(battlecry_select_one_minion_and_buff_it):
     @repeat_effect
     def battlecry(self, sequence: Sequence):
         target = sequence.target
-        if target.my_zone is self.my_zone:
+        if target and target.my_zone is self.my_zone:
             self.controller.bob.hand.append(target)
             self.controller.gold += 3*self.bonus_mult
             self.buff(
