@@ -73,7 +73,7 @@ class Card(models.Model):
     race= models.ForeignKey(Race, on_delete=models.PROTECT)
     #synergy= models.ForeignKey(Race, on_delete=models.PROTECT)
     #race= models.CharField(max_length=30, default='DEFAULT', choices=RACE)
-    synergy = models.CharField(max_length=30, default='DEFAULT', choices=RACE)
+    synergy = models.CharField(max_length=30, default='NONE', choices=RACE)
     type = models.CharField(max_length=30, default="DEFAULT")
 
     hero_script = models.CharField(max_length=255, null=True)
