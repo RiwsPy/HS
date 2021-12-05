@@ -102,17 +102,31 @@ class Meta_card_data(Card_list):
         return super().__getitem__(value)
 
 
-def charge_all_cards(types_ban=[]) -> Meta_card_data:
-    all_cards = Card.objects.exclude(synergy__in=types_ban)
-    db = Meta_card_data(Card_data(**card.__dict__)
-        for card in all_cards)
+class CardDB:
+    _instance = None
+    _types_ban = []
+    _objects = Meta_card_data()
 
-    for card in db:
-        for attr in dbfId_attr:
-            if getattr(card, attr, False):
-                card[attr] = db[getattr(card, attr)]
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._types_ban = kwargs.get('types_ban', [])
+            all_cards = Card.objects.exclude(synergy__in=cls._types_ban)
+            db = Meta_card_data(Card_data(**card.__dict__)
+                for card in all_cards)
 
-    return db
+            for card in db:
+                for attr in dbfId_attr:
+                    if getattr(card, attr, False):
+                        card[attr] = db[getattr(card, attr)]
 
-# TODO: delete
-CARD_DB = charge_all_cards()
+            cls.objects = db
+
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def __getitem__(self, value):
+        return self.objects[value]
+
+    @property
+    def objects(self):
+        return self._objects

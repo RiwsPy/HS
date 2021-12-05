@@ -4,7 +4,7 @@ from .utils import Card_list, controller, game, my_zone
 from .action import attack
 from .scripts import hero_arene, minion_arene
 from .void import Void
-from .db_card import CARD_DB, Card_data, Meta_card_data
+from .db_card import Card_data, Meta_card_data, CardDB
 from .sequence import Sequence
 from typing import Any
 from card.models import Card as dbCard
@@ -30,7 +30,7 @@ class Entity:
         'quest_value': 0,
         'attack': 0,
         'armor': 0,
-        'owner': Void().instance(),
+        'owner': Void(),
         'from_bob': False,
         'temp_counter': 0,  # set to 0 during each 'turn_on' sequence
     }
@@ -38,16 +38,16 @@ class Entity:
         self.entities = Card_list()
         db = {
             **self.get_default_attr(),
-            **CARD_DB[dbfId].__dict__,
+            **CardDB()[dbfId].__dict__,
             **kwargs}
         for key, data in db.items():
             if data is not None:
                 setattr(self, key, data)
 
-    def get_default_attr(self):
+    def get_default_attr(self) -> dict:
         default_attr = {}
-        for clas in self.__class__.__mro__:
-            default_attr = {**getattr(clas, 'default_attr', {}), **default_attr}
+        for cls in self.__class__.__mro__:
+            default_attr = {**getattr(cls, 'default_attr', {}), **default_attr}
         return default_attr
 
     def __getitem__(self, attr) -> Any:
@@ -182,9 +182,10 @@ class Entity:
     def how_many_time_can_I_attack(self) -> int:
         if not self.can_attack:
             return 0
-        elif self.MEGA_WINDFURY:
-            return 4
-        elif self.WINDFURY:
+
+        if self.WINDFURY:
+            if self.MEGA_WINDFURY:
+                return 4
             return 2
         return 1
 
@@ -193,6 +194,10 @@ class Entity:
         return self.game._turn
 
     def all_in_bob(self) -> None:
+        """
+            All cards in self.entities are removed and
+            go back to game.hand (if possible)
+        """
         for entity in self.entities[::-1]:
             self.game.hand.append(entity)
 
@@ -281,10 +286,10 @@ class Entity:
                             seq.damage_value = 0
 
                 if seq.damage_value > 0:
-                    real_damage = seq.damage_value - target.armor 
+                    real_damage = seq.damage_value - target.armor
                     target.armor = max(0, -real_damage)
                     target.health -= real_damage
-                    target.IS_POISONED &= self.POISONOUS # TODO: delete IS_POISONED
+                    target.IS_POISONED &= self.POISONOUS  # TODO: delete IS_POISONED
                     if not target.is_alive:
                         if target.health < 0 and overkill:
                             Sequence('OVERKILL', self).start_and_close()
@@ -299,13 +304,13 @@ class Entity:
             player: 'Entity' = None,
             remove: bool = True
         ) -> Card_data:
-
         """
             Entité source, son dbfId est exclu de la découverte
             Card_list sur laquelle effectuer les recherches
             player qui choisit la carte
             nombre de carte dans la découverte
         """
+
         if nb <= 0:
             return None
 
@@ -343,9 +348,6 @@ class Entity:
 
 class Minion(Entity):
     default_attr = {
-        #'techLevel': 1,
-        #'health': 1,
-        #'attack': 1,
     }
 
     def __init__(self, dbfId, **kwargs):
@@ -373,7 +375,7 @@ class Minion(Entity):
     def level(self) -> int:
         if not hasattr(self, 'techLevel') and\
                 getattr(self, 'battlegroundsNormalDbfId'):
-            return self.battlegroundsNormalDbfId.level    
+            return self.battlegroundsNormalDbfId.level
         return getattr(self, 'techLevel', 1)
 
     def all_in_bob(self) -> None:
@@ -455,7 +457,6 @@ class Minion(Entity):
             mechanics=self.mechanics)
         self.my_zone.cards.remove(self)
         modular_target.cards.append(self)
-
 
     def overkill_start(self, sequence):
         sequence.is_valid = self.OVERKILL
@@ -622,8 +623,7 @@ class Minion(Entity):
         # une nouvelle carte ne remplace pas l'ancienne
         # Dans ce cas, des informations utiles peuvent être perdues
         # d'après les observations en date du 30/11/2021, une nouvelle carte est créée
-        golden_card = Card(self.battlegroundsPremiumDbfId)
-        # self.dbfId = golden_card.dbfId
+
         owner = self.owner
         position = self.position
         self.owner.remove(self)
@@ -667,7 +667,7 @@ class Enchantment(Entity):
     # > pas de rétroactivité des bonus
     default_attr = {
         'aura': False,
-        'source': Void().instance(),
+        'source': Void(),
     }
 
     def __init__(self, dbfId, **kwargs):
@@ -688,7 +688,8 @@ class Enchantment(Entity):
 
     def enhance_start(self, sequence: Sequence) -> None:
         target = sequence.target
-        if target is None or target.DORMANT or self.duration <= target.nb_turn and self.duration != 0:
+        if target is None or target.DORMANT or\
+                self.duration <= target.nb_turn and self.duration != 0:
             sequence.is_valid = False
             return None
 
@@ -789,5 +790,5 @@ class Card:
     def __new__(cls, dbfId, **kwargs):
         from .scripts import event
         #ok = dbCard.objects.filter(pk=int(dbfId)) # retro3 base_T1 > 37s > 53s
-        self = getattr(event, str(CARD_DB[dbfId].id))
+        self = getattr(event, str(CardDB()[dbfId].id))
         return self(dbfId, **kwargs)
