@@ -3217,6 +3217,11 @@
  },
  {
   "name": "Cyclone crépitant",
+  "mechanics": [
+   "DIVINE_SHIELD",
+   "WINDFURY",
+   "MEGA_WINDFURY"
+  ],
   "synergy": "ELEMENTAL",
   "dbfId": 64055,
   "attack": 8,
@@ -3225,10 +3230,6 @@
   "cost": 4,
   "health": 2,
   "id": "TB_BaconUps_159",
-  "mechanics": [
-   "DIVINE_SHIELD",
-   "WINDFURY"
-  ],
   "race": "ELEMENTAL",
   "set": "BATTLEGROUNDS",
   "text": "<b>Bouclier divin</b>\n<b>Méga Furie des vents</b>",
@@ -5435,6 +5436,11 @@
  },
  {
   "name": "Cogneur",
+  "mechanics": [
+   "TRIGGER_VISUAL",
+   "WINDFURY",
+   "MEGA_WINDFURY"
+  ],
   "synergy": "QUILBOAR",
   "dbfId": 70174,
   "attack": 6,
@@ -5443,10 +5449,6 @@
   "cost": 5,
   "health": 14,
   "id": "BG20_104_G",
-  "mechanics": [
-   "TRIGGER_VISUAL",
-   "WINDFURY"
-  ],
   "race": "QUILBOAR",
   "set": "BATTLEGROUNDS",
   "text": "<b>Méga Furie des vents</b>\nUne fois que ce serviteur a attaqué, vous gagnez une <b>gemme de sang</b>.",
@@ -6347,6 +6349,11 @@
  {
   "name": "Goliath brisemer",
   "synergy": "PIRATE",
+  "mechanics": [
+   "OVERKILL",
+   "WINDFURY",
+   "MEGA_WINDFURY"
+  ],
   "enchantmentDbfId": 62461,
   "dbfId": 62460,
   "attack": 12,
@@ -6355,10 +6362,6 @@
   "cost": 7,
   "health": 14,
   "id": "TB_BaconUps_142",
-  "mechanics": [
-   "OVERKILL",
-   "WINDFURY"
-  ],
   "race": "PIRATE",
   "set": "BATTLEGROUNDS",
   "text": "<b>Méga Furie des vents</b>\n<b>Brutalité :</b> donne +4/+4 à vos autres Pirates.",
@@ -6936,6 +6939,12 @@
  {
   "name": "Chevalier dos-hirsute",
   "synergy": "QUILBOAR",
+  "mechanics": [
+   "DIVINE_SHIELD",
+   "FRENZY",
+   "WINDFURY",
+   "MEGA_WINDFURY"
+  ],
   "dbfId": 70159,
   "attack": 8,
   "battlegroundsNormalDbfId": 70158,
@@ -6943,11 +6952,6 @@
   "cost": 5,
   "health": 16,
   "id": "BG20_204_G",
-  "mechanics": [
-   "DIVINE_SHIELD",
-   "FRENZY",
-   "WINDFURY"
-  ],
   "race": "QUILBOAR",
   "set": "BATTLEGROUNDS",
   "text": "<b>Méga Furie des vents</b>\n<b>Bouclier divin</b>\n<b>Frénésie :</b> gagne <b>Bouclier divin</b>.",
@@ -7819,6 +7823,10 @@
  },
  {
   "name": "Zapp Mèche-Sournoise",
+  "mechanics": [
+   "WINDFURY",
+   "MEGA_WINDFURY"
+  ],
   "synergy": "NONE",
   "dbfId": 60041,
   "attack": 14,
@@ -7828,9 +7836,6 @@
   "elite": true,
   "health": 20,
   "id": "TB_BaconUps_091",
-  "mechanics": [
-   "WINDFURY"
-  ],
   "set": "BATTLEGROUNDS",
   "text": "<b>Méga Furie des vents</b>\nCe serviteur attaque toujours le serviteur adverse avec l’ATQ la plus basse.",
   "type": "MINION"
@@ -10872,6 +10877,9 @@
   "dbfId": 70472,
   "cardClass": "NEUTRAL",
   "id": "VAN_NEW1_027e",
+  "mechanics": [
+   "CANT_BE_SILENCED"
+  ],
   "set": "VANILLA",
   "text": "+1/+1.",
   "type": "ENCHANTMENT"
@@ -10883,6 +10891,9 @@
   "dbfId": 62238,
   "cardClass": "NEUTRAL",
   "id": "TB_BaconUps_136e",
+  "mechanics": [
+   "CANT_BE_SILENCED"
+  ],
   "set": "BATTLEGROUNDS",
   "text": "Le capitaine des mers du Sud donne +2/+2.",
   "type": "ENCHANTMENT"
@@ -10948,6 +10959,9 @@
   "dbfId": 58429,
   "cardClass": "WARLOCK",
   "id": "TB_BaconUps_060e",
+  "mechanics": [
+   "CANT_BE_SILENCED"
+  ],
   "set": "BATTLEGROUNDS",
   "text": "Mal’Ganis donne +4/+4.",
   "type": "ENCHANTMENT"

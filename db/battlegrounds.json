@@ -9099,6 +9099,9 @@
   "cardClass": "WARLOCK",
   "dbfId": 58429,
   "id": "TB_BaconUps_060e",
+  "mechanics": [
+   "CANT_BE_SILENCED"
+  ],
   "name": "Étreinte de Mal’Ganis",
   "set": "BATTLEGROUNDS",
   "text": "Mal’Ganis donne +4/+4.",
@@ -10368,6 +10371,9 @@
   "cardClass": "NEUTRAL",
   "dbfId": 62238,
   "id": "TB_BaconUps_136e",
+  "mechanics": [
+   "CANT_BE_SILENCED"
+  ],
   "name": "Yarrr !",
   "set": "BATTLEGROUNDS",
   "text": "Le capitaine des mers du Sud donne +2/+2.",
@@ -11616,6 +11622,9 @@
   "cardClass": "NEUTRAL",
   "dbfId": 70472,
   "id": "VAN_NEW1_027e",
+  "mechanics": [
+   "CANT_BE_SILENCED"
+  ],
   "name": "Yarrr !",
   "set": "VANILLA",
   "text": "+1/+1.",
