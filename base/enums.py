@@ -65,49 +65,39 @@ NB_CARD_BY_LEVEL_ARANNA = BOARD_SIZE
 
 class Race(str):
     data = {
-        "NONE": [0x0, 'Neutre'],
-        "BEAST": [0x1, 'Bête'],
-        "DEMON": [0x2, 'Démon'],
-        "DRAGON": [0x4, 'Dragon'],
-        "ELEMENTAL": [0x8, 'Élémentaire'],
-        "MECHANICAL": [0x10, 'Méca'],
-        "MURLOC": [0x20, 'Murloc'],
-        "PIRATE": [0x40, 'Pirate'],
-        "QUILBOAR": [0x80, 'Huran'],
-        "ALL": [0xFF, 'Tout']}
+        "NONE": 'Neutre',
+        "BEAST": 'Bête',
+        "DEMON": 'Démon',
+        "DRAGON": 'Dragon',
+        "ELEMENTAL": 'Élémentaire',
+        "MECHANICAL": 'Méca',
+        "MURLOC": 'Murloc',
+        "PIRATE": 'Pirate',
+        "QUILBOAR": 'Huran',
+        "ALL": 'Tout'}
     data['DEFAULT'] = data['NONE']
 
     @classmethod
     def battleground_race_name(cls) -> List[str]:
         return list(cls.data.keys())[1:-2]
 
-    @classmethod
-    def battleground_race(cls) -> List[int]:
-        return [
-            0x1, 0x2, 0x4, 0x8,
-            0x10, 0x20, 0x40, 0x80,
-            ]
-
-    @property
-    def hex(self) -> int:
-        return self.__class__.data[self][0]
-
     @property
     def name(self) -> str:
-        return self.__class__.data[self][1]
+        return self.__class__.data[self]
 
-    def __getattr__(self, race) -> int:
+    def __getattr__(self, race) -> bool:
         if race.isupper():
-            return self == race or self == 'ALL'
+            return self == race
         raise AttributeError
 
-    def __and__(self, value) -> int:
-        if isinstance(value, int):
-            return self.hex & value
-        return self.hex & self.__class__.data[value][0]
+    def __eq__(self, value) -> bool:
+        return str(self) == str(value) or str(self) == 'ALL'
 
-    def __sub__(self, value) -> int:
-        return self.hex - (self.hex & value)
+    def __ne__(self, value) -> bool:
+        return not self == value
+
+    def __hash__(self) -> int:
+        return super().__hash__()
 
 state_list= [
     'BATTLECRY',

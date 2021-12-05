@@ -9,8 +9,6 @@ from .sequence import Sequence
 from typing import Any
 from card.models import Card as dbCard
 
-Void = Void()
-
 
 def khadgar_aura(function):
     def double_invoc(self, sequence, *args, **kwargs):
@@ -30,30 +28,27 @@ def khadgar_aura(function):
 class Entity:
     default_attr = {
         'quest_value': 0,
-        #'type': Type.DEFAULT,
         'attack': 0,
         'armor': 0,
-        'owner': Void,
+        'owner': Void().instance(),
         'from_bob': False,
-        #'cost': 0,
-        #'id': 'no_method',
-        #'zone_type': Zone.NONE,
-        #'rarity': Rarity.DEFAULT,
-        #'techLevel': 0,
-        #'name': '',
         'temp_counter': 0,  # set to 0 during each 'turn_on' sequence
     }
-
     def __init__(self, dbfId, **kwargs) -> None:
         self.entities = Card_list()
         db = {
-            **Entity.default_attr,
-            **getattr(self.__class__, 'default_attr', {}),
+            **self.get_default_attr(),
             **CARD_DB[dbfId].__dict__,
             **kwargs}
         for key, data in db.items():
             if data is not None:
                 setattr(self, key, data)
+
+    def get_default_attr(self):
+        default_attr = {}
+        for clas in self.__class__.__mro__:
+            default_attr = {**getattr(clas, 'default_attr', {}), **default_attr}
+        return default_attr
 
     def __getitem__(self, attr) -> Any:
         return getattr(self, attr)
@@ -672,7 +667,7 @@ class Enchantment(Entity):
     # > pas de rétroactivité des bonus
     default_attr = {
         'aura': False,
-        'source': Void,
+        'source': Void().instance(),
     }
 
     def __init__(self, dbfId, **kwargs):

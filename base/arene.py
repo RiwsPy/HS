@@ -11,7 +11,7 @@ from .sequence import Sequence
 from collections import defaultdict
 from .db_card import Card_list
 
-
+# TODO: restructuration: beaucoup trop de répétitions
 class arene:
     def __init__(self, **kwargs) -> None:
         self.debut = time.time()
@@ -21,7 +21,7 @@ class arene:
             types_ban=kwargs['types_ban'],
             is_arene=True,
             no_bob=True)
-        self.type_ban = self.g.type_ban
+        self.types_ban = self.g.types_ban
         self.version = self.g.version
         self.method = kwargs['method']
 
@@ -191,7 +191,7 @@ class arene:
             Race('QUILBOAR'): (70143, 70162), # Géomancien, défense robuste
         }
         for synergy in compo_turn_3.copy():
-            if synergy & self.g.type_ban:
+            if synergy in self.g.types_ban:
                 del compo_turn_3[synergy]
 
         for race, compo in compo_turn_3.items():
@@ -461,17 +461,3 @@ class db_arene(dict):
         with open(self.__class__.filename, 'w', encoding='utf8') as file:
             json.dump(self, file, indent=1, ensure_ascii=False)
 
-if __name__ == '__main__':
-    """
-    db = db_arene()
-    print(db.search_minion_rate(63614, **{
-     "method": "base_T1",
-     "type_ban": 0,
-     "retro": 0,
-     "p1": CardName.DEFAULT_HERO,
-     "p2": CardName.DEFAULT_HERO}))
-    """
-
-    arene(method='base_T3', type_ban=0, retro=3,
-        p1=CardName.DEFAULT_HERO,
-        p2=CardName.DEFAULT_HERO)

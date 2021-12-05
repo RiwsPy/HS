@@ -15,7 +15,7 @@ class Board(ZoneEntity):
     MAX_SIZE = BOARD_SIZE
 
     def __init__(self, dbfId: int, **kwargs):
-        super().__init__(dbfId, **{**self.default_attr, **kwargs})
+        super().__init__(dbfId, **kwargs)
         self.purge()
 
         self.cards_save = []
@@ -205,7 +205,7 @@ class Graveyard(Board):
     }
 
     def __init__(self, dbfId=CardName.DEFAULT_GRAVEYARD):
-        super().__init__(dbfId, **self.default_attr)
+        super().__init__(dbfId)
         self.owner = None
 
     @property

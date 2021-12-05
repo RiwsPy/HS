@@ -85,11 +85,22 @@ TB_BaconUps_091= BGS_022 # Zapp Mèche-sournoise premium
 
 class BG20_304(Minion):
     # Archidruide Hamuul
-    #TODO
     #note: c'est considéré une actualisation : le pouvoir de Ysera s'active
     @repeat_effect
     def battlecry(self, sequence: Sequence):
-        pass
+        repr = self.my_zone.cards.shuffle().representation_by_race()
+        for type_ban in self.game.types_ban:
+            del repr[type_ban]
+        repr_max_value = 0
+        repr_race = ""
+        for race, minions in repr.items():
+            if len(minions) > repr_max_value:
+                repr_max_value = len(minions)
+                repr_race = race
+
+        repr_race = repr_race or random.choice(list(repr))
+        self.my_zone.drain_minion(freeze=True)
+        self.my_zone.fill_minion(entity_list=self.controller.deck.filter(race=repr_race))
 BG20_304_G= BG20_304
 
 

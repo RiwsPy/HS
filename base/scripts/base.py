@@ -47,7 +47,7 @@ class battlecry_select_all_and_buff_them(Minion):
 
     @repeat_effect
     def battlecry(self, sequence: Sequence):
-        minions = self.controller.board.cards.filter_hex(race=self.synergy).exclude(self)
+        minions = self.controller.board.cards.filter(race=self.synergy).exclude(self)
         for minion in minions:
             self.buff(minion)
 

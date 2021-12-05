@@ -38,10 +38,15 @@ class BG21_031(Minion):
 
     @repeat_effect
     def avenge(self, sequence: Sequence):
-        targets = self.my_zone.cards.filter(race='PIRATE', is_premium=False, is_alive=True).exclude(self)
+        targets = self.my_zone.cards.\
+            filter(
+                race='PIRATE',
+                is_alive=True).\
+            exclude(
+                self,
+                battlegroundsPremiumDbfId=None)
         if targets:
-            target = random.choice(targets)
-            # ???
+            random.choice(targets).set_premium()
 
 
 class BG21_031_G(BG21_031):

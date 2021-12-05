@@ -224,27 +224,28 @@ class TB_BaconShop_HP_041(Hero_power):
     # Le roi des Rats
 
     race_to_power_dbfId = {
-        Race('BEAST').hex: 59839,
-        Race('MECHANICAL').hex: 59853,
-        Race('MURLOC').hex: 59852,
-        Race('DEMON').hex: 59854,
-        Race('DRAGON').hex: 60922,
-        Race('PIRATE').hex: 62277,
-        Race('ELEMENTAL').hex: 64220,
-        Race('QUILBOAR').hex: 71081,
+        Race('BEAST'): 59839,
+        Race('MECHANICAL'): 59853,
+        Race('MURLOC'): 59852,
+        Race('DEMON'): 59854,
+        Race('DRAGON'): 60922,
+        Race('PIRATE'): 62277,
+        Race('ELEMENTAL'): 64220,
+        Race('QUILBOAR'): 71081,
     }
     def turn_on(self, sequence: Sequence):
-        types = Race.battleground_race()
-        random.shuffle(types)
-        race_power_exclude = self.game.type_ban | self.synergy.hex
-        for typ in types:
-            if typ & race_power_exclude == 0:
-                self.change(self.race_to_power_dbfId[typ])
+        race_name = Race.battleground_race_name()
+        random.shuffle(race_name)
+        race_power_exclude = self.game.types_ban + self.synergy
+        for race in race_name:
+            if race not in race_power_exclude:
+                self.change(self.race_to_power_dbfId[race])
                 break
 
     def buy_off(self, sequence: Sequence):
-        if sequence.source.race & self.synergy.hex and sequence.is_ally(self):
+        if sequence.source.race == self.synergy and sequence.is_ally(self):
             self.buff(sequence.source)
+
 TB_BaconShop_HP_041a= TB_BaconShop_HP_041
 TB_BaconShop_HP_041b= TB_BaconShop_HP_041
 TB_BaconShop_HP_041c= TB_BaconShop_HP_041
@@ -666,7 +667,18 @@ class TB_BaconShop_HP_052(Hero_power):
 
 class TB_BaconShop_HP_046(Hero_power):
     # Reno Jackson
-    pass
+    def use_power_start(self, sequence: Sequence):
+        minion = self.board.cards.exclude(battlegroundsPremiumDbfId=None).choice(
+            self.owner,
+            pr=f"Hero power : choisissez une cible :")
+        if minion:
+            sequence.add_target(minion)
+        else:
+            sequence.is_valid = False
+
+    def use_power(self, sequence: Sequence):
+        sequence.target.set_premium()
+
 
 class TB_BaconShop_HP_081(Hero_power):
     # Seigneur Barov
@@ -678,7 +690,7 @@ class TB_BaconShop_HP_101(Hero_power):
     # Considéré que la probabilité d'apparition d'un ticket est de 1/3
     # Cette valeur fait suite à un retour d'expérience non à une valeur officielle
     def summon_on(self, sequence: Sequence):
-        if self.game.current_sequence == 'TURN' and\
+        if not self.in_fight_sequence and\
                 not sequence.is_ally(self) and\
                 random.randint(0, 2) == 0:
             self.buff(sequence.source)

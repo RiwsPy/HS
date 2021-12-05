@@ -14,7 +14,7 @@ class Player_hand(ZoneEntity):
     MAX_SIZE = HAND_SIZE
 
     def __init__(self, **kwargs) -> None:
-        super().__init__(CardName.DEFAULT_HAND, **{**self.default_attr, **kwargs})
+        super().__init__(CardName.DEFAULT_HAND, **kwargs)
         self.cards = Board_Card_list()
         self.cards.owner = self
 

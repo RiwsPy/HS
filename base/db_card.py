@@ -22,7 +22,7 @@ class Card_data(int):
         kwargs['dbfId'] = self
         kwargs['type'] = Type(kwargs['type'])
         kwargs['synergy'] = Race(kwargs['synergy'])
-        kwargs['race'] = Race(kwargs['race'])
+        kwargs['race'] = Race(kwargs['race_id'])
         for mechanic in state_list:
             kwargs[mechanic] = False
         for mechanic in kwargs['mechanics']:
@@ -104,7 +104,6 @@ class Meta_card_data(Card_list):
 
 def charge_all_cards(types_ban=[]) -> Meta_card_data:
     all_cards = Card.objects.exclude(synergy__in=types_ban)
-
     db = Meta_card_data(Card_data(**card.__dict__)
         for card in all_cards)
 

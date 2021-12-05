@@ -46,16 +46,15 @@ class BG21_011(Minion):
         super().play_start(sequence)
         if sequence.is_valid:
             sequence.add_target(
-                self.controller.field.cards.filter_hex(race=self.synergy).\
-                    exclude(is_premium=True).choice(self.controller)
+                self.controller.field.cards.filter(race=self.synergy).\
+                    exclude(battlegroundsPremiumDbfId=None).choice(self.controller)
             )
 
     @repeat_effect
     def battlecry(self, sequence: Sequence):
         target = sequence.target
         if target:
-            pass
-            # TODO
+            target.set_premium()
 BG21_011_G= BG21_011 # Lanceur de crustacés premium
 
 

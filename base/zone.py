@@ -9,7 +9,7 @@ class Zone(Entity):
     }
 
     def __init__(self, dbfId, **kwargs):
-        super().__init__(dbfId, **{**self.default_attr, **kwargs})
+        super().__init__(dbfId, **kwargs)
 
     def __len__(self) -> int:
         return len(self.cards)

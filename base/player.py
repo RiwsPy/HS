@@ -23,12 +23,14 @@ class Player(Entity):
         champion = kwargs.pop('champion')
         pseudo = kwargs.pop('pseudo')
         super().__init__(champion,
-            fights=[],
-            gold_by_turn=GOLD_BY_TURN[:],
-            bought_minions=defaultdict(Card_list),
-            sold_minions=defaultdict(Card_list),
-            played_cards=defaultdict(Card_list),
-            **kwargs)
+            **{
+                'fights':[],
+                'gold_by_turn': GOLD_BY_TURN[:],
+                'bought_minions': defaultdict(Card_list),
+                'sold_minions': defaultdict(Card_list),
+                'played_cards': defaultdict(Card_list),
+                **kwargs
+            })
 
         self.pseudo = pseudo
         self.max_health = self.health
