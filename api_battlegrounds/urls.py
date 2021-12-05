@@ -16,8 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls.conf import include
+from rest_framework import routers
+from card.views import CardAPIView, TypeAPIView, RepopAPIView, RaceAPIView
+
+router = routers.SimpleRouter()
+router.register('cards', CardAPIView, basename='cards')
+router.register('types', TypeAPIView, basename='types')
+router.register('repops', RepopAPIView, basename='repops')
+router.register('races', RaceAPIView, basename='races')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('card.urls'), name='cards'),
+    path('api/', include(router.urls)),
 ]

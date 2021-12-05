@@ -1,7 +1,35 @@
-from django.db import models
+from django.db import models, transaction
 from django.contrib.postgres.fields import ArrayField
-from base.enums import CARD_NB_COPY, state_list, Race, Type, dbfId_attr
+from base.enums import CARD_NB_COPY, state_list, Race as Race_enums, Type, dbfId_attr
 from typing import Any
+
+class Race(models.Model):
+    RACE = [
+        ('ALL', 'ALL'),
+        ('NONE', 'NONE'),
+        ('BEAST', 'BEAST'),
+        ('DEMON', 'DEMON'),
+        ('MECHANICAL', 'MECHANICAL'),
+        ('MURLOC', 'MURLOC'),
+        ('DRAGON', 'DRAGON'),
+        ('PIRATE', 'PIRATE'),
+        ('ELEMENTAL', 'ELEMENTAL'),
+        ('QUILBOAR', 'QUILBOAR'),
+    ]
+
+    name= models.CharField(max_length=30, default='DEFAULT', choices=RACE, primary_key=True)
+    is_active= models.BooleanField(default=True)
+
+    @transaction.atomic
+    # permet de ne pas update les cartes si la sauvegarde sur le type n'a pas fonctionné
+    def disable(self):
+        if self.is_active is False:
+            return
+        self.is_active = False
+        self.save()
+        #self.products.update()
+
+
 
 class Card(models.Model):
     RACE = [
@@ -42,7 +70,9 @@ class Card(models.Model):
             models.CharField(max_length=50, null=True),
             default=list
         )
-    race= models.CharField(max_length=30, default='DEFAULT', choices=RACE)
+    race= models.ForeignKey(Race, on_delete=models.PROTECT)
+    #synergy= models.ForeignKey(Race, on_delete=models.PROTECT)
+    #race= models.CharField(max_length=30, default='DEFAULT', choices=RACE)
     synergy = models.CharField(max_length=30, default='DEFAULT', choices=RACE)
     type = models.CharField(max_length=30, default="DEFAULT")
 
@@ -107,14 +137,16 @@ class Card(models.Model):
             return self.__class__.objects.get(pk=getattr(self, attr))
         raise AttributeError
 
+    """
     @property
     def RACE(self):
-        return Race(self.race)
+        return Race_enums(self.race)
 
     @property
     def SYNERGY(self):
-        return Race(self.synergy)
+        return Race_enums(self.synergy)
 
     @property
     def TYPE(self):
         return Type(self.type)
+    """
