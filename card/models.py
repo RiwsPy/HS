@@ -4,20 +4,7 @@ from base.enums import CARD_NB_COPY, state_list, Race as Race_enums, Type, dbfId
 from typing import Any
 
 class Race(models.Model):
-    RACE = [
-        ('ALL', 'ALL'),
-        ('NONE', 'NONE'),
-        ('BEAST', 'BEAST'),
-        ('DEMON', 'DEMON'),
-        ('MECHANICAL', 'MECHANICAL'),
-        ('MURLOC', 'MURLOC'),
-        ('DRAGON', 'DRAGON'),
-        ('PIRATE', 'PIRATE'),
-        ('ELEMENTAL', 'ELEMENTAL'),
-        ('QUILBOAR', 'QUILBOAR'),
-    ]
-
-    name= models.CharField(max_length=30, default='DEFAULT', choices=RACE, primary_key=True)
+    name= models.CharField(max_length=30, primary_key=True)
     is_active= models.BooleanField(default=True)
 
     @transaction.atomic
@@ -29,6 +16,9 @@ class Race(models.Model):
         self.save()
         #self.products.update()
 
+
+class Rarity(models.Model):
+    name= models.CharField(max_length=30, unique=True)
 
 
 class Card(models.Model):
@@ -90,7 +80,8 @@ class Card(models.Model):
 
     spellSchool= models.CharField(max_length=30, default='')
     elite= models.BooleanField(default=False)
-    rarity= models.CharField(max_length=30, default='DEFAULT')
+    rarity= models.ForeignKey(Rarity, on_delete=models.PROTECT, default='INVALID')
+    #rarity= models.CharField(max_length=30, default='DEFAULT')
     collectible= models.BooleanField(default=False)
     set= models.CharField(max_length=30)
     artist= models.CharField(max_length=255, default='')

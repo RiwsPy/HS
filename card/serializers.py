@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from card.models import Card, Race
+from card.models import Card, Race, Rarity
  
 class CardDetailsSerializer(ModelSerializer):
  
@@ -80,9 +80,34 @@ class RaceSerializer(ModelSerializer):
         model = Race
         fields = [
             'name',
-            'cards',]
+            'cards',
+            'is_active']
 
     def get_cards(self, instance):
-        queryset = Card.objects.get(race=instance.name)
-        serializer = MinionSerializer(queryset)
+        queryset = Card.objects.filter(race=instance.name)
+        serializer = CardListSerializer(queryset, many=True)
         return serializer.data
+
+    # validate_XXX, où XXX est le nom de l'attribut
+    def validate_name(self, value:str):
+        value = value.upper()
+        if Race.objects.filter(name=value).exists():
+            raise serializers.ValidationError(f'Race {value} already exists')
+        return value
+
+    def validate(self, data):
+        if data['is_active'] is False:
+            raise serializers.ValidationError('is_active must be True')
+        return data
+
+
+class RaritySerializer(ModelSerializer):
+    class Meta:
+        model = Rarity
+        fields = '__all__'
+
+    def validate_name(self, value):
+        value = value.upper()
+        if Rarity.objects.filter(name=value).exists():
+            raise serializers.ValidationError(f'Rarity {value} already exists')
+        return value

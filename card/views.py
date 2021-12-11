@@ -1,25 +1,22 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
- 
-from card.models import Card, Race
+from rest_framework.permissions import IsAuthenticated
+from api_battlegrounds.permissions import IsAdminAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+
+from card.models import Card, Race, Rarity
 from .serializers import CardDetailsSerializer, MinionSerializer, RepopSerializer,\
-    CardListSerializer, RaceSerializer
+    CardListSerializer, RaceSerializer, RaritySerializer
 
 
 class MultipleSerializerMixin:
-    # Un mixin est une classe qui ne fonctionne pas de façon autonome
-    # Elle permet d'ajouter des fonctionnalités aux classes qui les étendent
-
     detail_serializer_class = None
 
     def get_serializer_class(self):
-        # Notre mixin détermine quel serializer à utiliser
-        # même si elle ne sait pas ce que c'est ni comment l'utiliser
         if self.action == 'retrieve' and self.detail_serializer_class is not None:
-            # Si l'action demandée est le détail alors nous retournons le serializer de détail
             return self.detail_serializer_class
         return super().get_serializer_class()
 
@@ -57,3 +54,28 @@ class RaceAPIView(ReadOnlyModelViewSet):
     serializer_class= RaceSerializer
     def get_queryset(self):
         return Race.objects.all()
+
+
+class AdminRaceViewSet(ModelViewSet):
+    serializer_class= RaceSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdminAuthenticated]
+
+    def get_queryset(self):
+        return Race.objects.all()
+
+
+class RarityAPIView(ReadOnlyModelViewSet):
+    serializer_class= RaritySerializer
+
+    def get_queryset(self):
+        return Rarity.objects.all()
+
+
+class AdminRarityAPIView(ModelViewSet):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    serializer_class= RaritySerializer
+    permission_classes = [IsAdminAuthenticated]
+
+    def get_queryset(self):
+        return Rarity.objects.all()

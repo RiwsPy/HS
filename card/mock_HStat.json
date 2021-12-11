@@ -1,0 +1,26 @@
+[
+    {
+     "name": "Chasse-marée murloc",
+     "synergy": "MURLOC",
+     "repopDbfId": 68469,
+     "dbfId": 976,
+     "artist": "Dan Scott",
+     "attack": 2,
+     "battlegroundsPremiumDbfId": 57338,
+     "cardClass": "NEUTRAL",
+     "collectible": true,
+     "cost": 2,
+     "flavor": "« La mort monte avec la marée ! »",
+     "health": 1,
+     "id": "EX1_506",
+     "mechanics": [
+      "BATTLECRY"
+     ],
+     "race": "MURLOC",
+     "rarity": "FREE",
+     "set": "LEGACY",
+     "techLevel": 1,
+     "text": "<b>Cri de guerre :</b> invoque un éclaireur murloc 1/1.",
+     "type": "MINION"
+    }
+]

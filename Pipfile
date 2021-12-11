@@ -12,6 +12,7 @@ python-dotenv = "*"
 djangorestframework = "*"
 requests = "*"
 pytest = "*"
+djangorestframework-simplejwt = "*"
 
 [requires]
 python_version = "3.8"
