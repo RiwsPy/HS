@@ -15,6 +15,7 @@ L'idée n'est pas connaître la probabilité de gagner d'une composition face à
 Il peut permettre également d'évaluer leur évolution au fil des mises à jours. De découvrir, d'analyser et de quantifier, l'impact des différentes stratégies, notamment en début de partie. Le chemin est encore long.
 
 Plutôt que de côter un serviteur en analysant 20M de parties en ligne, l'idée est de pouvoir obtenir un résultat en analysant les différentes possibilités. Le résultat sera différent, pas forcément meilleur, mais ce résultat pourra compléter les résultats déjà existants. Un avantage serait également de pouvoir d'obtenir des résultats exploitables très rapidement après une mise à jour. Plutôt qu'attendre 8 semaines pour avoir les 20M de parties.
+
 Plusieurs approches sont possibles, pour le moment une approche par stratégie du joueur est privilégiée.
 L'approche par stratégie par carte, est pour le moment mise de côté.
 
@@ -28,7 +29,7 @@ Via la commande :
 ```
     python3 main.py -uDB
 ```
-Il est possible de mettre à jour le fichier db/hearthstone.json avec la dernière version des cartes.
+Il est possible de mettre à jour le fichier `hearthstone.json` avec la dernière version des cartes.
 La requête est effectuée sur https://api.hearthstonejson.com/v1/latest/frFR/cards.json.
 Toutes les cartes sont sauvegardées.
 
@@ -37,25 +38,25 @@ Via la commande :
     python3 main.py -uBG
 ```
 Le fichier `battlegrounds.json` est rempli avec les cartes du set BATTLEGROUNDS.
-Ce dernier, couplé avec `battlegrounds_extended.json` produit `HStat.json`.
+Ce dernier, couplé avec `battlegrounds_extended.json` pour produire `HStat.json`.
 C'est ce dernier qui est utilisé pour remplir la base de données utilisée par l'API du projet, grâce à 
 ```
     ./manage.py uDB
 ```
 Une commande regroupant les trois est en cours de réflexion.
 
-Note : Une limite pointe son nez, car cette commande annule tous les changements sur la base de données effectués via l'API.
+*Note* : Une limite pointe son nez, car cette commande annule tous les changements sur la base de données effectués via l'API.
 
 
 # Arène
 L'arène est un mode gourmand où bon nombre de serviteurs combattent encore et encore.
 Les résultats des combats permettent de déterminer la pertinence des différents choix.
 Différents résultats sur les serviteurs de taverne 1 sont présents dans le fichier `arene.json`.
-Les résultats sont actuellement extrêmement généraux : les héros n'utilisent pas leur pouvoir et aucun type de serviteurs n'est banni. Il est tout à fait possible de mettre en place ces deux contraintes, tout est prêt pour cela, ce qui manque c'est la puissance de calcul ou le manque d'optimisation de la part du concepteur. Ce dernier s'explique en ces termes : "Chaque chose en son temps.".
+Les résultats sont actuellement extrêmement généraux : les héros n'utilisent pas leur pouvoir et aucun type de serviteurs n'est banni. Il est tout à fait possible de mettre en place ces deux contraintes, tout est prêt pour cela, ce qui manque c'est la puissance de calcul ou le manque d'optimisation de la part du concepteur. Ce dernier s'explique en ces termes : "*Chaque chose en son temps.*".
 
 Le fichier `arene.json` n'étant pas d'une clareté limpide au premier regard, voici un exemple travaillé (après moultes rebondissements), il s'agit d'un résultat de l'analyse "base_T1_to_T3_extended", retro 6, pour la version 20.8.
 
-```
+```python
 "2021-11-29 19:50:32.268500": { # date
 "method": "base_T1_to_T3_extended", # nom de la méthode employée : cumul de l'impact des cartes T1 du tour 1 jusqu'au tour 3, la stratégie employée est celle par défaut : levelup au tour2
 "types_ban": [], # types bannis : aucun
