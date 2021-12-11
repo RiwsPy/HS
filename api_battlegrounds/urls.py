@@ -17,15 +17,24 @@ from django.contrib import admin
 from django.urls import path
 from django.urls.conf import include
 from rest_framework import routers
-from card.views import CardAPIView, TypeAPIView, RepopAPIView, RaceAPIView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from card.views import CardAPIView, TypeAPIView, RepopAPIView, RaceAPIView,\
+    AdminRaceViewSet, RarityAPIView, AdminRarityAPIView
 
 router = routers.SimpleRouter()
 router.register('cards', CardAPIView, basename='cards')
 router.register('types', TypeAPIView, basename='types')
 router.register('repops', RepopAPIView, basename='repops')
 router.register('races', RaceAPIView, basename='races')
+router.register('rarities', RarityAPIView, basename='rarities')
+
+router.register('admin/races', AdminRaceViewSet, basename='admin-races')
+router.register('admin/rarities', AdminRarityAPIView, basename='admin-rarities')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
