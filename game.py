@@ -56,6 +56,7 @@ class Game(Entity):
         self.fights = defaultdict(list)
         self.entities = Card_list()
         self._turn = 0
+        self.temp_counter = 0
         self.action_stack = deque()
         self.players = Card_list()
         self.fields = Card_list()
@@ -68,7 +69,6 @@ class Game(Entity):
     def deck(self):
         return self.hand
 
-    #def party_begin(self, *players, hero_p1=0, hero_p2=0) -> None:
     def party_begin(self, player_name_player_hero: dict) -> None:
         # TODO: Players are assigned opponents for the first round when the game begins before the heroes are chosen.
         # TODO: Players will not face the same player, or Kel'Thuzad, more than once in every 3 combat rounds (unless there are 2 players remaining).
@@ -116,7 +116,7 @@ class Game(Entity):
     def remove(self, entity: Entity) -> None:
         pass
 
-    def turn_start(self, sequence):
+    def turn_start(self, sequence: Sequence) -> None:
         self._turn += 1
         self.entities = Card_list()
         for player in self.players:
@@ -149,10 +149,10 @@ class Game(Entity):
 
     def fight_start(self, sequence):
         self.entities = Card_list()
-        for p1, p2 in zip(self.players[::2], self.players[1::2]):
-            field = Card(CardName.DEFAULT_FIELD, p1=p1, p2=p2)
+        for p1_id, p2_id in zip(self.players[::2], self.players[1::2]):
+            field = Card(CardName.DEFAULT_FIELD, p1=p1_id, p2=p2_id)
             self.append(field)
-            field.combat = Combat(field, p1.board, p2.board)
+            field.combat = Combat(field, p1_id.board, p2_id.board)
             self.fights[self._turn].append(field)
 
     def fight(self, sequence):
