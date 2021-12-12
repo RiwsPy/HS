@@ -9,19 +9,22 @@ player_name = 'p1_name'
 g = Card(CardName.DEFAULT_GAME, is_test=True)
 hero_name = g.all_cards[CardName.DEFAULT_HERO]
 
+
 @pytest.fixture()
 def reinit_game(monkeypatch):
     def mock_choose_champion(self, lst, pr):
         return hero_name
     monkeypatch.setattr(Game, 'choose_champion', mock_choose_champion)
 
-    g.party_begin(player_name, 'p2_name')
+    g.party_begin({player_name: 0, 'p2_name': 0})
+
 
 def test_start_sequence(reinit_game):
     crd = g.players[0].draw(60055) # Micro-machine
     crd.play()
     Sequence('TURN', g).start_and_close()
     assert crd.attack == crd.dbfId.attack + crd.enchantmentDbfId.attack
+
 
 def test_play_sequence(reinit_game):
     tisse = g.players[0].draw(59670) # Tisse-colère
@@ -30,10 +33,12 @@ def test_play_sequence(reinit_game):
     demon.play()
     assert tisse.attack == tisse.dbfId.attack + 2
 
+
 def test_battlecry_sequence(reinit_game):
     cat = g.players[0].draw(40426) # Chat de gouttière
     cat.play()
     assert g.players[0].board.size == 2
+
 
 def test_die_sequence(reinit_game):
     with Sequence('TURN', g):
@@ -46,6 +51,7 @@ def test_die_sequence(reinit_game):
         cat.die()
         assert g.players[0].board.size == 2
         assert hye.attack == hye.dbfId.attack + 2
+
 
 def test_avenge_sequence(reinit_game):
     with Sequence('TURN', g):

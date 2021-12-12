@@ -11,7 +11,9 @@ from .sequence import Sequence
 from collections import defaultdict
 from .db_card import Card_list
 
-# TODO: restructuration: beaucoup trop de répétitions
+# TODO: restructuration: DRY
+
+
 class arene:
     def __init__(self, **kwargs) -> None:
         self.debut = time.time()
@@ -94,7 +96,7 @@ class arene:
         compo_turn_3 = self.compo_turn_3()
         for compo1 in compo_turn_3.values():
             for compo2 in compo_turn_3.values():
-                g.party_begin('p1_name', 'p2_name', hero_p1=p1, hero_p2=p2)
+                g.party_begin({'p1_name': p1, 'p2_name': p2})
                 j1, j2 = g.players
                 j1.level = 2
                 j2.level = 2
@@ -122,13 +124,13 @@ class arene:
         g = self.g
         NB_FIGHT = 10
         for card_p1 in card_list:
-            g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+            g.party_begin({'p1_name': hero_p1, 'p2_name': hero_p2})
             j1, j2 = g.players
             with Sequence('TURN', g):
                 j1.power.active_script_arene(card_p1)
             for card_p2, proba_apparition_p2 in stats.card_proba_game(g, j2):
                 print(card_p1.name, card_p2.name, proba_apparition_p2)
-                g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+                g.party_begin({'p1_name': hero_p1, 'p2_name': hero_p2})
                 j1, j2 = g.players
                 for _ in range(2):
                     with Sequence('TURN', g):
@@ -155,7 +157,7 @@ class arene:
         compo_turn_3 = self.compo_turn_3()
 
         for card_p1 in card_list:
-            g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+            g.party_begin({'p1_name': hero_p1, 'p2_name': hero_p2})
             j1, j2 = g.players
             with Sequence('TURN', g):
                 j1.power.active_script_arene(card_p1)
@@ -163,7 +165,7 @@ class arene:
             for card_p1_2, proba_c2 in stats.card_proba_game(g, j1):
                 for compo in compo_turn_3.values():
                     print(card_p1.name, card_p1_2.name)
-                    g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+                    g.party_begin({'p1_name': hero_p1, 'p2_name': hero_p2})
                     j1, j2 = g.players
                     Sequence('TURN', g).start_and_close()
                     with Sequence('TURN', g):
@@ -225,7 +227,7 @@ class arene:
             return
 
         for card_p1 in card_list:
-            g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+            g.party_begin({'p1_name': hero_p1, 'p2_name': hero_p2})
             j1, j2 = g.players
             with Sequence('TURN', g):
                 j1.power.active_script_arene(card_p1)
@@ -234,7 +236,7 @@ class arene:
             print(card_p1, 'en cours...')
             for card_p1_2, proba_c2 in stats.card_proba_game(g, j1):
                 for compo in compo_turn_3.values():
-                    g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+                    g.party_begin({'p1_name': hero_p1, 'p2_name': hero_p2})
                     j1, j2 = g.players
                     with Sequence('TURN', g):
                         j1.power.active_script_arene(card_p1)
@@ -313,7 +315,7 @@ class arene:
         # valeur, alors il faut mieux conserver son T1 et roll deux fois au tour3
 
         for card_p1 in card_list: # card_list
-            g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+            g.party_begin({'p1_name': hero_p1, 'p2_name': hero_p2})
             j1, j2 = g.players
             with Sequence('TURN', g):
                 j1.power.active_script_arene(card_p1)
@@ -322,14 +324,14 @@ class arene:
             print(f'{card_p1.name} en cours...')
             for card_p1_2, proba_c2 in stats.card_proba_game(g, j1):
                 print('card_p2', card_p1_2, proba_c2)
-                g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+                g.party_begin({'p1_name': hero_p1, 'p2_name': hero_p2})
                 j1, j2 = g.players
                 with Sequence('TURN', g):
                     j1.power.active_script_arene(card_p1, card_p1_2)
                     j1.level = 2
                 for card_p1_3, proba_c3 in stats.card_proba_game(g, j1):
                     for compo in compo_turn_3.values():
-                        g.party_begin('p1_name', 'p2_name', hero_p1=hero_p1, hero_p2=hero_p2)
+                        g.party_begin({'p1_name': hero_p1, 'p2_name': hero_p2})
                         j1, j2 = g.players
                         j1.power.hero_script = 'Special_arene_base_T2_to_T3'
                         with Sequence('TURN', g):

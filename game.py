@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from base.db_card import charge_all_cards
-from base.utils import Card_list, db_arene
+from base.db_card import CardDB
+from base.utils import Card_list
 from base.enums import Race, Type, NB_PRESENT_TYPE, VERSION, CardName
 import random
 import base.player
@@ -17,7 +17,6 @@ from base.sequence import Sequence
 
 class Game(Entity):
     default_attr = {
-        #"test": False,
         "type": Type("GAME"),
         "is_arene": False,
         'no_bob': False,
@@ -27,29 +26,26 @@ class Game(Entity):
         'is_test': False,
     }
 
-    def __init__(self, *args, types_ban=[], **kwargs):
-        for attr, value in {**self.default_attr, **kwargs}.items():
-            setattr(self, attr, value)
+    def __init__(self, *args, types_ban=None, **kwargs):
+        for kv in {**self.default_attr, **kwargs}.items():
+            setattr(self, *kv)
 
         self.reinit()
+        if types_ban is None:
+            self.types_ban = self.determine_ban_type()
+        else:
+            self.types_ban = types_ban
 
-        if not types_ban and not self.is_test and not self.is_arene:
-            types_ban = self.determine_ban_type()
-
-        all_cards = charge_all_cards(types_ban)
-
-        self.type_ban = sum(Race(race).hex for race in types_ban)
-        self.cards = all_cards
-        self.craftable_heroes = all_cards.filter(battlegroundsHero=True)
-        self.minion_can_collect = all_cards.exclude(techLevel=None)
+        self.cards = CardDB(self.types_ban)
+        self.craftable_heroes = self.cards.objects.filter(battlegroundsHero=True)
+        self.minion_can_collect = self.cards.objects.exclude(techLevel=None)
 
         self.hand = Bob_hand()
         self.hand.owner = self
 
         for minion in self.minion_can_collect:
             for _ in range(minion.nb_copy):
-                #self.hand.create_card_in(int(dbfId))
-                self.hand.create_card_in(minion.dbfId)
+                self.hand.create_card_in(minion)
             """
             *chain(*
             ([int(dbfId)]*dbfId.nb_copy
@@ -68,11 +64,18 @@ class Game(Entity):
     def all_cards(self) -> Meta_card_data:
         return self.cards
 
-    def party_begin(self, *players, hero_p1=0, hero_p2=0) -> None:
-        #TODO: Players are assigned opponents for the first round when the game begins before the heroes are chosen.
-        #TODO: Players will not face the same player, or Kel'Thuzad, more than once in every 3 combat rounds (unless there are 2 players remaining).
-        if not players:
-            return None
+    @property
+    def deck(self):
+        return self.hand
+
+    #def party_begin(self, *players, hero_p1=0, hero_p2=0) -> None:
+    def party_begin(self, player_name_player_hero: dict) -> None:
+        # TODO: Players are assigned opponents for the first round when the game begins before the heroes are chosen.
+        # TODO: Players will not face the same player, or Kel'Thuzad, more than once in every 3 combat rounds (unless there are 2 players remaining).
+        if not player_name_player_hero:
+            return
+
+        nb_hero_choice = 4
 
         self.all_in_bob()
         self.reinit()
@@ -80,22 +83,17 @@ class Game(Entity):
         random_craftable_heroes = list(self.craftable_heroes)
         random.shuffle(random_craftable_heroes)
 
-        for nb, player_name in enumerate(players):
+        for nb, (player_name, player_hero) in enumerate(player_name_player_hero.items()):
             bob = base.player.Bob(
                     minion_can_collect=self.minion_can_collect)
-            # de base, 4 héros sont disponibles lors de la sélection
 
-            if self.is_arene:
-                if nb == 0 and hero_p1:
-                    hero_chosen = self.all_cards[hero_p1]
-                elif nb == 1 and hero_p2:
-                    hero_chosen = self.all_cards[hero_p2]
-                else:
-                    hero_chosen = self.all_cards[CardName.DEFAULT_HERO]
-            elif nb == 0 and hero_p1:
-                hero_chosen = self.all_cards[hero_p1]
+            if player_hero:
+                hero_chosen = self.all_cards[player_hero]
+            elif self.is_arene:
+                hero_chosen = self.all_cards[CardName.DEFAULT_HERO]
             else:
-                hero_chosen = self.choose_champion(random_craftable_heroes[nb*4:nb*4+4],
+                hero_chosen = self.choose_champion(
+                    random_craftable_heroes[nb*nb_hero_choice:(nb+1)*nb_hero_choice],
                     pr=f'Choix du héros pour {player_name} :')
 
             plyr = Card(
@@ -109,10 +107,14 @@ class Game(Entity):
             self.append(new_field)
 
     def determine_ban_type(self) -> list:
-        lst = Race.battleground_race_name()
-        random.shuffle(lst)
+        if not self.is_test and not self.is_arene:
+            lst = Race.battleground_race_name()
+            random.shuffle(lst)
+            return lst[NB_PRESENT_TYPE:]
+        return []
 
-        return lst[NB_PRESENT_TYPE:]
+    def remove(self, entity: Entity) -> None:
+        pass
 
     def turn_start(self, sequence):
         self._turn += 1
@@ -157,51 +159,54 @@ class Game(Entity):
         for field in self.entities:
             field.combat.fight_initialisation()
 
-    def arene_on_creation(self):
-        minion_rating = db_arene(
-            version=self.version,
-            type_ban=self.type_ban)
-        for card in self.minion_can_collect:
-            try:
-                card.all_rating = minion_rating[card]['rating']
-            except KeyError:
-                card.all_rating = {}
-
 
 if __name__ == "__main__":
-    g = Card(CardName.DEFAULT_GAME, is_test=True)
-    g.party_begin('p1_name', 'p2_name', hero_p1=63601)
+    g = Card(CardName.DEFAULT_GAME, types_ban=[], is_test=True)
+    g.party_begin({'p1_name': 63601, 'p2_name': 0})
     p1, p2 = g.players
+
+    print(Race('PIRATE'))
+    print(Race('PIRATE') == 'PIRATE')
+    print(Race('ALL') == 'PIRATE')
+    print(Race('ALL').PIRATE)
+
+    a = Card_list()
+    a.append(p1.create_card(61444))
+    print(a.one_minion_by_race())
+    print(a.filter(race='PIRATE'))
+    print(a.filter(race='ALL'))
 
     """
     from base.arene import arene
-    arene(method='base_T1', types_ban=[], retro=4,
+    arene(method='base_T1_to_T3_extended', types_ban=[], retro=6,
         p1=CardName.DEFAULT_HERO,
         p2=CardName.DEFAULT_HERO)
     """
 
+    """
     p1 = g.players[0]
     old_hand_len = g.hand.size
     with Sequence('TURN', g):
-        g.hand.give_or_create_in(65658, p1.hand) # Acolyte de C'thun
+        p1.draw(65658) # Acolyte de C'thun
         assert p1.hand.size == 1
         assert g.hand.size == old_hand_len - len(g.players)*3 - 3
 
 
 
     with Sequence('TURN', g):
-        cha = p1.hand.create_card_in(41245) # Chasseur rochecave
+        cha = p1.draw(41245) # Chasseur rochecave
         cha.play()
-        yo = p1.hand.create_card_in(61060) # Yo-oh ogre
+        yo = p1.draw(61060) # Yo-oh ogre
         yo.play()
-        mou = p2.hand.create_card_in(61055) # Mousse du pont
+        mou = p2.draw(61055) # Mousse du pont
         mou.play()
-        mou = p2.hand.create_card_in(61055) # Mousse du pont
+        mou = p2.draw(61055) # Mousse du pont
         mou.play()
-        ele = p2.hand.create_card_in(64038) # ElémenPlus
+        ele = p2.draw(64038) # ElémenPlus
         ele.play()
 
     with Sequence('FIGHT', g) as seq:
         print(yo.health)
         print(cha.health)
         print(p1.field.combat.damage)
+    """

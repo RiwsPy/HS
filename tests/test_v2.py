@@ -22,7 +22,7 @@ def reinit_game(monkeypatch):
         return hero_name
     monkeypatch.setattr(Game, 'choose_champion', mock_choose_champion)
 
-    g.party_begin(player_name, 'p2_name')
+    g.party_begin({player_name: 0, 'p2_name': 0})
 
 
 def test_all_in_bob(reinit_game, monkeypatch):
@@ -56,7 +56,7 @@ def test_game_hand(reinit_game):
         assert isinstance(entity, Card_data)
     assert len(g.hand.cards.filter(dbfId=entity.dbfId)) == CARD_NB_COPY[entity_level]
     for card in g.hand.cards:
-        assert card.synergy.hex & g.type_ban == 0
+        assert card.synergy not in g.types_ban
     nb = len(g.minion_can_collect.filter(level=entity_level))
     assert len(g.hand[entity_level]) == \
                 CARD_NB_COPY[entity_level]*nb
@@ -141,7 +141,7 @@ def test_play_2(reinit_game):
     card = player.draw(976) # chasse-marée
     card.play()
     g.active_action()
-    lst = player.board.cards.exclude_hex(card, race=Race('ALL').hex-Race('MURLOC').hex)
+    lst = player.board.cards.exclude(card).filter(race='MURLOC')
     assert len(lst) == 3
 
 def test_card_append(reinit_game):

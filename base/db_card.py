@@ -23,6 +23,7 @@ class Card_data(int):
         kwargs['type'] = Type(kwargs['type'])
         kwargs['synergy'] = Race(kwargs['synergy'])
         kwargs['race'] = Race(kwargs['race_id'])
+        kwargs['rarity'] = kwargs['rarity_id']
         for mechanic in state_list:
             kwargs[mechanic] = False
         for mechanic in kwargs['mechanics']:
@@ -111,8 +112,10 @@ class CardDB:
         if cls._instance is None:
             cls._types_ban = kwargs.get('types_ban', [])
             all_cards = Card.objects.exclude(synergy__in=cls._types_ban)
-            db = Meta_card_data(Card_data(**card.__dict__)
-                for card in all_cards)
+            db = Meta_card_data(
+                Card_data(**card.__dict__)
+                for card in all_cards
+            )
 
             for card in db:
                 for attr in dbfId_attr:

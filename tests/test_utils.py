@@ -17,7 +17,7 @@ def reinit_game(monkeypatch):
         return hero_name
     monkeypatch.setattr(Game, 'choose_champion', mock_choose_champion)
 
-    g.party_begin(player_name, 'p2_name')
+    g.party_begin({player_name: 0, 'p2_name': 0})
 
 
 def test_utils(reinit_game):

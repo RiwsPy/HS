@@ -15,7 +15,9 @@ class BG21_000(Minion):
         self.buff(
             target
         )
-BG21_000_G= BG21_000 # Saute-mouton premium
+
+
+BG21_000_G = BG21_000  # Saute-mouton premium
 
 
 class BG21_002(Minion):
@@ -33,14 +35,16 @@ class BG21_001(Minion):
             self.my_zone.cards.filter(race='BEAST').exclude(self).random_choice()
         )
     deathrattle = avenge
-BG21_001_G= BG21_001 # Crocilisque claires-écailles premium
 
 
-BG21_003= battlecry_select_one_minion_and_buff_it # Crotale résurrecteur
-BG21_003_G= BG21_003
+BG21_001_G = BG21_001  # Crocilisque claires-écailles premium
 
-BG19_010= deathrattle_repop # Rat d'égout
-BG19_010_G= BG19_010 # Rat d'égout premium
+
+BG21_003 = battlecry_select_one_minion_and_buff_it  # Crotale résurrecteur
+BG21_003_G = BG21_003
+
+BG19_010 = deathrattle_repop  # Rat d'égout
+BG19_010_G = BG19_010  # Rat d'égout premium
 
 
 class LOOT_078(Minion):

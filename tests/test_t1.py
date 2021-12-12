@@ -9,13 +9,15 @@ player_name = 'p1_name'
 g = Card(CardName.DEFAULT_GAME, is_test=True)
 hero_name = g.all_cards[CardName.DEFAULT_HERO]
 
+
 @pytest.fixture()
 def reinit_game(monkeypatch):
     def mock_choose_champion(*args, **kwargs):
         return hero_name
     monkeypatch.setattr(Game, 'choose_champion', mock_choose_champion)
 
-    g.party_begin(player_name, 'p2_name')
+    g.party_begin({player_name: 0, 'p2_name': 0})
+
 
 def test_chat(reinit_game):
     crd = g.players[0].draw(40426) # Chat de gouttière

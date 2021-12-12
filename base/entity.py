@@ -1,4 +1,4 @@
-from .enums import LEVEL_MAX, MAX_TURN, CardName, Rarity, Zone, Type, \
+from .enums import LEVEL_MAX, MAX_TURN, CardName, Zone, Type, \
     DEFAULT_MINION_COST, state_list, Race
 from .utils import Card_list, controller, game, my_zone
 from .action import attack
@@ -410,8 +410,10 @@ class Minion(Entity):
             with Sequence('DIE', self, **kwargs) as seq:
                 if seq.is_valid:
                     Sequence('DEATHRATTLE', self, **kwargs).start_and_close()
+                    # Avenge s'active avant le die off
                     Sequence('AVENGE', self, **kwargs).start_and_close()
-                    Sequence('REBORN', self, **kwargs).start_and_close()
+
+            Sequence('REBORN', self, **kwargs).start_and_close()
 
     def play_start(self, sequence: Sequence):
         if self.my_zone.zone_type != Zone.HAND and\
