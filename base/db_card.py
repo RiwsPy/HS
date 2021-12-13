@@ -1,6 +1,7 @@
 from .enums import Race, Zone, Type, CARD_NB_COPY, state_list, dbfId_attr
 from typing import List, Any
 from .utils import Card_list
+from collections import defaultdict
 import os
 
 import django
@@ -31,14 +32,12 @@ class Card_data(int):
         self.data = kwargs
 
         self.value = 0
-        self.all_rating = {}
-        self.rating = -999
         self.counter = 0
         self.esp_moy = 0
 
-        self.counter_2 = 0
-        self.value_2 = 0
-        self.T1_to_T3_rating = -999
+        self.ratings = Ratings()
+        self.ratings.rating = -999
+        self.ratings.T1_to_T3 = -999
 
     def __repr__(self) -> str:
         return self.name
@@ -74,6 +73,15 @@ class Card_data(int):
     @property
     def __dict__(self) -> dict:
         return self.data
+
+    @property
+    def rating(self) -> int:
+        return self.ratings['rating']
+
+    @rating.setter
+    def rating(self, value) -> None:
+        self.ratings['rating'] = value
+
 
 class Meta_card_data(Card_list):
     def sort(self, attr='', reverse=False) -> None:
@@ -133,3 +141,15 @@ class CardDB:
     @property
     def objects(self):
         return self._objects
+
+
+class Ratings(defaultdict):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default_factory = int
+
+    def __getattr__(self, attr):
+        return super().__getitem__(attr)
+
+    def __setattr__(self, key, value) -> None:
+        self[key] = value
