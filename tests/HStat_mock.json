@@ -25,11 +25,6 @@
         "dbfId": -15
        },
        {
-        "type": "PLAYER",
-        "id": "player",
-        "dbfId": -16
-       },
-       {
         "type": "ZONE",
         "synergy": "ALL",
         "id": "Secret_board",
@@ -96,6 +91,41 @@
         "type": "MINION"
        },
        {
+        "name": "Chasse-marée murloc",
+        "synergy": "MURLOC",
+        "repopDbfId": 57339,
+        "dbfId": 57338,
+        "attack": 4,
+        "battlegroundsNormalDbfId": 976,
+        "cardClass": "NEUTRAL",
+        "cost": 2,
+        "health": 2,
+        "id": "TB_BaconUps_003",
+        "mechanics": [
+         "BATTLECRY"
+        ],
+        "race": "MURLOC",
+        "rarity": "FREE",
+        "set": "BATTLEGROUNDS",
+        "text": "<b>Cri de guerre :</b> invoque un éclaireur murloc 2/2.",
+        "type": "MINION"
+       },
+       {
+        "name": "Éclaireur murloc",
+        "synergy": "MURLOC",
+        "dbfId": 57339,
+        "attack": 2,
+        "battlegroundsNormalDbfId": 68469,
+        "cardClass": "NEUTRAL",
+        "cost": 1,
+        "health": 2,
+        "id": "TB_BaconUps_003t",
+        "race": "MURLOC",
+        "rarity": "COMMON",
+        "set": "BATTLEGROUNDS",
+        "type": "MINION"
+       },
+       {
         "name": "Mande-flots murloc",
         "synergy": "MURLOC",
         "enchantmentDbfId": 1719,
@@ -118,6 +148,46 @@
         "text": "Gagne +1 ATQ chaque fois que vous invoquez un Murloc.",
         "type": "MINION"
        },
+       {
+        "name": "Mande-flots murloc",
+        "synergy": "MURLOC",
+        "enchantmentDbfId": 58139,
+        "dbfId": 58138,
+        "attack": 2,
+        "battlegroundsNormalDbfId": 475,
+        "cardClass": "NEUTRAL",
+        "cost": 1,
+        "health": 4,
+        "id": "TB_BaconUps_011",
+        "mechanics": [
+         "TRIGGER_VISUAL"
+        ],
+        "race": "MURLOC",
+        "rarity": "RARE",
+        "set": "BATTLEGROUNDS",
+        "text": "Gagne +2 ATQ chaque fois que vous invoquez un Murloc.",
+        "type": "MINION"
+       },
+       {
+        "attack": 1,
+        "name": "Blarghghl",
+        "dbfId": 1719,
+        "cardClass": "NEUTRAL",
+        "id": "EX1_509e",
+        "set": "EXPERT1",
+        "text": "Attaque augmentée.",
+        "type": "ENCHANTMENT"
+       },
+       {
+        "attack": 2,
+        "name": "Blarghghl",
+        "dbfId": 58139,
+        "cardClass": "NEUTRAL",
+        "id": "TB_BaconUps_011e",
+        "set": "BATTLEGROUNDS",
+        "text": "Attaque augmentée.",
+        "type": "ENCHANTMENT"
+       },      
        {
         "name": "Chat de gouttière",
         "synergy": "BEAST",
@@ -149,6 +219,30 @@
         "type": "HERO_POWER",
         "id": "Taverne",
         "dbfId": 0
+       },
+       {
+        "name": "Taverne",
+        "cost": 0,
+        "hero_script": "Default_script",
+        "type": "HERO_POWER",
+        "minion_cost": 1,
+        "id": "Taverne",
+        "dbfId": -1
+       },
+       {
+        "name": "Éclaireur murloc",
+        "synergy": "MURLOC",
+        "dbfId": 68469,
+        "attack": 1,
+        "battlegroundsPremiumDbfId": 57339,
+        "cardClass": "NEUTRAL",
+        "cost": 0,
+        "health": 1,
+        "id": "VAN_EX1_506a",
+        "race": "MURLOC",
+        "rarity": "COMMON",
+        "set": "VANILLA",
+        "type": "MINION"
        }
       
     ]

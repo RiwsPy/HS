@@ -1,6 +1,5 @@
 from base.enums import *
 from base.entity import Card, Entity
-from base.db_card import CARD_DB
 import pytest
 from base.sequence import Sequence
 from base.db_card import Meta_card_data, Card_data
@@ -8,8 +7,8 @@ from game import Game
 
 
 player_name = 'p1_name'
-hero_name = CARD_DB[CardName.DEFAULT_HERO]
 g = Card(CardName.DEFAULT_GAME, is_test=True)
+hero_name = g.all_cards[CardName.DEFAULT_HERO]
 
 
 def test_enums():
@@ -23,7 +22,7 @@ def reinit_game(monkeypatch):
         return hero_name
     monkeypatch.setattr(Game, 'choose_champion', mock_choose_champion)
 
-    g.party_begin(player_name, 'p2_name')
+    g.party_begin({player_name: 0, 'p2_name': 0})
 
 
 def test_all_in_bob(reinit_game, monkeypatch):
@@ -38,7 +37,7 @@ def test_all_in_bob(reinit_game, monkeypatch):
         assert player.bob.board.size == 3
 
         monkeypatch.setattr('base.player.Player.can_buy_minion', lambda *args, **kwargs: True)
-        crd = player.bob.board[0]
+        crd = player.bob.board.cards[0]
         crd.buy()
         assert player.bob.board.size == 2
         assert len(player.hand.cards) == 1
@@ -51,20 +50,15 @@ def test_all_in_bob(reinit_game, monkeypatch):
 
 def test_game_hand(reinit_game):
     entity_level = 1
-    entity = g.hand[entity_level][0]
-    id = entity.dbfId
-    assert entity.type == Type.MINION
-    assert entity.level == entity_level
-    assert isinstance(entity, Entity)
-    assert len(g.hand.cards.filter(dbfId=id)) == CARD_NB_COPY[entity_level]
+    for entity in g.hand[entity_level]:
+        assert entity.type == Type.MINION
+        assert entity.level == entity_level
+        assert isinstance(entity, Card_data)
+    assert len(g.hand.cards.filter(dbfId=entity.dbfId)) == CARD_NB_COPY[entity_level]
     for card in g.hand.cards:
-        assert card.synergy.hex & g.type_ban == 0
-    nb = 0
-    for card_id in g.minion_can_collect:
-        if card_id.level == entity_level:
-            nb += 1
-    assert len(g.hand.cards_of_tier_max(
-            tier_max=entity_level, tier_min=entity_level)) == \
+        assert card.synergy not in g.types_ban
+    nb = len(g.minion_can_collect.filter(level=entity_level))
+    assert len(g.hand[entity_level]) == \
                 CARD_NB_COPY[entity_level]*nb
 
 def test_minion(reinit_game):
@@ -72,9 +66,9 @@ def test_minion(reinit_game):
     entity_data = g.minion_can_collect[minion_id]
     assert entity_data != None
 
-    for minion in g.hand.entities[entity_data['level']]:
+    for minion in g.hand.entities[entity_data.level]:
         if minion == minion_id:
-            for data, value in entity_data.data:
+            for data, value in entity_data.items():
                 assert getattr(minion, data) == value
             break
 
@@ -133,7 +127,7 @@ def test_play(reinit_game):
 
 def test_play_2(reinit_game):
     player = g.players[0]
-    card = player.hand.create_card_in(70143) # tranchebauge
+    card = player.draw(70143) # tranchebauge
     assert card.dbfId == 70143
     assert card.owner == player.hand
     assert card in player.hand.cards
@@ -142,18 +136,18 @@ def test_play_2(reinit_game):
     assert card in player.board.cards
     assert len(player.hand.cards) == 1
     assert card.can_attack
-    card = player.hand.create_card_in(976) # chasse-marée
+    card = player.draw(976) # chasse-marée
     card.play()
-    card = player.hand.create_card_in(976) # chasse-marée
+    card = player.draw(976) # chasse-marée
     card.play()
     g.active_action()
-    lst = player.board.cards.exclude_hex(card, race=Race('ALL').hex-Race('MURLOC').hex)
+    lst = player.board.cards.exclude(card).filter(race='MURLOC')
     assert len(lst) == 3
 
 def test_card_append(reinit_game):
     player = g.players[0]
     player.bob.board.fill_minion()
-    card = player.bob.board[0]
+    card = player.bob.board.cards[0]
     old_owner = card.owner
     old_len_old_owner = len(card.owner.cards)
     new_owner = player.hand
@@ -166,7 +160,7 @@ def test_card_append(reinit_game):
 
 def test_entity_reset(reinit_game):
     player = g.players[0]
-    crd = player.hand.create_card_in(70143) # géomancien
+    crd = player.draw(70143) # géomancien
 
     assert crd.attack == crd.dbfId.attack
     crd.attack += 2
@@ -197,9 +191,9 @@ def test_append_action(reinit_game):
 
 def test_fight_1_1(reinit_game):
     with Sequence('TURN', g):
-        crd = g.players[0].hand.create_card_in(40425) # chat tigré
+        crd = g.players[0].draw(40425) # chat tigré
         crd.play()
-        crd = g.players[1].hand.create_card_in(40425)
+        crd = g.players[1].draw(40425)
         crd.play()
 
     Sequence('FIGHT', g).start_and_close()
@@ -211,11 +205,11 @@ def test_fight_1_1(reinit_game):
 def test_aura_1(reinit_game):
     player1 = g.players[0]
     with Sequence('TURN', g):
-        crd = player1.hand.create_card_in(61061) # Forban
+        crd = player1.draw(61061) # Forban
         crd.play()
         assert crd.attack == crd.dbfId.attack
 
-        crd2 = player1.hand.create_card_in(680) # Capitaine des mers du sud
+        crd2 = player1.draw(680) # Capitaine des mers du sud
         crd2.play()
         g.active_action()
         assert crd2.attack == crd2.dbfId.attack
@@ -236,20 +230,21 @@ def test_adjacent_neighbors(reinit_game):
     assert crd_test.adjacent_neighbors() == [crd1, crd2]
 
 def test_card_data(reinit_game):
-    card_data = g.card_db[41245]
-    crd = g.players[0].hand.create_card_in(41245)
+    card_data = g.all_cards[41245]
+    crd = g.players[0].draw(41245)
     assert card_data.attack == crd.attack
     assert card_data.level == crd.level
     assert card_data.nb_copy == CARD_NB_COPY[crd.level]
 
 def test_meta_card_data(reinit_game):
-    crd1 = g.card_db[41245]
-    crd2 = g.card_db[475]
+    crd1 = g.all_cards[41245]
+    crd2 = g.all_cards[475]
     crd1.rating = 2
     crd2.rating = 1.1
     meta = Meta_card_data(crd1, crd2)
     meta.sort('rating')
     assert meta == [475, 41245]
     assert type(meta) is Meta_card_data
-    assert type(meta[0]) is Card_data
+    for card in meta:
+        assert type(card) is Card_data
 

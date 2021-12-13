@@ -1,7 +1,25 @@
-from django.db import models
+from django.db import models, transaction
 from django.contrib.postgres.fields import ArrayField
-from base.enums import CARD_NB_COPY, state_list, Race, Type, Zone
+from base.enums import CARD_NB_COPY, state_list, Race as Race_enums, Type, dbfId_attr
 from typing import Any
+
+class Race(models.Model):
+    name= models.CharField(max_length=30, primary_key=True)
+    is_active= models.BooleanField(default=True)
+
+    @transaction.atomic
+    # permet de ne pas update les cartes si la sauvegarde sur le type n'a pas fonctionné
+    def disable(self):
+        if self.is_active is False:
+            return
+        self.is_active = False
+        self.save()
+        #self.products.update()
+
+
+class Rarity(models.Model):
+    name= models.CharField(max_length=30, unique=True)
+
 
 class Card(models.Model):
     RACE = [
@@ -16,13 +34,6 @@ class Card(models.Model):
         ('ELEMENTAL', 'ELEMENTAL'),
         ('QUILBOAR', 'QUILBOAR'),
     ]
-    col_to_attr = {
-        'enchantment_dbfId': 'enchantmentDbfId',
-        'repop_dbfId': 'repopDbfId',
-        'premium_dbfId': 'battlegroundsPremiumDbfId',
-        'normal_dbfId': 'battlegroundsNormalDbfId',
-        'power_dbfId': 'powerDbfId',
-    }
 
     dbfId = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255)
@@ -49,8 +60,10 @@ class Card(models.Model):
             models.CharField(max_length=50, null=True),
             default=list
         )
-    race= models.CharField(max_length=30, default='DEFAULT', choices=RACE)
-    synergy = models.CharField(max_length=30, default='DEFAULT', choices=RACE)
+    race= models.ForeignKey(Race, on_delete=models.PROTECT)
+    #synergy= models.ForeignKey(Race, on_delete=models.PROTECT)
+    #race= models.CharField(max_length=30, default='DEFAULT', choices=RACE)
+    synergy = models.CharField(max_length=30, default='NONE', choices=RACE)
     type = models.CharField(max_length=30, default="DEFAULT")
 
     hero_script = models.CharField(max_length=255, null=True)
@@ -58,19 +71,17 @@ class Card(models.Model):
     battlegroundsHero= models.BooleanField(default=False)
     remain_use= models.PositiveSmallIntegerField(null=True)
     avenge_counter= models.PositiveSmallIntegerField(null=True)
-    #bonus_value= models.IntegerField(null=True)
     duration= models.IntegerField(null=True)
-    aura= models.BooleanField(default=False)
     battlegroundsDarkmoonPrizeTurn= models.PositiveSmallIntegerField(null=True)
     minion_cost= models.PositiveSmallIntegerField(null=True)
     roll_cost= models.PositiveSmallIntegerField(default=0)
     levelup_cost_mod= models.PositiveSmallIntegerField(default=0)
-    #zone_type= models.CharField(max_length=30, default="DEFAULT")
     phase= models.CharField(max_length=30, null=True)
 
     spellSchool= models.CharField(max_length=30, default='')
     elite= models.BooleanField(default=False)
-    rarity= models.CharField(max_length=30, default='DEFAULT')
+    rarity= models.ForeignKey(Rarity, on_delete=models.PROTECT, default='INVALID')
+    #rarity= models.CharField(max_length=30, default='DEFAULT')
     collectible= models.BooleanField(default=False)
     set= models.CharField(max_length=30)
     artist= models.CharField(max_length=255, default='')
@@ -113,24 +124,20 @@ class Card(models.Model):
     def __getattr__(self, attr: str) -> Any:
         if attr in state_list:
             return attr in self.mechanics
-        if attr in self.col_to_attr:
-            return self.__class__.objects.get(pk=getattr(self, self.col_to_attr[attr]))
+        if attr in dbfId_attr:
+            return self.__class__.objects.get(pk=getattr(self, attr))
         raise AttributeError
 
+    """
     @property
     def RACE(self):
-        return Race(self.race)
+        return Race_enums(self.race)
 
     @property
     def SYNERGY(self):
-        return Race(self.synergy)
+        return Race_enums(self.synergy)
 
     @property
     def TYPE(self):
         return Type(self.type)
-
-    @property
-    def power_dbfId(self):
-        if self.powerDbfId:
-            return self.__class__.objects.get(pk=self.powerDbfId)
-        return None
+    """

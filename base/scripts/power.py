@@ -1,8 +1,10 @@
+from base.db_card import Meta_card_data
 from base.entity import Hero_power
 import random
 from base.enums import BOARD_SIZE, Race, Type, CardName, AKAZAM_SECRETS, LEVEL_MAX
 from base.utils import repeat_effect
 from base.sequence import Sequence
+from base.board import BoardAppendError
 
 
 class use_power_on_my_minion(Hero_power):
@@ -19,8 +21,8 @@ class use_power_on_my_minion(Hero_power):
 class TB_BaconShop_HP_049(Hero_power):
     # Baz'hial
     def use_power(self, sequence: Sequence):
-        self.damage(self.owner, 2)
-        self.hand.create_card_in(CardName.COIN)
+        self.damage(self.controller, 2)
+        self.controller.draw(CardName.COIN)
 
 
 class TB_BaconShop_HP_044(Hero_power):
@@ -29,8 +31,8 @@ class TB_BaconShop_HP_044(Hero_power):
         if self.nb_turn < 3:
             self.owner.gold = 0
         elif self.nb_turn == 3:
-            self.hand.create_card_in(59604, quest_value=3)
-            self.hand.create_card_in(59604, quest_value=3)
+            self.controller.draw(59604, quest_value=3)
+            self.controller.draw(59604, quest_value=3)
 
 
 class TB_BaconShop_HP_033(Hero_power):
@@ -63,10 +65,10 @@ class TB_BaconShop_HP_074(Hero_power):
     def use_power(self, sequence: Sequence):
         self.quest_value += 1
         if self.quest_value % 5 == 0:
-            card = self.owner.bob.local_hand.random_choice()
-            self.game.hand.give_or_create_in(
-                card.battlegroundsPremiumDbfId,
-                self.controller.hand)
+            self.controller.draw(
+                self.owner.bob.local_hand.random_choice().\
+                    battlegroundsPremiumDbfId
+            )
 
 
 class TB_BaconShop_HP_054(Hero_power):
@@ -84,7 +86,7 @@ class TB_BaconShop_HP_076(Hero_power):
 class TB_BaconShop_HP_010(use_power_on_my_minion):
     # Georges
     def use_power(self, sequence: Sequence):
-        self.buff(self.enchantment_dbfId, sequence.target)
+        self.buff(sequence.target)
 
 
 class TB_BaconShop_HP_072(Hero_power):
@@ -95,21 +97,30 @@ class TB_BaconShop_HP_072(Hero_power):
 
     def use_power(self, sequence: Sequence):
         self.cost = self.dbfId.cost
-        self.owner.discover(self, nb=1, typ=Race.PIRATE, lvl_max=self.level)
+        self.controller.draw(
+            self.discover(
+                self.controller.deck.filter(race='PIRATE'),
+                nb=1
+            )
+        )
 
 
 class TB_BaconShop_HP_064(Hero_power):
     # Alexstrasa
     def levelup_off(self, sequence: Sequence):
-        if self.owner.level == 5:
-            self.owner.discover(self, nb=3, typ=Race.DRAGON, lvl_max=6)
-            self.owner.discover(self, nb=3, typ=Race.DRAGON, lvl_max=6)
+        if self.controller.level == 5:
+            for _ in range(2):
+                self.controller.draw(
+                    self.discover(
+                        self.game.hand.cards.filter(race='DRAGON'),
+                        nb=3)
+                )
 
 
 class TB_BaconShop_HP_082(Hero_power):
     # Omu
     def levelup_off(self, sequence: Sequence):
-        self.owner.gold += 2
+        self.controller.gold += 2
 
 
 class TB_BaconShop_HP_063(Hero_power):
@@ -128,16 +139,13 @@ class TB_BaconShop_HP_040(Hero_power):
         sequence.is_valid = self.board.size > 0
 
     def use_power(self, sequence: Sequence):
-        self.buff(
-            self.enchantment_dbfId,
-            self.board.cards.random_choice()
-        )
+        self.buff(self.board.cards.random_choice())
 
 
 class TB_BaconShop_HP_085(use_power_on_my_minion):
     # Rakanishu
     def use_power(self, sequence: Sequence):
-        self.buff(self.enchantment_dbfId,
+        self.buff(
             sequence.target,
             attack=self.bonus_value,
             max_health=self.bonus_value)
@@ -151,13 +159,13 @@ class TB_BaconShop_HP_036(Hero_power):
     # Jaraxxus
     def use_power(self, sequence: Sequence):
         for minion in self.board.cards.filter(race='DEMON'):
-            self.buff(self.enchantment_dbfId, minion)
+            self.buff(minion)
 
 
 class TB_BaconShop_HP_047(Hero_power):
     # Elise
     def levelup_off(self, sequence: Sequence):
-        self.hand.create_card_in(60265, quest_value=self.owner.level)
+        self.controller.draw(60265, quest_value=self.owner.level)
 
 
 class TB_BaconShop_HP_088(Hero_power):
@@ -174,7 +182,7 @@ class TB_BaconShop_HP_014(Hero_power):
     def turn_off(self, sequence: Sequence):
         for minion in self.owner.bob.board.cards:
             if minion.FREEZE:
-                self.buff(self.enchantment_dbfId, minion)
+                self.buff(minion)
 
 
 class TB_BaconShop_HP_015(Hero_power):
@@ -183,7 +191,7 @@ class TB_BaconShop_HP_015(Hero_power):
         if not self.in_fight_sequence and\
                 sequence.source.controller is self.controller.bob:
             if sequence.source.race.MECHANICAL:
-                self.buff(self.enchantment_dbfId, sequence.source)
+                self.buff(sequence.source)
 
 
 class TB_BaconShop_HP_087(Hero_power):
@@ -199,8 +207,8 @@ class TB_BaconShop_HP_087t(Hero_power):
     def turn_off(self, sequence: Sequence):
         # le bonus s'active-t-il deux fois si le board ne contient qu'un seul serviteur ?
         if self.board.size > 0:
-            self.buff(self.enchantment_dbfId, self.board[0])
-            self.buff(self.enchantment_dbfId, self.board[-1])
+            self.buff(self.board.cards[0])
+            self.buff(self.board.cards[-1])
 
 
 class TB_BaconShop_HP_039(Hero_power):
@@ -209,34 +217,35 @@ class TB_BaconShop_HP_039(Hero_power):
         minion = self.controller.bob.board.cards.random_choice()
         if minion:
             self.hand.append(minion)
-            self.buff(self.enchantment_dbfId, minion)
+            self.buff(minion)
 
 
 class TB_BaconShop_HP_041(Hero_power):
     # Le roi des Rats
 
     race_to_power_dbfId = {
-        Race('BEAST').hex: 59839,
-        Race('MECHANICAL').hex: 59853,
-        Race('MURLOC').hex: 59852,
-        Race('DEMON').hex: 59854,
-        Race('DRAGON').hex: 60922,
-        Race('PIRATE').hex: 62277,
-        Race('ELEMENTAL').hex: 64220,
-        Race('QUILBOAR').hex: 71081,
+        Race('BEAST'): 59839,
+        Race('MECHANICAL'): 59853,
+        Race('MURLOC'): 59852,
+        Race('DEMON'): 59854,
+        Race('DRAGON'): 60922,
+        Race('PIRATE'): 62277,
+        Race('ELEMENTAL'): 64220,
+        Race('QUILBOAR'): 71081,
     }
     def turn_on(self, sequence: Sequence):
-        types = Race.battleground_race()
-        random.shuffle(types)
-        race_power_exclude = self.game.type_ban | self.synergy.hex
-        for typ in types:
-            if typ & race_power_exclude == 0:
-                self.change(self.race_to_power_dbfId[typ])
+        race_name = Race.battleground_race_name()
+        random.shuffle(race_name)
+        race_power_exclude = self.game.types_ban + self.synergy
+        for race in race_name:
+            if race not in race_power_exclude:
+                self.change(self.race_to_power_dbfId[race])
                 break
 
     def buy_off(self, sequence: Sequence):
-        if sequence.source.race & self.synergy.hex and sequence.is_ally(self):
-            self.buff(self.enchantment_dbfId, sequence.source)
+        if sequence.source.race == self.synergy and sequence.is_ally(self):
+            self.buff(sequence.source)
+
 TB_BaconShop_HP_041a= TB_BaconShop_HP_041
 TB_BaconShop_HP_041b= TB_BaconShop_HP_041
 TB_BaconShop_HP_041c= TB_BaconShop_HP_041
@@ -282,7 +291,7 @@ class TB_BaconShop_HP_066(Hero_power):
     def buy_off(self, sequence: Sequence):
         self.quest_value += 1
         if self.quest_value % 3 == 0:
-            self.buff(self.enchantment_dbfId, sequence.source)
+            self.buff(sequence.source)
 
 
 class TB_BaconShop_HP_104(Hero_power):
@@ -294,16 +303,15 @@ class TB_BaconShop_HP_104(Hero_power):
     def turn_off(self, sequence: Sequence):
         if self.board.size > 0 and self.temp_counter is True:
             for _ in range(self.quest_value):
-                self.buff(self.enchantment_dbfId,
-                    random.choice(self.board.cards))
+                self.buff(random.choice(self.board.cards))
 
 
 class TB_BaconShop_HP_001(use_power_on_my_minion):
     # Edwin
     def use_power(self, sequence: Sequence):
-        bonus_attack = self.enchantment_dbfId.attack*self.bonus_value
-        bonus_health = self.enchantment_dbfId.max_health*self.bonus_value
-        self.buff(self.enchantment_dbfId, sequence.target,
+        bonus_attack = self.enchantmentDbfId.attack*self.bonus_value
+        bonus_health = self.enchantmentDbfId.max_health*self.bonus_value
+        self.buff(sequence.target,
             attack=bonus_attack,
             max_health=bonus_health)
 
@@ -318,17 +326,16 @@ class TB_BaconShop_HP_053(Hero_power):
         self.temp_counter = 1
 
     def die_off(self, sequence: Sequence):
-        source = sequence.source
         if self.temp_counter == 1 and not sequence.is_ally(self):
             self.temp_counter = 0
-            self.game.hand.give_or_create_in(source.dbfId, self.hand)
+            self.controller.draw(sequence.source.dbfId)
 
 
 class TB_BaconShop_HP_107(Hero_power):
     # Grisebranche
     def summon_on(self, sequence: Sequence):
         if self.in_fight_sequence and self.owner is sequence.source.controller:
-            self.buff(self.enchantment_dbfId, sequence.source)
+            self.buff(sequence.source)
 
 
 class TB_BaconShop_HP_062(Hero_power):
@@ -346,7 +353,7 @@ class TB_BaconShop_HP_048(Hero_power):
         if self.is_enabled and sequence.source.BATTLECRY:
             self.quest_value += 1
             if self.quest_value % 5 == 0:
-                self.hand.create_card_in(2949)
+                self.controller.draw(2949)
                 self.dec_remain_use()
 
 
@@ -355,7 +362,7 @@ class TB_BaconShop_HP_028(Hero_power):
     # TODO: à simplifier
     def use_power(self):
         bob = self.owner.bob
-        bob.board.drain_all_minion()
+        bob.board.drain_minion(freeze=True)
         self.board.fill_minion(
             nb_card_to_play = self.owner.nb_card_by_refresh - 1)
 
@@ -372,12 +379,12 @@ class TB_BaconShop_HP_038(Hero_power):
 
     @repeat_effect
     def use_power(self, sequence: Sequence):
-        self.hand.create_card_in(random.choice([53215, 65230]))
+        self.controller.draw(random.choice([53215, 65230]))
 
     def turn_off(self, sequence: Sequence):
         if not self.is_enabled:
-            for entity in self.game.entities.filter(type=Type.HERO).exclude(self):
-                entity.hand.create_card_in(53215)
+            for player in self.game.players.exclude(self):
+                player.draw(53215)
 
 
 class TB_BaconShop_HP_042(Hero_power):
@@ -386,23 +393,21 @@ class TB_BaconShop_HP_042(Hero_power):
 
     @repeat_effect
     def sell_off(self, sequence: Sequence):
-        self.buff(
-            self.enchantment_dbfId,
-            self.controller.opponent.board.cards.random_choice())
+        self.buff(self.controller.opponent.board.cards.random_choice())
 
 
 class TB_BaconShop_HP_061(Hero_power):
     # Aile de mort
     def summon_on(self, sequence: Sequence):
         #TODO gestion début de TURN/FIGHT
-        self.buff(self.enchantment_dbfId, sequence.source)
+        self.buff(sequence.source, aura=True)
 
     def fight_on(self, sequence: Sequence):
         # bonus non cumulable ?
         for minion in self.board.cards:
-            self.buff(self.enchantment_dbfId, minion)
+            self.buff(minion, aura=True)
         for minion in self.board.opponent.cards:
-            self.buff(self.enchantment_dbfId, minion)
+            self.buff(minion, aura=True)
     turn_on= fight_on
 
 
@@ -410,7 +415,7 @@ class TB_BaconShop_HP_086(Hero_power):
     # Al'Akir
     def fight_on(self, sequence: Sequence):
         if self.board.size > 0:
-            self.buff(self.enchantment_dbfId, self.board.cards[0])
+            self.buff(self.board.cards[0])
 
 
 class TB_BaconShop_HP_069(Hero_power):
@@ -420,8 +425,8 @@ class TB_BaconShop_HP_069(Hero_power):
         # puis elle est rebuff puis attaque à nouveau
 
         if self.board.size > 0:
-            self.buff(self.enchantment_dbfId, self.board.cards[0])
-            self.buff(self.enchantment_dbfId, self.board.cards[-1])
+            self.buff(self.board.cards[0])
+            self.buff(self.board.cards[-1])
 
 
 class TB_BaconShop_HP_068(Hero_power):
@@ -435,7 +440,7 @@ class TB_BaconShop_HP_068(Hero_power):
             sequence.is_valid = False
 
     def use_power(self, sequence: Sequence):
-        self.buff(self.enchantment_dbfId, sequence.target)
+        self.buff(sequence.target)
 
 
 class TB_BaconShop_HP_024(use_power_on_my_minion):
@@ -451,7 +456,7 @@ class TB_BaconShop_HP_024(use_power_on_my_minion):
 
     def fight_on(self, sequence: Sequence):
         if self.quest_value in self.board.cards:
-            self.buff(self.enchantment_dbfId, self.quest_value)
+            self.buff(self.quest_value)
 
 
 class BG20_HERO_103p(Hero_power):
@@ -460,18 +465,19 @@ class BG20_HERO_103p(Hero_power):
 
     @repeat_effect
     def levelup_off(self, sequence: Sequence):
-        self.hand.create_card_in(CardName.BLOOD_GEM)
+        self.controller.draw(CardName.BLOOD_GEM)
 
 
 class BG20_HERO_102p(Hero_power):
     # Saurcroc
+    # TODO: enchantment dbfId = 71456
     def use_power(self):
         self.temp_counter = 1
 
     def buy_off(self, sequence: Sequence):
         if self.temp_counter == 1:
             self.temp_counter = 0
-            self.buff(self.enchantment_dbfId,
+            self.buff(
                 sequence.source,
                 attack=self.nb_turn+1)
 
@@ -480,7 +486,7 @@ class TB_BaconShop_HP_037a(Hero_power):
     # Cirène
     def use_power(self):
         for minion in self.board.cards.one_minion_by_race():
-            self.buff(self.enchantment_dbfId, minion)
+            self.buff(minion)
 
 
 class BG20_HERO_201p(Hero_power):
@@ -489,7 +495,7 @@ class BG20_HERO_201p(Hero_power):
     def use_power_start(self, sequence: Sequence):
         minion1 = self.controller.field.cards.choice(self.controller)
         if minion1:
-            self.buff(self.enchantment_dbfId, minion1)
+            self.buff(minion1)
             sequence.target = minion1
         else:
             sequence.is_valid = False
@@ -516,12 +522,12 @@ class BG20_HERO_201p2(BG20_HERO_201p):
         minion2 = self.temp_counter
 
         if minion2 and minion1:
-            self.buff(self.enchantment_dbfId, 
+            self.buff(
                 minion2,
                 attack=minion1.attack, 
                 max_health=minion1.health)
 
-            self.buff(self.enchantment_dbfId,
+            self.buff(
                 minion1,
                 attack=minion2.attack,
                 max_health=minion2.health)
@@ -545,7 +551,7 @@ class BG20_HERO_101p(Hero_power):
 
     def use_power(self, sequence: Sequence):
         self.hand.append(self.temp_counter)
-        self.buff(self.enchantment_dbfId, self.temp_counter)
+        self.buff(self.temp_counter)
 
 
 class TB_BaconShop_HP_106(Hero_power):
@@ -555,7 +561,16 @@ class TB_BaconShop_HP_106(Hero_power):
 
 class TB_BaconShop_HP_057(Hero_power):
     # Sir Finley
-    pass
+    def turn_on(self, sequence: Sequence):
+        if self.nb_turn == 1:
+            power_id = self.discover(
+                Meta_card_data(
+                    hero.powerDbfId 
+                    for hero in self.game.craftable_heroes
+                ),
+                remove=False
+            )
+            self.change(power_id.dbfId)
 
 
 class TB_BaconShop_HP_075(Hero_power):
@@ -575,14 +590,14 @@ class TB_BaconShop_HP_103(Hero_power):
         self.temp_counter = 1
 
     def fight_on(self, sequence: Sequence):
-        # TODO: carte retirée de la main de Bob ?
         if self.temp_counter:
-            card = self.game.hand.cards_of_tier_max(
-                    tier_max=self.owner.level,
-                    tier_min=self.owner.level).random_choice()
-            minion = self.board.create_card_in(card.dbfId)
-            if minion in self.board.cards:
-                self.hand.append(card)
+            card = self.controller.deck.random_choice()
+            try:
+                self.board.create_card_in(card)
+            except BoardAppendError:
+                pass
+            else:
+                self.controller.draw(card)
 
 
 class TB_BaconShop_HP_065t2(Hero_power):
@@ -594,7 +609,7 @@ class TB_BaconShop_HP_065t2(Hero_power):
 class TB_BaconShop_HP_022(Hero_power):
     # Carniflore
     def use_power(self, sequence: Sequence):
-        self.hand.create_card_in(76964)
+        self.controller.draw(76964)
 
 
 class TB_BaconShop_HP_056(Hero_power):
@@ -652,7 +667,18 @@ class TB_BaconShop_HP_052(Hero_power):
 
 class TB_BaconShop_HP_046(Hero_power):
     # Reno Jackson
-    pass
+    def use_power_start(self, sequence: Sequence):
+        minion = self.board.cards.exclude(battlegroundsPremiumDbfId=None).choice(
+            self.owner,
+            pr=f"Hero power : choisissez une cible :")
+        if minion:
+            sequence.add_target(minion)
+        else:
+            sequence.is_valid = False
+
+    def use_power(self, sequence: Sequence):
+        sequence.target.set_premium()
+
 
 class TB_BaconShop_HP_081(Hero_power):
     # Seigneur Barov
@@ -664,10 +690,10 @@ class TB_BaconShop_HP_101(Hero_power):
     # Considéré que la probabilité d'apparition d'un ticket est de 1/3
     # Cette valeur fait suite à un retour d'expérience non à une valeur officielle
     def summon_on(self, sequence: Sequence):
-        if self.game.current_sequence == 'TURN' and\
+        if not self.in_fight_sequence and\
                 not sequence.is_ally(self) and\
                 random.randint(0, 2) == 0:
-            self.buff(self.enchantment_dbfId, sequence.source)
+            self.buff(sequence.source)
 
     @property
     def quest_value(self) -> int:
@@ -677,7 +703,7 @@ class TB_BaconShop_HP_101(Hero_power):
     def quest_value(self, value) -> None:
         self._quest_value = value
         if self._quest_value % 3 == 0 and self._quest_value > 0:
-            self.hand.create_card_in(64484, quest_value=self.owner.level)
+            self.controller.draw(64484, quest_value=self.owner.level)
 
 
 class TB_BaconShop_HP_077(Hero_power):
@@ -709,3 +735,36 @@ class BG20_HERO_301p(Hero_power):
     pass
 
 Taverne= Hero_power
+
+class BG20_HERO_202p(Hero_power):
+    # Maître Nguyen
+    def turn_on(self, sequence: Sequence):
+        self.buff(self.controller)
+
+
+class BG21_HERO_000p(Hero_power):
+    # Conviction rang 1
+    nb_target = 1
+    def use_power(self, sequence: Sequence):
+        targets = self.controller.board.cards.shuffle()
+        for target in targets[:self.nb_target]:
+            self.buff(target)
+
+    def levelup_off(self, sequence: Sequence):
+        if self.controller.level >= 3:
+            self.change(73943)
+
+
+class BG21_HERO_000p2(BG21_HERO_000p):
+    # Conviction rang 2
+    nb_target = 3
+    def levelup_off(self, sequence: Sequence):
+        if self.controller.level >= 5:
+            self.change(73944)
+
+
+class BG21_HERO_000p3(BG21_HERO_000p):
+    # Conviction rang 3
+    nb_target = 5
+    def levelup_off(self, sequence: Sequence):
+        pass

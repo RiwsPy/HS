@@ -1,8 +1,11 @@
 import requests
 import json
 
+def call_external_api(url: str):
+    return requests.get(url)
+
 def call_api():
-    req = requests.get("https://api.hearthstonejson.com/v1/latest/frFR/cards.json")
+    req = call_external_api("https://api.hearthstonejson.com/v1/latest/frFR/cards.json")
     if req.status_code == 200:
         print('DB updating...')
         with open('db/hearthstone.json', 'w') as file:
@@ -28,7 +31,7 @@ def save_battlegrounds_cards():
             battlegrounds_dbfId.discard(str(dbfId))
             card_data[str(dbfId)] = card
             all_to_battlegrounds.append(card)
-        elif card['set'] == "BATTLEGROUNDS":
+        elif card['set'] == "BATTLEGROUNDS" and card.get('battlegroundsSkinParentId') is None:
             unknow_dbfId[dbfId] = card['name']
 
 

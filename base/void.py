@@ -1,6 +1,13 @@
 from .enums import Type, Zone, Race
 
 class Void:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self) -> None:
         self.temp_list = []
 

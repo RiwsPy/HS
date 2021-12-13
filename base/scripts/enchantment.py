@@ -210,12 +210,20 @@ BGS_104e1= add_stat # Festin de taverne
 BG21_020e= add_stat # Ébloui
 BGS_045e= add_stat # Souffle froid
 TB_BaconUps_115e= add_stat # Souffle froid premium
+BG21_HERO_000pe= add_stat # Béni
+BG20_HERO_666p_t3_e= add_stat # Griffes terrifiantes
+BG20_HERO_666p_t4a_e= add_stat # Cornes furieuses
+BG20_HERO_666p_t4a_e2= add_stat # Cornes résistantes
+BG20_HERO_666p_t4a_e3= add_stat # Cornes durcies
+BG20_HERO_666p_t5_e= add_stat # Sabots infernaux
+
 
 class TB_BaconShop_HP_069e(add_stat):
     # Fidèles lieutenants
     def apply(self):
         super().apply()
         self.owner.combat()
+        self.remove()
 
 
 class BG21_040e(Enchantment):
@@ -269,7 +277,7 @@ class BGS_104pe(Enchantment):
     def summon_on(self, sequence):
         if sequence.source.controller is self.controller.bob and\
                 sequence.source.race.ELEMENTAL:
-            self.buff(self.enchantment_dbfId,
+            self.buff(sequence.source,
                 attack=self.bonus_value,
                 max_health=self.bonus_value)
 BG21_020pe= BGS_104pe # Ench. de joueur Rejeton de Lumière éclatant
@@ -278,9 +286,10 @@ BG21_020pe= BGS_104pe # Ench. de joueur Rejeton de Lumière éclatant
 class TB_BaconShop_HP_068e(add_stat):
     # Emprisonné
     def remove(self):
+        source = self.source
         super().remove()
-        self.buff(self.enchantment_dbfId, self)
-        self.controller.opponent.hand.append(self)
+        self.buff(self)
+        source.controller.hand.append(self)
 
 
 class UNG_999t2e(add_stat):
@@ -300,6 +309,15 @@ class BG21_000e(add_stat):
 BG21_000_Ge= BG21_000e # Bond en avant premium
 
 
+class BG20_HERO_202pe(Enchantment):
+    # Maelstrom
+    # TODO+ spell 72671
+    def turn_on(self, sequence: Sequence):
+        # changement pouvoir
+        # enchantement de joueur pour s'activer avant les autres pouvoirs ?
+        # liste des pouvoirs ?
+        # découverte, un pouvoir ne peut se redécouvrir
+        pass
 
 
 # Unofficial enchantment
@@ -311,4 +329,5 @@ class POISSON(Enchantment):
     def apply(self):
         self.owner.DEATHRATTLE = True
         setattr(self, 'deathrattle', self.deathrattle_met)
+
 

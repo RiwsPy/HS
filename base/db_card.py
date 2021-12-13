@@ -1,7 +1,7 @@
-from .enums import Race, Zone, Type, CARD_NB_COPY, state_list
-from json import load
+from .enums import Race, Zone, Type, CARD_NB_COPY, state_list, dbfId_attr
 from typing import List, Any
 from .utils import Card_list
+from collections import defaultdict
 import os
 
 import django
@@ -9,37 +9,45 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api_battlegrounds.settings')
 django.setup()
 from card.models import Card
 
-col_to_attr = {
-    'enchantment_dbfId': 'enchantmentDbfId',
-    'repop_dbfId': 'repopDbfId',
-    'premium_dbfId': 'battlegroundsPremiumDbfId',
-    'normal_dbfId': 'battlegroundsNormalDbfId',
-    'power_dbfId': 'powerDbfId',
-}
 
 class Card_data(int):
     def __new__(cls, **kwargs):
         return super().__new__(cls, kwargs['dbfId'])
 
     def __init__(self, **kwargs) -> None:
+        try:
+            del kwargs['_state']
+        except KeyError:
+            pass
+
+        kwargs['dbfId'] = self
+        kwargs['type'] = Type(kwargs['type'])
+        kwargs['synergy'] = Race(kwargs['synergy'])
+        kwargs['race'] = Race(kwargs['race_id'])
+        kwargs['rarity'] = kwargs['rarity_id']
+        for mechanic in state_list:
+            kwargs[mechanic] = False
+        for mechanic in kwargs['mechanics']:
+            kwargs[mechanic] = True
         self.data = kwargs
+
         self.value = 0
-        self.all_rating = {}
-        self.rating = -999
         self.counter = 0
         self.esp_moy = 0
 
-        self.counter_2 = 0
-        self.value_2 = 0
-        self.T1_to_T3_rating = -999
+        self.ratings = Ratings()
+        self.ratings.rating = -999
+        self.ratings.T1_to_T3 = -999
 
     def __repr__(self) -> str:
         return self.name
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr) -> Any:
         return self.data.get(attr)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key) -> Any:
+        print('__get__item', key)
+        raise IndexError
         return getattr(self, str(key))
 
     def __setitem__(self, key, value) -> None:
@@ -66,49 +74,82 @@ class Card_data(int):
     def __dict__(self) -> dict:
         return self.data
 
+    @property
+    def rating(self) -> int:
+        return self.ratings['rating']
+
+    @rating.setter
+    def rating(self, value) -> None:
+        self.ratings['rating'] = value
+
+
 class Meta_card_data(Card_list):
     def sort(self, attr='', reverse=False) -> None:
         """
             sort IN place.
         """
-        super().sort(key=lambda x: x[attr], reverse=reverse)
+        super().sort(key=lambda x: getattr(x, attr), reverse=reverse)
 
     def __getitem__(self, value) -> Any:
-        # problème avec random.shuffle si dbfId <= len(self) ??
-        if not isinstance(value, int):
+        # TODO problème de compatibilité avec random.shuffle ??
+        if type(value) is Card_data:
+            return value
+        elif type(value) is str and value.isdigit():
+            value = int(value)
+        elif isinstance(value, slice):
             return super().__getitem__(value)
-        try:
-            value = super().__getitem__(self.index(value))
-        except ValueError:
-            #print('Warning', value, 'not in Meta_card_data ret:', super().__getitem__(value))
-            return super().__getitem__(value)
-        else:
-            pass
-            #print('pas warning', value)
-        return value
 
-def charge_all_cards() -> Meta_card_data:
-    db = Meta_card_data()
+        if isinstance(value, int):
+            try:
+                return super().__getitem__(self.index(value))
+            except ValueError:
+                print('Meta_card_data __getitem__: unknow', value)
+                raise ValueError
 
-    for card in Card.objects.all():
-        value = card.__dict__.copy()
-        del value['_state']
-        value['type'] = Type(getattr(Type, value['type']))
-        value['synergy'] = Race(value['synergy'])
-        value['race'] = Race(value['race'])
-        for mechanic in state_list:
-            value[mechanic] = False
-        for mechanic in value['mechanics']:
-            value[mechanic] = True
+        print('strange value', value, type(value))
 
-        db.append(Card_data(**value))
+        return super().__getitem__(value)
 
-    for card in db:
-        for k, v in col_to_attr.items():
-            if getattr(card, v, False):
-                card[k] = db[getattr(card, v)]
-                del card.data[v]
 
-    return db
+class CardDB:
+    _instance = None
+    _types_ban = []
+    _objects = Meta_card_data()
 
-CARD_DB = charge_all_cards()
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._types_ban = kwargs.get('types_ban', [])
+            all_cards = Card.objects.exclude(synergy__in=cls._types_ban)
+            db = Meta_card_data(
+                Card_data(**card.__dict__)
+                for card in all_cards
+            )
+
+            for card in db:
+                for attr in dbfId_attr:
+                    if getattr(card, attr, False):
+                        card[attr] = db[getattr(card, attr)]
+
+            cls.objects = db
+
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def __getitem__(self, value):
+        return self.objects[value]
+
+    @property
+    def objects(self):
+        return self._objects
+
+
+class Ratings(defaultdict):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default_factory = int
+
+    def __getattr__(self, attr):
+        return super().__getitem__(attr)
+
+    def __setattr__(self, key, value) -> None:
+        self[key] = value

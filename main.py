@@ -17,5 +17,3 @@ if __name__ == "__main__":
         call_api()
     if args.updateBG:
         save_battlegrounds_cards()
-    #app.run()
-

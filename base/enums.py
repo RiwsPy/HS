@@ -13,6 +13,15 @@ LEVEL_MAX = 6
 BOB_MINION_COST = 1
 DEFAULT_MINION_COST = 3
 
+dbfId_attr = {
+    'enchantmentDbfId',
+    'repopDbfId',
+    'battlegroundsPremiumDbfId',
+    'battlegroundsNormalDbfId',
+    'powerDbfId',
+}
+
+
 class CardName:
     COIN = 58596
     BLOOD_GEM = 70136
@@ -28,7 +37,6 @@ class CardName:
     DEFAULT_HAND = -13
     DEFAULT_BOARD = -14
     DEFAULT_BOB_BOARD = -15
-    DEFAULT_PLAYER = -16
     DEFAULT_SECRET_BOARD = -17
     DEFAULT_GRAVEYARD = -18
     DEFAULT_FIELD = -19
@@ -56,49 +64,39 @@ NB_CARD_BY_LEVEL_ARANNA = BOARD_SIZE
 
 class Race(str):
     data = {
-        "NONE": [0x0, 'Neutre'],
-        "BEAST": [0x1, 'Bête'],
-        "DEMON": [0x2, 'Démon'],
-        "DRAGON": [0x4, 'Dragon'],
-        "ELEMENTAL": [0x8, 'Élémentaire'],
-        "MECHANICAL": [0x10, 'Méca'],
-        "MURLOC": [0x20, 'Murloc'],
-        "PIRATE": [0x40, 'Pirate'],
-        "QUILBOAR": [0x80, 'Huran'],
-        "ALL": [0xFF, 'Tout']}
+        "NONE": 'Neutre',
+        "BEAST": 'Bête',
+        "DEMON": 'Démon',
+        "DRAGON": 'Dragon',
+        "ELEMENTAL": 'Élémentaire',
+        "MECHANICAL": 'Méca',
+        "MURLOC": 'Murloc',
+        "PIRATE": 'Pirate',
+        "QUILBOAR": 'Huran',
+        "ALL": 'Tout'}
     data['DEFAULT'] = data['NONE']
 
     @classmethod
     def battleground_race_name(cls) -> List[str]:
         return list(cls.data.keys())[1:-2]
 
-    @classmethod
-    def battleground_race(cls) -> List[int]:
-        return [
-            0x1, 0x2, 0x4, 0x8,
-            0x10, 0x20, 0x40, 0x80,
-            ]
-
-    @property
-    def hex(self) -> int:
-        return self.__class__.data[self][0]
-
     @property
     def name(self) -> str:
-        return self.__class__.data[self][1]
+        return self.__class__.data[self]
 
-    def __getattr__(self, race) -> int:
+    def __getattr__(self, race) -> bool:
         if race.isupper():
-            return self == race or self == 'ALL'
+            return self == race
         raise AttributeError
 
-    def __and__(self, value) -> int:
-        if isinstance(value, int):
-            return self.hex & value
-        return self.hex & self.__class__.data[value][0]
+    def __eq__(self, value) -> bool:
+        return str(self) == str(value) or str(self) == 'ALL'
 
-    def __sub__(self, value) -> int:
-        return self.hex - (self.hex & value)
+    def __ne__(self, value) -> bool:
+        return not self == value
+
+    def __hash__(self) -> int:
+        return super().__hash__()
 
 state_list= [
     'BATTLECRY',
@@ -144,6 +142,11 @@ class Type(int):
 
     DEFAULT = NONE
 
+    def __new__(cls, value):
+        if isinstance(value, str):
+            return super().__new__(cls, getattr(cls, value))
+        return super().__new__(cls, value)
+
     @property
     def can_be_add_in_hand(self):
         return self in (self.__class__.SPELL, self.__class__.MINION)
@@ -151,6 +154,11 @@ class Type(int):
     @property
     def can_be_add_in_board(self):
         return self == self.__class__.MINION
+
+    def __getattr__(self, attr):
+        if isinstance(attr, int):
+            return attr
+        raise AttributeError
 
 
 class Zone(int):

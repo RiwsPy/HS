@@ -13,7 +13,10 @@ class TB_BaconShop_HP_008a(Spell):
 class TB_BaconShop_HP_047t(Spell):
     # Carte de recrutement
     def cast(self, sequence: Sequence):
-        self.controller.discover(self, nb=3, lvl_min=self.quest_value, lvl_max=self.quest_value)
+        card_id = self.discover(
+            self.game.hand.cards.filter(level=self.quest_value),
+            nb=1)
+        self.controller.draw(card_id)
 TB_BaconShop_HP_101t2= TB_BaconShop_HP_047t # Trophée
 TB_BaconShop_Triples_01= TB_BaconShop_HP_047t # Récompense de triple
 
@@ -22,10 +25,7 @@ class TB_Bacon_Secrets_08(Spell):
     # Vengeance
     def die_off(self, sequence: Sequence):
         if sequence.is_ally(self) and self.controller.board.size > 0:
-            self.buff(
-                self.enchantment_dbfId,
-                self.controller.board.cards.random_choice()
-            )
+            self.buff(self.controller.board.cards.random_choice())
             self.die()
 
 
@@ -42,7 +42,7 @@ class TB_Bacon_Secrets_13(Spell):
     def turn_on(self, sequence: Sequence):
         if self.controller.board.size > 0:
             for minion in self.controller.board.cards:
-                self.buff(self.enchantment_dbfId, minion)
+                self.buff(minion)
             self.die()
 
 
@@ -63,7 +63,7 @@ class TB_Bacon_Secrets_12(Spell):
         if sequence.target is self.controller and\
                 self.in_fight_sequence and\
                 sequence.damage_value >= self.controller.health:
-            self.buff(self.enchantment_dbfId, self.controller)
+            self.buff(self.controller)
             self.die()
 
 
@@ -73,7 +73,7 @@ class TB_Bacon_Secrets_01(Spell):
     def combat_on(self, sequence: Sequence):
         if not self.controller.board.is_full and\
                 sequence.target.controller is self.controller:
-            self.invoc(sequence, self.repop_dbfId)
+            self.invoc(sequence, self.repopDbfId)
             self.die()
 
 
@@ -84,7 +84,7 @@ class TB_Bacon_Secrets_02(Spell):
         if not self.controller.board.is_full and\
                 sequence.target.controller is self.controller:
             for _ in range(3):
-                self.invoc(sequence, self.repop_dbfId)
+                self.invoc(sequence, self.repopDbfId)
             self.die()
 
 
@@ -113,7 +113,7 @@ class TRL_509t(Spell):
             sequence.is_valid = False
         
     def cast(self, sequence: Sequence):
-        self.buff(self.enchantment_dbfId, sequence.target)
+        self.buff(sequence.target)
 
 
 class BGS_Treasures_000(TRL_509t):
@@ -168,3 +168,125 @@ class BG20_GEM(TRL_509t):
                 -x.attack,
                 ))
         return sorted_board[0]
+
+
+class BG20_HERO_666p_t1a(Spell):
+    # Sceau des Enfers
+    damage_value = 2
+    def fight_on(self, sequence: Sequence):
+        if self.owner.board.opponent.size > 0:
+            for target in self.owner.board.opponent.cards.shuffle()[:3]:
+                self.damage(target, self.damage_value)
+            self.die()
+
+class BG20_HERO_666p_t1b(BG20_HERO_666p_t1a):
+    # Sceau des Enfers
+    damage_value = 4
+
+class BG20_HERO_666p_t1c(BG20_HERO_666p_t1a):
+    # Sceau des Enfers
+    damage_value = 8
+
+class BG20_HERO_666p_t1d(BG20_HERO_666p_t1a):
+    # Sceau des Enfers
+    damage_value = 16
+
+
+class BG20_HERO_666p_t1a(Spell):
+    # Griffes de la Terreur
+    bonus_value = 4
+    def play_start(self, sequence: Sequence):
+        minion = self.controller.field.cards.choice(self.controller)
+        if minion:
+            sequence.add_target(minion)
+        else:
+            sequence.is_valid = False
+        
+    def cast(self, sequence: Sequence):
+        self.buff(
+            sequence.target,
+            attack=self.bonus_value,
+            max_health=self.bonus_value
+        )
+
+
+class BG20_HERO_666p_t1b(BG20_HERO_666p_t1a):
+    # Griffes de la Terreur magiques
+    bonus_value = 8
+
+
+class BG20_HERO_666p_t1c(BG20_HERO_666p_t1a):
+    # Griffes de la Terreur rares
+    bonus_value = 16
+
+
+class BG20_HERO_666p_t1d(BG20_HERO_666p_t1a):
+    # Griffes de la Terreur uniques
+    def cast(self, sequence: Sequence):
+        self.buff(
+            sequence.target,
+            attack=sequence.target.attack,
+            max_health=sequence.target.max_health
+        )
+
+class BG20_HERO_666p_t4a(Spell):
+    # Cornes de magma
+    def play_start(self, sequence: Sequence):
+        minion = self.controller.field.cards.choice(self.controller)
+        if minion:
+            sequence.add_target(minion)
+        else:
+            sequence.is_valid = False
+        
+    def cast(self, sequence: Sequence):
+        self.buff(sequence.target)
+
+BG20_HERO_666p_t4b= BG20_HERO_666p_t4a # Cornes de magma magiques
+BG20_HERO_666p_t4c= BG20_HERO_666p_t4a # Cornes de magma rares
+
+class BG20_HERO_666p_t4d(BG20_HERO_666p_t4a):
+    # Cornes de magma uniques
+    def cast(self, sequence: Sequence):
+        self.create_card(self.game.deck[77347].enchantmentDbfId).buff(sequence.target)
+        self.create_card(self.game.deck[77348].enchantmentDbfId).buff(sequence.target)
+        self.create_card(self.game.deck[77351].enchantmentDbfId).buff(sequence.target)
+
+
+class BG20_HERO_666p_t5a(Spell):
+    bonus_value = 2
+    def cast(self, sequence: Sequence):
+        for minion in self.owner.board.cards:
+            self.buff(
+                minion,
+                attack=self.bonus_value
+            )
+
+class BG20_HERO_666p_t5b(BG20_HERO_666p_t5a):
+    bonus_value = 4
+
+class BG20_HERO_666p_t5c(BG20_HERO_666p_t5a):
+    bonus_value = 8
+
+class BG20_HERO_666p_t5d(BG20_HERO_666p_t5a):
+    bonus_value = 16
+
+
+class BG20_HERO_666p_t6a(Spell):
+    nb_repop = 1
+    def fight_off(self, sequence: Sequence):
+        # TODO: fight_off ?
+        if self.owner.board.size == 0:
+            for _ in range(self.nb_repop):
+                self.owner.board.create_card_in(
+                    self.owner.deck.filter(race='DEMON').random_choice()
+                )
+            self.die()
+
+class BG20_HERO_666p_t6b(BG20_HERO_666p_t6a):
+    nb_repop = 2
+
+class BG20_HERO_666p_t6c(BG20_HERO_666p_t6a):
+    nb_repop = 3
+
+class BG20_HERO_666p_t6d(BG20_HERO_666p_t6a):
+    nb_repop = 4

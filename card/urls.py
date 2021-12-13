@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.urls import path
 from django.urls.conf import include
-from .views import CardAPIView
+from .views import CardAPIView, TypeAPIView, RepopAPIView
 
 urlpatterns = [
-    path('cards/', CardAPIView.as_view())
+
 ]

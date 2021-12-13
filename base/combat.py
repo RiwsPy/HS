@@ -20,7 +20,6 @@ class Combat:
         board_p2.owner.fights.append(self)
 
     def fight_initialisation(self) -> None:
-        # TODO: sauvegarde des résultats de tous les combats
         """
             Start the fight and save result
         """
