@@ -13159,11 +13159,6 @@
   "dbfId": -15
  },
  {
-  "type": "PLAYER",
-  "id": "player",
-  "dbfId": -16
- },
- {
   "type": "ZONE",
   "id": "Secret_board",
   "phase": "ALL",

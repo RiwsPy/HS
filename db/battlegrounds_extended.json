@@ -874,7 +874,6 @@
 "-13":{"type":"ZONE", "phase":"NONE"},
 "-14":{"type":"ZONE", "id":"Player_board", "phase":"ALL"},
 "-15":{"type":"ZONE", "id":"Bob_board", "phase":"NONE"},
-"-16":{"type":"PLAYER", "id":"player"},
 "-17":{"type":"ZONE", "id":"Secret_board", "phase":"ALL"},
 "-18":{"type":"ZONE", "id":"Graveyard", "phase":"NONE"},
 "-19":{"type":"ZONE", "id":"Field", "phase":"ALL"},
