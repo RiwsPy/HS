@@ -3,6 +3,7 @@ from .utils import Card_list
 from .sequence import Sequence
 from .enums import Zone
 
+
 class Field(Entity):
     default_attr = {
         'zone_type': Zone.NONE,
@@ -23,7 +24,7 @@ class Field(Entity):
         return Card_list(*(self.p1.board.cards + self.p2.board.cards))
 
     def fight_off(self, sequence: Sequence):
-        #TODO: détermination du prochain adversaire ?
+        # TODO: détermination du prochain adversaire ?
         if self.combat:
             for fighter in self.entities:
                 fighter.field = None
@@ -33,3 +34,7 @@ class Field(Entity):
                 self.combat.winner.owner.damage(loser, self.combat.damage)
 
         self.combat = None
+
+    @property
+    def controller(self) -> 'Entity':
+        return self

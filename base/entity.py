@@ -1,5 +1,5 @@
 from .enums import LEVEL_MAX, MAX_TURN, CardName, Zone, Type, \
-    DEFAULT_MINION_COST, state_list, Race
+    DEFAULT_MINION_COST, state_list
 from .utils import Card_list, controller, game, my_zone
 from .action import attack
 from .scripts import hero_arene, minion_arene
@@ -7,7 +7,6 @@ from .void import Void
 from .db_card import Card_data, Meta_card_data, CardDB
 from .sequence import Sequence
 from typing import Any
-from card.models import Card as dbCard
 
 
 def khadgar_aura(function):
@@ -30,12 +29,13 @@ class Entity:
         'quest_value': 0,
         'attack': 0,
         'armor': 0,
-        'owner': Void(),
         'from_bob': False,
         'temp_counter': 0,  # set to 0 during each 'turn_on' sequence
     }
+
     def __init__(self, dbfId, **kwargs) -> None:
         self.entities = Card_list()
+        self.owner = Void()
         db = {
             **self.get_default_attr(),
             **CardDB()[dbfId].__dict__,
@@ -63,20 +63,6 @@ class Entity:
             yield ent
         if next_entities:
             yield from self.__iter__(*next_entities)
-
-    def _iter_seq(self, sequence: Sequence, *args):
-        next_entities = Card_list()
-        for ent in args or self.entities:
-            if ent.type != Type.ZONE or ent.phase == 'ALL':
-                next_entities += ent.entities
-            yield ent
-        # ON / OFF phase inaccessible pour la source de la séquence
-        # sauf si source.valid_for_myself == True
-        if sequence.phase_name.rpartition('_')[-1] in ('ON', 'OFF') and\
-                not getattr(sequence.source, 'valid_for_myself', False):
-            next_entities = next_entities.exclude(sequence.source)
-        if next_entities:
-            yield from self._iter_seq(sequence, *next_entities)
 
     @property
     def in_fight_sequence(self) -> bool:
@@ -169,25 +155,29 @@ class Entity:
 
     @property
     def position(self) -> int:
+        if self.type <= Type.ZONE:
+            return 0
+        return self.my_zone.cards.index(self)
+        """
         try:
             return self.my_zone.cards.index(self)
         except (ValueError, AttributeError):
             pass
         return None
+        """
 
     @property
     def can_attack(self) -> bool:
         return getattr(self, 'attack', 0) > 0
 
     def how_many_time_can_I_attack(self) -> int:
-        if not self.can_attack:
-            return 0
-
-        if self.WINDFURY:
-            if self.MEGA_WINDFURY:
-                return 4
-            return 2
-        return 1
+        if self.can_attack:
+            if self.WINDFURY:
+                if self.MEGA_WINDFURY:
+                    return 4
+                return 2
+            return 1
+        return 0
 
     @property
     def nb_turn(self) -> int:
@@ -213,13 +203,17 @@ class Entity:
                 return Card_list(
                     minion
                     for minion in zone[position-1:position+2:2]
-                        if minion)
+                    if minion)
 
         return Card_list()
 
     @property
     def has_frenzy(self) -> bool:
         return self.FRENZY and self.is_alive
+
+    @property
+    def is_alive(self) -> bool:
+        return True
 
     def calc_stat_from_scratch(self, heal=False) -> None:
         if self.DORMANT:
@@ -303,7 +297,7 @@ class Entity:
             nb: int = 3,
             player: 'Entity' = None,
             remove: bool = True
-        ) -> Card_data:
+    ) -> Card_data:
         """
             Entité source, son dbfId est exclu de la découverte
             Card_list sur laquelle effectuer les recherches
@@ -762,7 +756,6 @@ class Hero_power(Entity):
             self.owner.remove(self)
             self.owner.append(new_power_id)
             self.owner.power = new_power_id
-            #self = new_power_id
 
 
 class Spell(Entity):
@@ -791,6 +784,6 @@ class Spell(Entity):
 class Card:
     def __new__(cls, dbfId, **kwargs):
         from .scripts import event
-        #ok = dbCard.objects.filter(pk=int(dbfId)) # retro3 base_T1 > 37s > 53s
+        # ok = dbCard.objects.filter(pk=int(dbfId)) # retro3 base_T1 > 37s > 53s
         self = getattr(event, str(CardDB()[dbfId].id))
         return self(dbfId, **kwargs)
