@@ -59,7 +59,7 @@ class Special_arene_base_T2_to_T3:
         worst_rating_minion = self.board.cards[-1]
         if worst_rating_minion:
             # rating basé sur base_T3, T1_to_T3_rating basé sur le T1_to_T3_no_refound
-            worst_rating_minion_rating = self.all_cards[worst_rating_minion.dbfId].T1_to_T3_rating
+            worst_rating_minion_rating = self.all_cards[worst_rating_minion.dbfId].ratings.T1_to_T3
             if card_2.rating-worst_rating_minion_rating > diff_esp or\
                     hasattr(worst_rating_minion, 'sell_on') or\
                     hasattr(worst_rating_minion, 'sell_off'):

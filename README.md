@@ -85,7 +85,7 @@ Le fichier `arene.json` n'étant pas d'une clareté limpide au premier regard, v
     "72059_Entourloupeur impétueux": -10.94
 }
 ```
-Le résultat n'est pas parfait pour autant. Par exemple, l'avantage de l'Anomalie actualisante peut également être impactante tour 4 ou 5 selon le moment où le roll gratuit est utilisé (cela dit, un patch a été ajouté pour simuler cet impact cela mais cela reste approximatif). Le Tisse-colère est sous-côté car aucun type n'étant banni, les démons sont mécaniquement dilués dans le pool etc
+Le résultat n'est pas parfait pour autant. Par exemple, l'avantage de l'`Anomalie actualisante` peut également être impactante tour 4 ou 5 selon le moment où le roll gratuit est utilisé (cela dit, un patch a été ajouté pour simuler cet impact mais cela reste approximatif). Le `Tisse-colère` est sous-côté car aucun type n'étant banni, les démons sont mécaniquement dilués dans le pool etc
 
 
 # API
@@ -108,7 +108,7 @@ GET/PUT/PATCH/DELETE `admin/races/<RACE>/` (accès aux cartes de la race indiqu�
 
 GET/PUT/PATCH/DELETE `admin/rarities/` (accès aux différentes raretés)
 
-Les informations des cartes sont d'abord issues de la version officielle puis complétées en fonction des besoins du projet.
+Les données sont d'abord issues de la version officielle puis complétées en fonction des besoins du projet.
 
 
 

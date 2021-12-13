@@ -1181,6 +1181,66 @@
      "1281_Hyène charognarde": -5.29,
      "70147_Bronze-couenne": -7.42
     }
+   },
+   "2021-12-13 08:24:59.521191": {
+    "method": "base_T1",
+    "types_ban": [],
+    "retro": 0,
+    "players": [
+     "56298_BaconPHhero",
+     "56298_BaconPHhero"
+    ],
+    "espérance": -1.1667,
+    "rating": {
+     "63614_Acolyte de C’Thun": 1.91,
+     "41245_Chasseur rochecave": 1.46,
+     "72387_Robo-toutou": 0.72,
+     "61061_Forban": 0.56,
+     "74910_Diablotin dégoûtant": 0.54,
+     "74659_Chromaile évolutive": 0.12,
+     "976_Chasse-marée murloc": -0.4,
+     "64042_Anomalie actualisante": -0.43,
+     "59968_Dragonnet rouge": -1.08,
+     "70143_Géomancien de Tranchebauge": -1.2,
+     "53445_Micromomie": -1.34,
+     "59670_Tisse-colère": -2.08,
+     "1281_Hyène charognarde": -2.34,
+     "61055_Mousse du pont": -2.34,
+     "64038_Élémenplus": -2.34,
+     "72059_Entourloupeur impétueux": -2.34,
+     "40426_Chat de gouttière": -3.53,
+     "70147_Bronze-couenne": -6.88
+    }
+   },
+   "2021-12-13 08:26:49.748329": {
+    "method": "base_T1",
+    "types_ban": [],
+    "retro": 1,
+    "players": [
+     "56298_BaconPHhero",
+     "56298_BaconPHhero"
+    ],
+    "espérance": -0.8217,
+    "rating": {
+     "63614_Acolyte de C’Thun": 0.78,
+     "74910_Diablotin dégoûtant": 0.2,
+     "61061_Forban": 0.16,
+     "41245_Chasseur rochecave": 0.12,
+     "72387_Robo-toutou": -0.26,
+     "976_Chasse-marée murloc": -1.07,
+     "74659_Chromaile évolutive": -1.51,
+     "64042_Anomalie actualisante": -2.33,
+     "59968_Dragonnet rouge": -2.94,
+     "53445_Micromomie": -3.37,
+     "70143_Géomancien de Tranchebauge": -3.38,
+     "59670_Tisse-colère": -4.22,
+     "40426_Chat de gouttière": -4.91,
+     "1281_Hyène charognarde": -5.29,
+     "61055_Mousse du pont": -5.29,
+     "64038_Élémenplus": -5.29,
+     "72059_Entourloupeur impétueux": -5.29,
+     "70147_Bronze-couenne": -7.42
+    }
    }
   },
   "base_T3": {

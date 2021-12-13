@@ -1,18 +1,18 @@
 from collections import defaultdict
-
-from .enums import Type, LEVEL_MAX, VERSION, Race
-import json
+from .enums import Type, LEVEL_MAX, Race
 from types import GeneratorType
 import random
-from typing import Any, DefaultDict, List
+from typing import Any, DefaultDict
+
 
 def requirements(**kwargs):
+    # TODO
     def constraint(function):
         def decorator(self, sequence):
             return function(self, sequence)
 
         is_valid = True
-        for k, v in kwargs:
+        for _ in kwargs:
             is_valid = True
 
         if is_valid:
@@ -36,6 +36,7 @@ def repeat_effect(function):
             function(self, sequence)
     return decorator
 
+
 def game(self):
     ret = self
     while ret.type > Type.GAME:
@@ -44,15 +45,17 @@ def game(self):
         return ret
     return None
 
+
 def controller(self):
     ret = self
     while ret.type > Type.HERO:
         ret = ret.owner
     return ret
 
+
 def my_zone(self):
     ret = self
-    #while ret.type > Type.ZONE:
+    # while ret.type > Type.ZONE:
     while ret.type not in (Type.ZONE, Type.GAME):
         ret = ret.owner
     if ret.type == Type.ZONE:
@@ -83,9 +86,10 @@ class Card_list(list):
 
     def exclude(self, *args, **kwargs) -> 'Card_list':
         # kwargs : OR relation
-        cards = self.__class__(card
+        cards = self.__class__(
+            card
             for card in self
-                if card not in args)
+            if card not in args)
 
         for k, v in kwargs.items():
             for card in cards[::-1]:
@@ -95,9 +99,10 @@ class Card_list(list):
         return cards
 
     def filter_maxmin_level(self, level_max=LEVEL_MAX, level_min=1) -> 'Card_list':
-        return self.__class__(card
+        return self.__class__(
+            card
             for card in self
-                if level_min <= card.level <= level_max)
+            if level_min <= card.level <= level_max)
 
     def one_minion_by_race(self) -> 'Card_list':
         """
@@ -112,7 +117,7 @@ class Card_list(list):
         ret = Card_list()
         for race in Race.battleground_race_name():
             try:
-                ret.append(tri[race][0]) # ajout du premier minion
+                ret.append(tri[race][0])  # ajout du premier minion
             except IndexError:
                 if tri[Race('ALL')]:
                     ret.append(tri[Race('ALL')].pop(0))
@@ -141,7 +146,7 @@ class Card_list(list):
             return None
         elif len(choice_list) == 1:
             return choice_list[0]
-        elif player.is_bot or self.game.is_arene:
+        elif player.is_bot or player.game.is_arene:
             return choice_list.random_choice()
         else:
             if pr:
@@ -157,7 +162,6 @@ class Card_list(list):
                     print('Saississez une valeur.')
 
 
-
 class Board_Card_list(Card_list):
     def __getitem__(self, value):
         try:
@@ -167,5 +171,5 @@ class Board_Card_list(Card_list):
 
     def append(self, card):
         super().append(card)
-        if getattr(self, 'owner', None):
+        if hasattr(self, 'owner'):
             self.owner.owner.check_triple()

@@ -97,9 +97,8 @@ class Game(Entity):
                     pr=f'Choix du héros pour {player_name} :')
 
             plyr = Card(
-                CardName.DEFAULT_PLAYER,
+                hero_chosen,
                 pseudo=player_name,
-                champion=hero_chosen,
                 bob=bob,
                 is_bot=True)
             self.players.append(plyr)
@@ -161,27 +160,15 @@ class Game(Entity):
 
 
 if __name__ == "__main__":
-    g = Card(CardName.DEFAULT_GAME, types_ban=[], is_test=True)
-    g.party_begin({'p1_name': 63601, 'p2_name': 0})
-    p1, p2 = g.players
+    # g = Card(CardName.DEFAULT_GAME, types_ban=[], is_test=True)
+    # g.party_begin({'p1_name': 63601, 'p2_name': 0})
 
-    print(Race('PIRATE'))
-    print(Race('PIRATE') == 'PIRATE')
-    print(Race('ALL') == 'PIRATE')
-    print(Race('ALL').PIRATE)
-
-    a = Card_list()
-    a.append(p1.create_card(61444))
-    print(a.one_minion_by_race())
-    print(a.filter(race='PIRATE'))
-    print(a.filter(race='ALL'))
-
-    """
     from base.arene import arene
-    arene(method='base_T1_to_T3_extended', types_ban=[], retro=6,
-        p1=CardName.DEFAULT_HERO,
-        p2=CardName.DEFAULT_HERO)
-    """
+    arene(
+        method='base_T1',
+        types_ban=[],
+        retro=1,
+        players=[CardName.DEFAULT_HERO, CardName.DEFAULT_HERO])
 
     """
     p1 = g.players[0]
